@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+          cache: true
+      - name: gofmt
+        run: |
+          if [ -n "$(gofmt -l . 2>/dev/null)" ]; then
+            echo "Files need gofmt:"
+            gofmt -l .
+            exit 1
+          fi
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.61
+          args: --timeout=5m
+
+  test:
+    name: test
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        go: ['1.23']
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go }}
+          cache: true
+      - name: go test
+        run: go test -race -coverprofile=coverage.out ./...
+      - name: upload coverage
+        if: matrix.os == 'ubuntu-latest'
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage.out
+          fail_ci_if_error: false
+
+  conformance:
+    name: conformance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+          cache: true
+      - name: run spec test vectors
+        run: |
+          if [ -d spec/test-vectors ]; then
+            go test ./spec/test-vectors/... -v
+          else
+            echo "No test vectors yet — design phase"
+          fi
+
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+          cache: true
+      - name: build all
+        run: |
+          go build ./core/...
+          go build -o /tmp/ledger ./ledger/cmd/ledger 2>/dev/null || echo "ledger main not yet present"
+          go build -o /tmp/verifier ./verifier/cmd/verifier 2>/dev/null || echo "verifier main not yet present"

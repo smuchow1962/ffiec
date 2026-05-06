@@ -1,0 +1,63 @@
+# Go
+*.exe
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.sum.tmp
+vendor/
+
+# Build outputs
+bin/
+build/
+dist/
+out/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Local config / secrets
+.env
+.env.local
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+*.jks
+secrets/
+local/
+
+# Test artifacts
+coverage.out
+coverage.html
+*.coverprofile
+profile.out
+*.prof
+
+# Generated docs
+site/
+public/
+
+# Local SQLite ledgers used in development
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+
+# Goreleaser
+goreleaser/
+
+# Direnv
+.envrc
+.direnv/

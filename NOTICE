@@ -1,0 +1,22 @@
+FFIEC AI Chain-of-Custody Reference Implementation
+Copyright 2026 MMPWorks LLC and contributors
+
+This product includes software developed at MMPWorks LLC and contributed
+back to the open-source community under the Apache License, Version 2.0.
+
+The reference implementations in this repository (core, ledger, verifier)
+are intended to be conforming examples of the chain-of-custody specification
+in spec/. The specification is the normative document; implementations
+conform to the specification.
+
+This product makes use of:
+  - Go standard library cryptographic primitives (crypto/hmac, crypto/sha256,
+    crypto/ed25519) — Apache 2.0 / BSD style
+  - OpenTelemetry Go SDK and OTLP libraries — Apache 2.0
+  - Other dependencies as declared in each module's go.mod
+
+The "FFIEC" name in this repository's identifier refers to the Federal
+Financial Institutions Examination Council. This project is not affiliated
+with, endorsed by, or sponsored by the FFIEC or any of its member agencies.
+The repository name reflects the regulatory framework this work is designed
+to satisfy.

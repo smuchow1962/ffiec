@@ -1,0 +1,27 @@
+# Code owners for the FFIEC AI Chain-of-Custody project.
+# These owners are auto-assigned as reviewers on PRs touching their paths.
+
+# Default — every change reviewed by maintainers
+*                              @smuchow1962
+
+# Specification — requires spec editors
+/spec/                         @smuchow1962
+/spec/test-vectors/            @smuchow1962
+
+# Cryptographic primitives — requires cryptography review
+/core/chain/                   @smuchow1962
+/core/merkle/                  @smuchow1962
+/core/hsm/                     @smuchow1962
+
+# Security policy and design
+/SECURITY.md                   @smuchow1962
+/docs/design/09-threat-model.md @smuchow1962
+
+# Governance
+/GOVERNANCE.md                 @smuchow1962
+/CODE_OF_CONDUCT.md            @smuchow1962
+/LICENSE                       @smuchow1962
+/NOTICE                        @smuchow1962
+
+# CI / build
+/.github/                      @smuchow1962
