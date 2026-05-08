@@ -49,7 +49,7 @@ Binds every event to a sequence-of-events for a given run. Produces evidence tha
 | Why per-process keys instead of per-tenant? | Compromise of one process should not compromise other processes. Per-process scoping is the standard separation. |
 | What stops the master key from leaking? | The master never reaches the application host. The handshake delivers a session key derived under HKDF; the master remains in tenant-controlled storage (HSM-backed where available). |
 | What if HKDF is broken in the future? | The chain is still useful retrospectively because each event also includes its `payload_hash` under HMAC. A key compromise affects new events; sealed past events are still verifiable against the daily Merkle root. |
-| Open issue | The handshake protocol that delivers session keys is out of scope for v1.0. v1.1 candidates: SPIFFE/SPIRE-based delivery, or vendored HSM-token-based delivery. |
+| Outstanding work | The handshake protocol that delivers session keys is out of scope for v1.0 — institutions document their handshake in CC8.1 and the chain inherits the institution's existing key-delivery posture. v1.x roadmap candidates: SPIFFE/SPIRE-based delivery, or vendored HSM-token-based delivery. Either is layered onto v1.0 without breaking the wire form. |
 
 ## 3. Primitive 2 — Daily Merkle seal
 
@@ -83,9 +83,10 @@ Catches retroactive tampering. An insider with database access who alters one ev
 | Question | Answer |
 |---|---|
 | Why daily? Could an attacker do damage in less than a day? | The HMAC chain catches in-flight tampering instantly; the daily seal catches retroactive tampering at the day boundary. The window is bounded by the seal interval. Higher frequency is available as an option (configurable per tenant). |
+| Can the cadence be relaxed for smaller institutions? | Yes. Daily is the default; weekly or monthly is defensible for community banks where examination cadence is 18-month and HSM cost is meaningful. The trade-off is the time-to-detect for retroactive tampering — institutions document the cadence in their control description and the examiner accepts or pushes back. |
 | What if the seal job fails? | Events continue to be captured and HMAC-chained. The daily seal is computed and signed when the HSM becomes available. The seal&rsquo;s timestamp records the actual signing time; the day boundary is unambiguous. The verifier reports the delay. |
 | Why RFC 6962 specifically? | It is the standard Merkle construction in regulator-trusted systems (Certificate Transparency, CONIKS, Trillian). Auditors recognize it. Re-using a standard is a feature. |
-| Open issue | The empty-day seal raises a small definitional question: what does it mean to "seal" no events? The current answer is that the seal is a continuous attestation that the institution is operating the ledger; a missing seal is a gap that the examiner notices. v1.0-final will add explicit text. |
+| What does it mean to "seal" no events? | Resolved in spec §4.2 (normative). Every tenant-day MUST receive a seal record, including tenant-days with zero events; the empty-day Merkle root is pinned at `SHA-256(b"")` = `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`. A missing empty-day seal is reported as `missing seal for tenant-day {D}` — control-completeness failure, not chain-integrity failure. The seal is a continuous attestation that the institution is operating the ledger. |
 
 ## 4. Primitive 3 — HSM-rooted root signature
 
@@ -110,16 +111,24 @@ Anchors integrity in hardware. Even an attacker with full database admin and ful
 
 ### 4.4 The signing payload
 
-The signed payload is constructed as text rather than binary, to maximize auditor readability:
+The signed payload is constructed as text rather than binary, to maximize auditor readability. Under v1.0-final-amendment the canonical form is the v1.0a 10-line `sign_payload` defined normatively in spec §4.3:
 
 ```
-ffiec-ai-chain-v1\n
+ffiec.chain-of-custody.v1\n
+{sign_payload_version}\n            // "v1.0a" under v1.0-final-amendment
+{algorithm}\n                       // "ed25519" for v1.0
+{format_version}\n                  // "v1" for this spec
 {tenant_id}\n
-{ISO 8601 date in UTC}\n
-{hex-encoded Merkle root}
+{ISO 8601 date (YYYY-MM-DD UTC)}\n
+{hex-encoded Merkle root, 64 chars lowercase}\n
+{hex-encoded HKDF inputs digest, 64 chars lowercase}\n
+{cadence}\n                         // "hourly" | "daily" | "weekly"
+{dev_mode}                          // single byte: "1" or "0"; no trailing \n
 ```
 
-An auditor can read the payload, copy it into a verifier, and confirm the signature by hand if necessary. Binary encoding would be marginally more efficient and substantially less inspectable.
+Each inter-field separator is a single `0x0A` (LF) byte; the terminal `dev_mode` byte has no trailing newline. The payload is exactly nine `0x0A` separators. CRLF is non-conformant. An auditor can read the payload, copy it into a verifier, and confirm the signature by hand if necessary. Binary encoding would be marginally more efficient and substantially less inspectable.
+
+Pre-amendment chains (produced before 2026-05-07) omit the `sign_payload_version` line and use the pre-amendment 6-line form (magic line + `algorithm` + `format_version` + `tenant_id` + `iso8601_date` + `hex(merkle_root)` + `hex(hkdf_inputs_digest)`). The verifier dispatches on the seal record's `sign_payload_version` field and reconstructs the matching form, so pre-amendment chains remain verifiable under amendment-aware verifiers without re-sealing. Spec §4.3 carries the byte-level normative text.
 
 ### 4.5 The auditor's-lens review
 
@@ -129,7 +138,7 @@ An auditor can read the payload, copy it into a verifier, and confirm the signat
 | Who holds the public key? | The tenant publishes the public key to a tenant-controlled registry. The institution shares it with examiners and external auditors. The verifier reads it from a flat file or from the registry. |
 | What if the HSM key is lost? | A tenant rotation event. The new HSM key signs going forward; previous days' seals are still verifiable against the previous public key. The institution must document key rotation in the tenant key registry. |
 | What if FIPS 140-2 is replaced by FIPS 140-3? | FIPS 140-3 supersedes 140-2 for new validations. The spec accepts &ldquo;FIPS 140-2 Level 3 or higher&rdquo;, which includes FIPS 140-3 Level 3. |
-| Open issue | Defining the tenant key registry. v1.0 leaves it as &ldquo;institution provides a documented retrieval path&rdquo;. v1.1 may standardize a JWKS-style registry endpoint. |
+| Tenant key registry format | v1.0 leaves the registry implementation-flexible — &ldquo;institution provides a documented retrieval path&rdquo; — because every institution already has an internal directory shape its IT and compliance teams know. A standardized JWKS-style registry endpoint with FFIEC-specified extensions is a v1.x roadmap commitment that lifts the lowest-friction shape into spec text once enough institutions have shipped to inform the field set. |
 
 ## 5. Primitive 4 — OpenTelemetry-native wire
 
@@ -162,8 +171,12 @@ The wire format is OTLP. Implementations may export to *any OTLP-compatible back
 |---|---|
 | Why depend on OTel? | OTel is a CNCF-graduated, industry-standard, multi-language, vendor-neutral observability framework. Depending on it is depending on the lingua franca. |
 | What if OTel changes? | The chain extension fields are encoded as plain attribute key/value pairs. Future OTel versions either preserve them or deprecate the attribute mechanism, in which case our spec migrates with them. |
-| Are we registered with the OTel semantic conventions? | Not at v1.0-draft. The intent is to register `ffiec.chain.*` once the spec is at v1.0-final. |
-| Open issue | The registration step. Track in [`spec/`](../../spec/) once a sponsor in the OTel community is identified. |
+| Are we registered with the OTel semantic conventions? | Not yet. Registration of the `ffiec.chain.*` and `audit.*` namespaces under FFIEC stewardship is a v1.0-final-amendment post-submission milestone — the spec is locked at v1.0-final-amendment, the conformance corpus is built, and the registration request goes to the OTel semconv community once an FFIEC-side sponsor is identified. The chain attributes are stable in v1.0; registration is paperwork, not a wire-format change. |
+| Outstanding work | The registration step. Track in [`spec/`](../../spec/) once a sponsor in the OTel community is identified. |
+
+## 5.6 Algorithm identifiers and migration
+
+The seal record carries an explicit algorithm identifier so a future spec version can introduce a post-quantum signature alongside Ed25519 without invalidating past seals. Spec §4.3.2 already admits the dual-algorithm transitional posture via the seal record's `signatures` list (Variant B, per-algorithm `sign_payload`); the verifier dispatches on the algorithm identifier and the algorithm-confusion attack class is closed before the v1.x post-quantum transition begins. The HMAC chain has no per-event algorithm identifier in v1.0 — HMAC-SHA-256 is implicit. The optional attribute `ffiec.chain.algorithm` (defaulting to HMAC-SHA-256 for v1.0 events) is part of the spec §4.4 attribute table; it costs nothing to emit today and makes a future migration structurally tractable. Without it, an HMAC-SHA-256 weakening would require a spec version bump rather than an attribute addition.
 
 ## 6. Cross-primitive review
 

@@ -1,0 +1,507 @@
+{
+  "01-cryptographic-engineer.md": {
+    "path": "01-cryptographic-engineer.md",
+    "mtime": 1778114175.0794518,
+    "size": 14505
+  },
+  "02-big-four-cyber-risk.md": {
+    "path": "02-big-four-cyber-risk.md",
+    "mtime": 1778114145.421137,
+    "size": 23029
+  },
+  "03-big-four-soc-audit.md": {
+    "path": "03-big-four-soc-audit.md",
+    "mtime": 1778114102.7736626,
+    "size": 14724
+  },
+  "04-ffiec-it-examiner.md": {
+    "path": "04-ffiec-it-examiner.md",
+    "mtime": 1778114172.4544096,
+    "size": 19721
+  },
+  "05-ffiec-cybersecurity-examiner.md": {
+    "path": "05-ffiec-cybersecurity-examiner.md",
+    "mtime": 1778114282.4350133,
+    "size": 37995
+  },
+  "06-big-four-model-risk.md": {
+    "path": "06-big-four-model-risk.md",
+    "mtime": 1778114293.9260614,
+    "size": 31237
+  },
+  "99-gap-roll-up.md": {
+    "path": "99-gap-roll-up.md",
+    "mtime": 1778114572.5115912,
+    "size": 16348
+  },
+  "README.md": {
+    "path": "README.md",
+    "mtime": 1778162355.2403498,
+    "size": 7042
+  },
+  "historical-round-8-pre-hmac-rework/01-big-four-cyber-risk.md": {
+    "path": "historical-round-8-pre-hmac-rework/01-big-four-cyber-risk.md",
+    "mtime": 1778103764.587145,
+    "size": 2289
+  },
+  "historical-round-8-pre-hmac-rework/02-big-four-model-risk.md": {
+    "path": "historical-round-8-pre-hmac-rework/02-big-four-model-risk.md",
+    "mtime": 1778103780.7028372,
+    "size": 2404
+  },
+  "historical-round-8-pre-hmac-rework/03-big-four-soc-audit.md": {
+    "path": "historical-round-8-pre-hmac-rework/03-big-four-soc-audit.md",
+    "mtime": 1778103797.1376655,
+    "size": 2613
+  },
+  "historical-round-8-pre-hmac-rework/04-ffiec-it-examiner.md": {
+    "path": "historical-round-8-pre-hmac-rework/04-ffiec-it-examiner.md",
+    "mtime": 1778103812.7299526,
+    "size": 2369
+  },
+  "historical-round-8-pre-hmac-rework/05-ffiec-cybersecurity-examiner.md": {
+    "path": "historical-round-8-pre-hmac-rework/05-ffiec-cybersecurity-examiner.md",
+    "mtime": 1778103827.666127,
+    "size": 2353
+  },
+  "historical-round-8-pre-hmac-rework/06-ffiec-eic.md": {
+    "path": "historical-round-8-pre-hmac-rework/06-ffiec-eic.md",
+    "mtime": 1778103842.7198741,
+    "size": 2587
+  },
+  "historical-round-8-pre-hmac-rework/99-gap-roll-up.md": {
+    "path": "historical-round-8-pre-hmac-rework/99-gap-roll-up.md",
+    "mtime": 1778103882.0767472,
+    "size": 6224
+  },
+  "historical-round-8-pre-hmac-rework/README.md": {
+    "path": "historical-round-8-pre-hmac-rework/README.md",
+    "mtime": 1778103747.001589,
+    "size": 1765
+  },
+  "outside/02-outside-reviewer-spec-conformance-architect.md": {
+    "path": "outside/02-outside-reviewer-spec-conformance-architect.md",
+    "mtime": 1778165805.3869448,
+    "size": 36255
+  },
+  "outside/03-outside-reviewer-digital-forensics-specialist.md": {
+    "path": "outside/03-outside-reviewer-digital-forensics-specialist.md",
+    "mtime": 1778168534.5732794,
+    "size": 46618
+  },
+  "outside/04-outside-reviewer-cryptographic-security-analyst.md": {
+    "path": "outside/04-outside-reviewer-cryptographic-security-analyst.md",
+    "mtime": 1778171030.0190241,
+    "size": 38034
+  },
+  "outside/05-outside-reviewer-chief-privacy-officer.md": {
+    "path": "outside/05-outside-reviewer-chief-privacy-officer.md",
+    "mtime": 1778173088.305149,
+    "size": 60182
+  },
+  "outside/06-outside-reviewer-chief-compliance-officer-japan.md": {
+    "path": "outside/06-outside-reviewer-chief-compliance-officer-japan.md",
+    "mtime": 1778180882.6193082,
+    "size": 66705
+  },
+  "outside/07-outside-reviewer-ai-platform-engineer.md": {
+    "path": "outside/07-outside-reviewer-ai-platform-engineer.md",
+    "mtime": 1778162113.825868,
+    "size": 51070
+  },
+  "outside/08-outside-reviewer-ai-safety-researcher.md": {
+    "path": "outside/08-outside-reviewer-ai-safety-researcher.md",
+    "mtime": 1778181321.1648989,
+    "size": 40304
+  },
+  "outside/08-outside-reviewer-eu-regulatory-specialist.md": {
+    "path": "outside/08-outside-reviewer-eu-regulatory-specialist.md",
+    "mtime": 1778181281.1212363,
+    "size": 29847
+  },
+  "outside/09-outside-reviewer-ai-safety-researcher.md": {
+    "path": "outside/09-outside-reviewer-ai-safety-researcher.md",
+    "mtime": 1778181584.1920874,
+    "size": 40304
+  },
+  "outside/10-outside-reviewer-fdic-occ-bank-examiner.md": {
+    "path": "outside/10-outside-reviewer-fdic-occ-bank-examiner.md",
+    "mtime": 1778184742.723883,
+    "size": 67230
+  },
+  "outside/10-outside-reviewer-soc2-attestation-partner.md": {
+    "path": "outside/10-outside-reviewer-soc2-attestation-partner.md",
+    "mtime": 1778184764.5204701,
+    "size": 27877
+  },
+  "outside/11-outside-reviewer-apac-regulatory-specialist.md": {
+    "path": "outside/11-outside-reviewer-apac-regulatory-specialist.md",
+    "mtime": 1778184931.7773497,
+    "size": 29120
+  },
+  "outside/11-outside-reviewer-bsa-aml-officer.md": {
+    "path": "outside/11-outside-reviewer-bsa-aml-officer.md",
+    "mtime": 1778184750.370083,
+    "size": 49762
+  },
+  "outside/12-outside-reviewer-cyber-risk-officer-israel.md": {
+    "path": "outside/12-outside-reviewer-cyber-risk-officer-israel.md",
+    "mtime": 1778186059.7326868,
+    "size": 61803
+  },
+  "outside/12-outside-reviewer-eu-consumer-protection-lawyer.md": {
+    "path": "outside/12-outside-reviewer-eu-consumer-protection-lawyer.md",
+    "mtime": 1778186288.9068518,
+    "size": 51704
+  },
+  "outside/13-outside-reviewer-chief-internal-auditor.md": {
+    "path": "outside/13-outside-reviewer-chief-internal-auditor.md",
+    "mtime": 1778186230.0978239,
+    "size": 106908
+  },
+  "outside/13-outside-reviewer-healthcare-ciso.md": {
+    "path": "outside/13-outside-reviewer-healthcare-ciso.md",
+    "mtime": 1778186705.2833736,
+    "size": 49326
+  },
+  "outside/14-outside-reviewer-federal-civilian-ciso.md": {
+    "path": "outside/14-outside-reviewer-federal-civilian-ciso.md",
+    "mtime": 1778187023.1902862,
+    "size": 40316
+  },
+  "outside/14-outside-reviewer-plaintiff-class-action-lawyer.md": {
+    "path": "outside/14-outside-reviewer-plaintiff-class-action-lawyer.md",
+    "mtime": 1778186123.000246,
+    "size": 57367
+  },
+  "outside/15-outside-reviewer-supply-chain-attestation-specialist.md": {
+    "path": "outside/15-outside-reviewer-supply-chain-attestation-specialist.md",
+    "mtime": 1778186668.4190617,
+    "size": 40220
+  },
+  "outside/15-outside-reviewer-third-party-risk-manager.md": {
+    "path": "outside/15-outside-reviewer-third-party-risk-manager.md",
+    "mtime": 1778186277.2495396,
+    "size": 98988
+  },
+  "outside/16-outside-reviewer-bank-of-israel-supervisor.md": {
+    "path": "outside/16-outside-reviewer-bank-of-israel-supervisor.md",
+    "mtime": 1778187501.4625762,
+    "size": 102542
+  },
+  "outside/17-outside-reviewer-fss-examiner-korea.md": {
+    "path": "outside/17-outside-reviewer-fss-examiner-korea.md",
+    "mtime": 1778187458.173501,
+    "size": 74774
+  },
+  "outside/18-outside-reviewer-megabank-ciso-korea.md": {
+    "path": "outside/18-outside-reviewer-megabank-ciso-korea.md",
+    "mtime": 1778187600.9024389,
+    "size": 100001
+  },
+  "outside/19-outside-reviewer-ai-ethics-officer-korea.md": {
+    "path": "outside/19-outside-reviewer-ai-ethics-officer-korea.md",
+    "mtime": 1778187532.0049367,
+    "size": 72118
+  },
+  "outside/herald-vendor-conformance-review-round-2.md": {
+    "path": "outside/herald-vendor-conformance-review-round-2.md",
+    "mtime": 1778165684.5136745,
+    "size": 31050
+  },
+  "outside/herald-vendor-conformance-review-round-3.md": {
+    "path": "outside/herald-vendor-conformance-review-round-3.md",
+    "mtime": 1778168526.9336786,
+    "size": 29418
+  },
+  "outside/herald-vendor-conformance-review-round-4.md": {
+    "path": "outside/herald-vendor-conformance-review-round-4.md",
+    "mtime": 1778172590.317823,
+    "size": 22299
+  },
+  "outside/herald-vendor-conformance-review-round-5.md": {
+    "path": "outside/herald-vendor-conformance-review-round-5.md",
+    "mtime": 1778181092.8757625,
+    "size": 20891
+  },
+  "outside/herald-vendor-conformance-review.md": {
+    "path": "outside/herald-vendor-conformance-review.md",
+    "mtime": 1778161512.4098034,
+    "size": 29622
+  },
+  "round-10/01-cryptographic-engineer.md": {
+    "path": "round-10/01-cryptographic-engineer.md",
+    "mtime": 1778116289.577877,
+    "size": 31173
+  },
+  "round-10/02-big-four-cyber-risk.md": {
+    "path": "round-10/02-big-four-cyber-risk.md",
+    "mtime": 1778116081.4477863,
+    "size": 17339
+  },
+  "round-10/03-big-four-soc-audit.md": {
+    "path": "round-10/03-big-four-soc-audit.md",
+    "mtime": 1778116113.8355248,
+    "size": 23629
+  },
+  "round-10/04-ffiec-it-examiner.md": {
+    "path": "round-10/04-ffiec-it-examiner.md",
+    "mtime": 1778116161.9805799,
+    "size": 24055
+  },
+  "round-10/05-ffiec-cybersecurity-examiner.md": {
+    "path": "round-10/05-ffiec-cybersecurity-examiner.md",
+    "mtime": 1778116162.0563846,
+    "size": 21641
+  },
+  "round-10/06-big-four-model-risk.md": {
+    "path": "round-10/06-big-four-model-risk.md",
+    "mtime": 1778116397.7560005,
+    "size": 28487
+  },
+  "round-10/99-gap-roll-up.md": {
+    "path": "round-10/99-gap-roll-up.md",
+    "mtime": 1778117169.5825891,
+    "size": 8710
+  },
+  "round-11/01-cryptographic-engineer.md": {
+    "path": "round-11/01-cryptographic-engineer.md",
+    "mtime": 1778118192.486374,
+    "size": 33382
+  },
+  "round-11/02-big-four-cyber-risk.md": {
+    "path": "round-11/02-big-four-cyber-risk.md",
+    "mtime": 1778118178.4544656,
+    "size": 36245
+  },
+  "round-11/03-big-four-soc-audit.md": {
+    "path": "round-11/03-big-four-soc-audit.md",
+    "mtime": 1778118097.8838751,
+    "size": 15557
+  },
+  "round-11/04-ffiec-it-examiner.md": {
+    "path": "round-11/04-ffiec-it-examiner.md",
+    "mtime": 1778118180.145851,
+    "size": 25148
+  },
+  "round-11/05-ffiec-cybersecurity-examiner.md": {
+    "path": "round-11/05-ffiec-cybersecurity-examiner.md",
+    "mtime": 1778118144.1929939,
+    "size": 23440
+  },
+  "round-11/06-big-four-model-risk.md": {
+    "path": "round-11/06-big-four-model-risk.md",
+    "mtime": 1778118222.8915286,
+    "size": 36059
+  },
+  "round-11/99-gap-roll-up.md": {
+    "path": "round-11/99-gap-roll-up.md",
+    "mtime": 1778118533.5346906,
+    "size": 7182
+  },
+  "round-12/01-cryptographic-engineer.md": {
+    "path": "round-12/01-cryptographic-engineer.md",
+    "mtime": 1778119201.4151895,
+    "size": 16960
+  },
+  "round-12/02-big-four-cyber-risk.md": {
+    "path": "round-12/02-big-four-cyber-risk.md",
+    "mtime": 1778119125.9675546,
+    "size": 25667
+  },
+  "round-12/03-big-four-soc-audit.md": {
+    "path": "round-12/03-big-four-soc-audit.md",
+    "mtime": 1778119144.6891286,
+    "size": 20442
+  },
+  "round-12/04-ffiec-it-examiner.md": {
+    "path": "round-12/04-ffiec-it-examiner.md",
+    "mtime": 1778119226.5621824,
+    "size": 36901
+  },
+  "round-12/05-ffiec-cybersecurity-examiner.md": {
+    "path": "round-12/05-ffiec-cybersecurity-examiner.md",
+    "mtime": 1778119207.717934,
+    "size": 22844
+  },
+  "round-12/06-big-four-model-risk.md": {
+    "path": "round-12/06-big-four-model-risk.md",
+    "mtime": 1778119245.086181,
+    "size": 32811
+  },
+  "round-12/99-gap-roll-up.md": {
+    "path": "round-12/99-gap-roll-up.md",
+    "mtime": 1778119358.4239335,
+    "size": 8182
+  },
+  "round-13/01-cryptographic-engineer.md": {
+    "path": "round-13/01-cryptographic-engineer.md",
+    "mtime": 1778120122.8369312,
+    "size": 20487
+  },
+  "round-13/01-outside-reviewer-ai-platform-engineer.md": {
+    "path": "round-13/01-outside-reviewer-ai-platform-engineer.md",
+    "mtime": 1778162334.7511518,
+    "size": 711
+  },
+  "round-13/02-big-four-cyber-risk.md": {
+    "path": "round-13/02-big-four-cyber-risk.md",
+    "mtime": 1778120073.0851119,
+    "size": 21372
+  },
+  "round-13/03-big-four-soc-audit.md": {
+    "path": "round-13/03-big-four-soc-audit.md",
+    "mtime": 1778157166.5062745,
+    "size": 45351
+  },
+  "round-13/04-ffiec-it-examiner.md": {
+    "path": "round-13/04-ffiec-it-examiner.md",
+    "mtime": 1778156943.369247,
+    "size": 54302
+  },
+  "round-13/05-ffiec-cybersecurity-examiner.md": {
+    "path": "round-13/05-ffiec-cybersecurity-examiner.md",
+    "mtime": 1778156899.80477,
+    "size": 38841
+  },
+  "round-13/06-big-four-model-risk.md": {
+    "path": "round-13/06-big-four-model-risk.md",
+    "mtime": 1778157149.5533855,
+    "size": 45312
+  },
+  "round-14/01-cryptographic-engineer.md": {
+    "path": "round-14/01-cryptographic-engineer.md",
+    "mtime": 1778157941.5203507,
+    "size": 51477
+  },
+  "round-14/02-big-four-cyber-risk.md": {
+    "path": "round-14/02-big-four-cyber-risk.md",
+    "mtime": 1778157698.2160854,
+    "size": 25319
+  },
+  "round-14/03-big-four-soc-audit.md": {
+    "path": "round-14/03-big-four-soc-audit.md",
+    "mtime": 1778157687.908886,
+    "size": 26795
+  },
+  "round-14/04-ffiec-it-examiner.md": {
+    "path": "round-14/04-ffiec-it-examiner.md",
+    "mtime": 1778157696.9727168,
+    "size": 28042
+  },
+  "round-14/05-ffiec-cybersecurity-examiner.md": {
+    "path": "round-14/05-ffiec-cybersecurity-examiner.md",
+    "mtime": 1778157788.105266,
+    "size": 34801
+  },
+  "round-14/06-big-four-model-risk.md": {
+    "path": "round-14/06-big-four-model-risk.md",
+    "mtime": 1778157737.4889607,
+    "size": 26294
+  },
+  "round-15/01-cryptographic-engineer.md": {
+    "path": "round-15/01-cryptographic-engineer.md",
+    "mtime": 1778158728.8048253,
+    "size": 38678
+  },
+  "round-15/02-big-four-cyber-risk.md": {
+    "path": "round-15/02-big-four-cyber-risk.md",
+    "mtime": 1778158510.0656295,
+    "size": 30208
+  },
+  "round-15/03-big-four-soc-audit.md": {
+    "path": "round-15/03-big-four-soc-audit.md",
+    "mtime": 1778158473.1020925,
+    "size": 21510
+  },
+  "round-15/04-ffiec-it-examiner.md": {
+    "path": "round-15/04-ffiec-it-examiner.md",
+    "mtime": 1778158471.2319732,
+    "size": 23361
+  },
+  "round-15/05-ffiec-cybersecurity-examiner.md": {
+    "path": "round-15/05-ffiec-cybersecurity-examiner.md",
+    "mtime": 1778158655.9405546,
+    "size": 45493
+  },
+  "round-15/06-big-four-model-risk.md": {
+    "path": "round-15/06-big-four-model-risk.md",
+    "mtime": 1778158595.266694,
+    "size": 34123
+  },
+  "round-15/99-gap-roll-up.md": {
+    "path": "round-15/99-gap-roll-up.md",
+    "mtime": 1778158806.2164974,
+    "size": 5005
+  },
+  "round-16/01-cryptographic-engineer.md": {
+    "path": "round-16/01-cryptographic-engineer.md",
+    "mtime": 1778159171.0817597,
+    "size": 13546
+  },
+  "round-16/02-big-four-cyber-risk.md": {
+    "path": "round-16/02-big-four-cyber-risk.md",
+    "mtime": 1778159205.4486,
+    "size": 48402
+  },
+  "round-16/03-big-four-soc-audit.md": {
+    "path": "round-16/03-big-four-soc-audit.md",
+    "mtime": 1778159131.0213468,
+    "size": 33935
+  },
+  "round-16/04-ffiec-it-examiner.md": {
+    "path": "round-16/04-ffiec-it-examiner.md",
+    "mtime": 1778159068.4634283,
+    "size": 19943
+  },
+  "round-16/05-ffiec-cybersecurity-examiner.md": {
+    "path": "round-16/05-ffiec-cybersecurity-examiner.md",
+    "mtime": 1778159178.8401406,
+    "size": 40485
+  },
+  "round-16/06-big-four-model-risk.md": {
+    "path": "round-16/06-big-four-model-risk.md",
+    "mtime": 1778159074.6615243,
+    "size": 21640
+  },
+  "spawned/round-05/aoife-brennan-soc2-sox.md": {
+    "path": "spawned/round-05/aoife-brennan-soc2-sox.md",
+    "mtime": 1778181606.4352582,
+    "size": 23314
+  },
+  "spawned/round-05/karim-elsayed-sre.md": {
+    "path": "spawned/round-05/karim-elsayed-sre.md",
+    "mtime": 1778181237.988368,
+    "size": 24321
+  },
+  "spawned/round-05/margarethe-lindqvist-dora.md": {
+    "path": "spawned/round-05/margarethe-lindqvist-dora.md",
+    "mtime": 1778181358.6745098,
+    "size": 24986
+  },
+  "spawned/round-05/naveed-khan-fbi-forensics.md": {
+    "path": "spawned/round-05/naveed-khan-fbi-forensics.md",
+    "mtime": 1778181240.816714,
+    "size": 24130
+  },
+  "spawned/round-06/bonnie-hartwell-plaintiff-ediscovery.md": {
+    "path": "spawned/round-06/bonnie-hartwell-plaintiff-ediscovery.md",
+    "mtime": 1778186663.0200434,
+    "size": 22721
+  },
+  "spawned/round-06/eunice-park-whittaker-records-management.md": {
+    "path": "spawned/round-06/eunice-park-whittaker-records-management.md",
+    "mtime": 1778186473.643567,
+    "size": 24723
+  },
+  "spawned/round-06/mihail-vasiliev-crypto-academic.md": {
+    "path": "spawned/round-06/mihail-vasiliev-crypto-academic.md",
+    "mtime": 1778186641.1728349,
+    "size": 24452
+  },
+  "spawned/round-06/reina-castellanos-nydfs.md": {
+    "path": "spawned/round-06/reina-castellanos-nydfs.md",
+    "mtime": 1778187004.3816822,
+    "size": 21608
+  }
+}

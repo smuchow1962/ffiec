@@ -57,6 +57,37 @@ The foundation transfer is the project&rsquo;s **end state for governance**. The
 - **Certify compliance.** This project produces a specification and a reference implementation. Conformance certification, if any, is the FFIEC&rsquo;s decision, not ours.
 - **Accept paid-for spec changes.** Specification changes are made on technical merit and regulatory alignment alone.
 
+## Vendor-conformance attestation registry
+
+The project operates a public registry of vendor-conformance attestations &mdash; signed attestations from vendors that their chain-of-custody implementations pass the FFIEC conformance corpus published in `spec/test-vectors/`. The registry is the project-side trust mechanism that complements vendor SOC reporting (which covers vendor operational controls but does NOT attest implementation conformance against the corpus). Institutions consume the registry as part of CC8.1 vendor-management evidence; the procedure is documented in [`docs/vendor-conformance-attestation.md`](docs/vendor-conformance-attestation.md).
+
+### Sub-committee operation
+
+A **vendor-conformance sub-committee** within the project's working group operates the registry. The sub-committee comprises at minimum three project maintainers, separated from the spec-editor role to keep decision-making distributed. Sub-committee membership rotates per the project's standard maintainer-rotation discipline. Decisions are logged in public issue tracking with rationale published.
+
+### Project-side commitments
+
+The project commits to the following operational cadences for the vendor-conformance attestation procedure:
+
+| Commitment | Cadence |
+|---|---|
+| Registry review (sub-committee confirms each registry entry's URLs are reachable, pending re-attestations are tracked, the revocation log is current) | Quarterly |
+| Submission acknowledgement after a vendor submits an attestation | 5 business days |
+| Submission review completion after acknowledgement | 30 calendar days |
+| Revocation publication after sub-committee revocation decision | 14 calendar days |
+| Vendor re-attestation grace period after a new corpus version publishes | 90 calendar days |
+| Quarterly registry-review summary publication (signed by release-management role) | Within 14 calendar days of quarter end |
+
+These commitments are normative project-side governance. The sub-committee operates them as standing obligations; institutions consuming the registry can rely on the cadences when scheduling vendor-management evidence cycles. Failure to meet a commitment is escalated to the maintainer group per the project's standard escalation discipline; persistent failure is a foundation-transfer-readiness concern noted in the project's standard public reporting.
+
+### Corpus-version update coordination
+
+The FFIEC conformance corpus updates per the "Specification changes" process above. When a new corpus version publishes, the working group announces the corpus version with the 90-day vendor re-attestation grace period. During the grace period, prior-corpus attestations remain "Active" in the registry with a "re-attestation pending" annotation; after the grace period expires, the sub-committee revokes the prior-corpus attestation per the documented revocation procedure if no re-attestation has been submitted. The 90-day grace period is calibrated against typical vendor product-release cadence and the test-execution time required to run the corpus against a new product version.
+
+### Registry public access
+
+The registry is public, signed by the working group's release-management role using the project's standard cosign and GPG trust paths. Institutions consume the registry without authentication. A machine-readable feed (JSON Lines) supports institutions integrating registry consumption into vendor-management automation. Registry-document signing follows the same trust-path discipline as binary and spec PDF signing; the institution's trust anchors validate the registry as they validate the binary.
+
 ## Code of conduct
 
 The project follows the [Contributor Covenant 2.1](CODE_OF_CONDUCT.md). Violations are reported to the maintainers via the contact in that document.

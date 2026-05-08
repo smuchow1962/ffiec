@@ -1,0 +1,540 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ffiec-chain-of-custody.org/schemas/operational-events/v1.0.json",
+  "title": "FFIEC Chain-of-Custody Operational Events",
+  "description": "Canonical schema for operational events emitted by conforming chain-of-custody implementations as control evidence. Pairs with spec §10.2 'Operational events' and docs/soc-pack/control-evidence-events.md. Schema version v1.0 covers the v1.0 spec event set; see the 'Schema versioning' section of control-evidence-events.md for the spec-version compatibility matrix and backward-compatibility commitments.",
+  "type": "object",
+  "required": ["event", "timestamp", "tenant_id", "correlation_id", "fields"],
+  "properties": {
+    "event": {
+      "type": "string",
+      "description": "Dotted-namespace event name. Standard namespaces are reserved by the spec; vendor extensions use the 'vendor.' prefix.",
+      "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 / RFC 3339 timestamp in UTC. The 'Z' suffix is REQUIRED; offset forms (e.g. '+00:00') are not accepted by mechanical SOC consumers."
+    },
+    "tenant_id": {
+      "type": "string",
+      "description": "Tenant identifier per spec §3 character class, OR the literal string '(institution-wide; not per-tenant)' for events that are not tenant-scoped (e.g. cold_dr.dryrun_attestation_consumed).",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "correlation_id": {
+      "type": "string",
+      "description": "Free-form correlation token chosen by the emitting implementation. Lets the SOC team join related events (e.g. seal.job_started + seal.job_completed for the same seal date).",
+      "minLength": 1
+    },
+    "fields": {
+      "type": "object",
+      "description": "Per-event detail. Shape is determined by the event name; see the per-event $defs below."
+    }
+  },
+  "additionalProperties": false,
+  "oneOf": [
+    {"$ref": "#/$defs/ledger.startup"},
+    {"$ref": "#/$defs/ledger.hsm_session_opened"},
+    {"$ref": "#/$defs/seal.job_started"},
+    {"$ref": "#/$defs/seal.job_completed"},
+    {"$ref": "#/$defs/seal.job_failed"},
+    {"$ref": "#/$defs/chain.verification_failure"},
+    {"$ref": "#/$defs/hsm.operation_success"},
+    {"$ref": "#/$defs/hsm.operation_failure"},
+    {"$ref": "#/$defs/config.reload"},
+    {"$ref": "#/$defs/master_key.rotated"},
+    {"$ref": "#/$defs/master_key.rotation_observed"},
+    {"$ref": "#/$defs/master_key.retired"},
+    {"$ref": "#/$defs/audit_file.truncation_detected"},
+    {"$ref": "#/$defs/regulator_fingerprint.rotation_received"},
+    {"$ref": "#/$defs/regulator_fingerprint.rotation_validated"},
+    {"$ref": "#/$defs/regulator_fingerprint.installed"},
+    {"$ref": "#/$defs/cold_dr.dryrun_attestation_consumed"},
+    {"$ref": "#/$defs/master.reconciliation_completed"},
+    {"$ref": "#/$defs/mirror.reconciliation_completed"},
+    {"$ref": "#/$defs/vendor_extension"}
+  ],
+  "$defs": {
+    "ledger.startup": {
+      "type": "object",
+      "description": "Emitted when a ledger process starts. Pairs with the institution's deployment-evidence trail.",
+      "properties": {
+        "event": {"const": "ledger.startup"},
+        "timestamp": {"$ref": "#/properties/timestamp"},
+        "tenant_id": {"$ref": "#/properties/tenant_id"},
+        "correlation_id": {"$ref": "#/properties/correlation_id"},
+        "fields": {
+          "type": "object",
+          "required": ["version", "config_hash", "hsm_cluster", "spec_version"],
+          "properties": {
+            "version": {"type": "string", "description": "Ledger implementation version (semver)."},
+            "config_hash": {"type": "string", "description": "SHA-256 of the ledger's effective configuration at startup.", "pattern": "^[0-9a-f]{64}$|^[0-9a-f]{8,}$"},
+            "hsm_cluster": {"type": "string", "description": "Identifier for the HSM cluster the process is bound to."},
+            "spec_version": {"type": "string", "description": "Chain-of-custody spec version this build targets (e.g. 'v1.0')."}
+          },
+          "additionalProperties": true
+        }
+      },
+      "required": ["event", "timestamp", "tenant_id", "correlation_id", "fields"],
+      "additionalProperties": false
+    },
+    "ledger.hsm_session_opened": {
+      "type": "object",
+      "description": "Emitted when the ledger opens an HSM session for signing.",
+      "properties": {
+        "event": {"const": "ledger.hsm_session_opened"},
+        "timestamp": {"$ref": "#/properties/timestamp"},
+        "tenant_id": {"$ref": "#/properties/tenant_id"},
+        "correlation_id": {"$ref": "#/properties/correlation_id"},
+        "fields": {
+          "type": "object",
+          "required": ["hsm_cluster", "key_label"],
+          "properties": {
+            "hsm_cluster": {"type": "string"},
+            "key_label": {"type": "string", "description": "PKCS#11 or KMS label of the signing key used by this session."}
+          },
+          "additionalProperties": true
+        }
+      },
+      "required": ["event", "timestamp", "tenant_id", "correlation_id", "fields"],
+      "additionalProperties": false
+    },
+    "seal.job_started": {
+      "type": "object",
+      "description": "Emitted when a daily-seal job begins.",
+      "properties": {
+        "event": {"const": "seal.job_started"},
+        "timestamp": {"$ref": "#/properties/timestamp"},
+        "tenant_id": {"$ref": "#/properties/tenant_id"},
+        "correlation_id": {"$ref": "#/properties/correlation_id"},
+        "fields": {
+          "type": "object",
+          "required": ["seal_date", "trigger"],
+          "properties": {
+            "seal_date": {"type": "string", "format": "date", "description": "UTC calendar day this seal covers (YYYY-MM-DD)."},
+            "trigger": {"type": "string", "enum": ["scheduled", "manual", "retry", "catch_up"], "description": "What caused the seal job to start."}
+          },
+          "additionalProperties": true
+        }
+      },
+      "required": ["event", "timestamp", "tenant_id", "correlation_id", "fields"],
+      "additionalProperties": false
+    },
+    "seal.job_completed": {
+      "type": "object",
+      "description": "Emitted when a daily-seal job completes successfully. Pairs with seal.job_started under the same correlation_id.",
+      "properties": {
+        "event": {"const": "seal.job_completed"},
+        "timestamp": {"$ref": "#/properties/timestamp"},
+        "tenant_id": {"$ref": "#/properties/tenant_id"},
+        "correlation_id": {"$ref": "#/properties/correlation_id"},
+        "fields": {
+          "type": "object",
+          "required": ["seal_date", "event_count", "merkle_root", "signed_at", "cadence", "key_versions", "format_version", "algorithm"],
+          "properties": {
+            "seal_date": {"type": "string", "format": "date"},
+            "event_count": {"type": "integer", "minimum": 0, "description": "Number of chain entries covered by this seal."},
+            "merkle_root": {"type": "string", "pattern": "^[0-9a-f]{64}$", "description": "SHA-256 of the per-tenant-day Merkle root."},
+            "signed_at": {"type": "string", "format": "date-time"},
+            "duration_ms": {"type": "integer", "minimum": 0},
+            "late_binding_count": {"type": "integer", "minimum": 0, "description": "Number of late-arriving entries included in this seal per spec §10.10."},
+            "cadence": {"type": "string", "enum": ["hourly", "daily", "weekly", "monthly"]},
+            "key_versions": {
+              "type": "array",
+              "items": {"type": "integer", "minimum": 1},
+              "minItems": 1,
+              "description": "Distinct IKM generations covered by this seal. Multi-version on rotation days."
+            },
+            "hkdf_inputs_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+            "format_version": {"type": "string"},
+            "algorithm": {"type": "string", "enum": ["ed25519", "dilithium3", "ed25519+dilithium3"], "description": "Signing algorithm. Cosigned posture uses the '+' form per spec K-1."},
+            "dev_mode": {"type": "boolean", "description": "TRUE if the seal was produced by a development-only adapter; MUST be FALSE for production."}
+          },
+          "additionalProperties": true
+        }
+      },
+      "required": ["event", "timestamp", "tenant_id", "correlation_id", "fields"],
+      "additionalProperties": false
+    },
+    "seal.job_failed": {
+      "type": "object",
+      "description": "Emitted when a daily-seal job fails. The institution's IR Scenario 1 / 2 procedures consume this.",
+      "properties": {
+        "event": {"const": "seal.job_failed"},
+        "timestamp": {"$ref": "#/properties/timestamp"},
+        "tenant_id": {"$ref": "#/properties/tenant_id"},
+        "correlation_id": {"$ref": "#/properties/correlation_id"},
+        "fields": {
+          "type": "object",
+          "required": ["seal_date", "error"],
+          "properties": {
+            "seal_date": {"type": "string", "format": "date"},
+            "error": {"type": "string", "description": "Short error code (e.g. 'hsm_unavailable', 'wal_corruption_detected')."},
+            "retry_count": {"type": "integer", "minimum": 0},
+            "next_retry_at": {"type": "string", "format": "date-time"}
+          },
+          "additionalProperties": true
+        }
+      },
+      "required": ["event", "timestamp", "tenant_id", "correlation_id", "fields"],
+      "additionalProperties": false
+    },
+    "chain.verification_failure": {
+      "type": "object",
+      "description": "Emitted when the verifier reports a failure during the spec §7 procedure. The 'step' field maps directly to the §7 step that produced the failure (1-12).",
+      "properties": {
+        "event": {"const": "chain.verification_failure"},
+        "timestamp": {"$ref": "#/properties/timestamp"},
+        "tenant_id": {"$ref": "#/properties/tenant_id"},
+        "correlation_id": {"$ref": "#/properties/correlation_id"},
+        "fields": {
+          "type": "object",
+          "required": ["run_id", "seq", "step", "reason"],
+          "properties": {
+            "run_id": {"type": "string"},
+            "seq": {"type": "integer", "minimum": 0},
+            "key_version": {"type": "integer", "minimum": 1},
+            "key_fingerprint": {"type": "string", "pattern": "^[0-9a-f]{32}$"},
+            "format_version": {"type": "string"},
+            "step": {"type": "integer", "minimum": 1, "maximum": 12, "description": "Spec §7 procedure step that produced the failure."},
+            "reason": {"type": "string", "description": "Short failure code (e.g. 'payload_hash_MAC_mismatch', 'key_fingerprint_mismatch', 'seq_gap', 'unknown_key_version')."},
+            "detail": {"type": "string", "description": "Free-form detail. For step=8 failures, MUST carry 'expected_fingerprint=...; recorded_fingerprint=...' so the IR responder can map to the IKM-roster row."}
+          },
+          "additionalProperties": true
+        }
+      },
+      "required": ["event", "timestamp", "tenant_id", "correlation_id", "fields"],
+      "additionalProperties": false
+    },
+    "hsm.operation_success": {
+      "type": "object",
+      "description": "Emitted on successful HSM operation. Lets the SOC team correlate every seal signing with an HSM evidence trail.",
+      "properties": {
+        "event": {"const": "hsm.operation_success"},
+        "timestamp": {"$ref": "#/properties/timestamp"},
+        "tenant_id": {"$ref": "#/properties/tenant_id"},
+        "correlation_id": {"$ref": "#/properties/correlation_id"},
+        "fields": {
+          "type": "object",
+          "required": ["op", "key_label"],
+          "properties": {
+            "op": {"type": "string", "enum": ["sign", "verify", "derive", "wrap", "unwrap"]},
+            "key_label": {"type": "string"},
+            "latency_ms": {"type": "integer", "minimum": 0}
+          },
+          "additionalProperties": true
+        }
+      },
+      "required": ["event", "timestamp", "tenant_id", "correlation_id", "fields"],
+      "additionalProperties": false
+    },
+    "hsm.operation_failure": {
+      "type": "object",
+      "description": "Emitted on HSM operation failure. The institution's IR procedures consume this for HSM-availability incidents.",
+      "properties": {
+        "event": {"const": "hsm.operation_failure"},
+        "timestamp": {"$ref": "#/properties/timestamp"},
+        "tenant_id": {"$ref": "#/properties/tenant_id"},
+        "correlation_id": {"$ref": "#/properties/correlation_id"},
+        "fields": {
+          "type": "object",
+          "required": ["op", "key_label", "error"],
+          "properties": {
+            "op": {"type": "string", "enum": ["sign", "verify", "derive", "wrap", "unwrap"]},
+            "key_label": {"type": "string"},
+            "error": {"type": "string"}
+          },
+          "additionalProperties": true
+        }
+      },
+      "required": ["event", "timestamp", "tenant_id", "correlation_id", "fields"],
+      "additionalProperties": false
+    },
+    "config.reload": {
+      "type": "object",
+      "description": "Emitted when the ledger reloads its effective configuration.",
+      "properties": {
+        "event": {"const": "config.reload"},
+        "timestamp": {"$ref": "#/properties/timestamp"},
+        "tenant_id": {"$ref": "#/properties/tenant_id"},
+        "correlation_id": {"$ref": "#/properties/correlation_id"},
+        "fields": {
+          "type": "object",
+          "required": ["config_hash", "source"],
+          "properties": {
+            "config_hash": {"type": "string"},
+            "source": {"type": "string", "enum": ["operator_signal", "automated_reload", "startup", "rollback"]}
+          },
+          "additionalProperties": true
+        }
+      },
+      "required": ["event", "timestamp", "tenant_id", "correlation_id", "fields"],
+      "additionalProperties": false
+    },
+    "master_key.rotated": {
+      "type": "object",
+      "description": "Emitted by the IKM custodian when an IKM rotation completes. The institution's KMS/HSM operator framework produces this; the ledger consumes the rotation via master_key.rotation_observed.",
+      "properties": {
+        "event": {"const": "master_key.rotated"},
+        "timestamp": {"$ref": "#/properties/timestamp"},
+        "tenant_id": {"$ref": "#/properties/tenant_id"},
+        "correlation_id": {"$ref": "#/properties/correlation_id"},
+        "fields": {
+          "type": "object",
+          "required": ["old_version", "new_version", "custodian", "rotation_id"],
+          "properties": {
+            "old_version": {"type": "string", "description": "Custodian-side label for the prior IKM generation."},
+            "new_version": {"type": "string", "description": "Custodian-side label for the new IKM generation."},
+            "custodian": {"type": "string", "description": "KMS/HSM identifier (e.g. 'aws-cloudhsm-cluster-1')."},
+            "rotation_id": {"type": "string"}
+          },
+          "additionalProperties": true
+        }
+      },
+      "required": ["event", "timestamp", "tenant_id", "correlation_id", "fields"],
+      "additionalProperties": false
+    },
+    "master_key.rotation_observed": {
+      "type": "object",
+      "description": "Emitted by the ledger when it first sees a chain entry under a new key_version. Pairs with master_key.rotated; the SOC team confirms both events appear within the institution's documented rotation window.",
+      "properties": {
+        "event": {"const": "master_key.rotation_observed"},
+        "timestamp": {"$ref": "#/properties/timestamp"},
+        "tenant_id": {"$ref": "#/properties/tenant_id"},
+        "correlation_id": {"$ref": "#/properties/correlation_id"},
+        "fields": {
+          "type": "object",
+          "required": ["old_key_version", "new_key_version", "first_seen_key_fingerprint"],
+          "properties": {
+            "old_key_version": {"type": "integer", "minimum": 1},
+            "new_key_version": {"type": "integer", "minimum": 1},
+            "first_seen_key_fingerprint": {"type": "string", "pattern": "^[0-9a-f]{32}$"}
+          },
+          "additionalProperties": true
+        }
+      },
+      "required": ["event", "timestamp", "tenant_id", "correlation_id", "fields"],
+      "additionalProperties": false
+    },
+    "master_key.retired": {
+      "type": "object",
+      "description": "Emitted when an IKM is removed from the registry per spec §10.9 retention rule. chain_entries_referencing_remaining MUST be 0 at retirement time.",
+      "properties": {
+        "event": {"const": "master_key.retired"},
+        "timestamp": {"$ref": "#/properties/timestamp"},
+        "tenant_id": {"$ref": "#/properties/tenant_id"},
+        "correlation_id": {"$ref": "#/properties/correlation_id"},
+        "fields": {
+          "type": "object",
+          "required": ["key_version", "retired_at", "retention_period_days", "retention_approved_by", "chain_entries_referencing_remaining"],
+          "properties": {
+            "key_version": {"type": "integer", "minimum": 1},
+            "retired_at": {"type": "string", "format": "date-time"},
+            "retention_period_days": {"type": "integer", "minimum": 1},
+            "retention_approved_by": {"type": "string", "description": "Owner / approver per the institution's retention-control description."},
+            "chain_entries_referencing_remaining": {"type": "integer", "minimum": 0, "maximum": 0, "description": "MUST be 0; non-zero indicates premature retirement and is a control failure."}
+          },
+          "additionalProperties": true
+        }
+      },
+      "required": ["event", "timestamp", "tenant_id", "correlation_id", "fields"],
+      "additionalProperties": false
+    },
+    "audit_file.truncation_detected": {
+      "type": "object",
+      "description": "Emitted by the verifier when read_audit_file refuses a file whose last byte is not '\\n' per spec §4.1. The recovery_* fields document IR Scenario 9 disposition.",
+      "properties": {
+        "event": {"const": "audit_file.truncation_detected"},
+        "timestamp": {"$ref": "#/properties/timestamp"},
+        "tenant_id": {"$ref": "#/properties/tenant_id"},
+        "correlation_id": {"$ref": "#/properties/correlation_id"},
+        "fields": {
+          "type": "object",
+          "required": ["file_path", "writer_pid", "writer_host", "last_complete_seq", "detected_by", "detected_at", "recovery_attempted"],
+          "properties": {
+            "file_path": {"type": "string"},
+            "writer_pid": {"type": "integer", "minimum": 1},
+            "writer_host": {"type": "string"},
+            "last_complete_seq": {"type": "integer", "minimum": 0},
+            "detected_by": {"type": "string", "enum": ["verifier", "ledger", "operator"]},
+            "detected_at": {"type": "string", "format": "date-time"},
+            "recovery_attempted": {"type": "boolean"},
+            "recovery_source": {"type": "string", "description": "Source the institution recovered from (e.g. 'sdk_local_sqlite_buffer')."},
+            "recovery_outcome": {"type": "string", "enum": ["complete", "partial", "unrecoverable"], "description": "An 'unrecoverable' outcome triggers IR Scenario 9 notification guidance."}
+          },
+          "additionalProperties": true
+        }
+      },
+      "required": ["event", "timestamp", "tenant_id", "correlation_id", "fields"],
+      "additionalProperties": false
+    },
+    "regulator_fingerprint.rotation_received": {
+      "type": "object",
+      "description": "Emitted when the institution receives a new regulator-held public-key fingerprint per the §2.9 reception procedure. First of three events in the rotation lifecycle.",
+      "properties": {
+        "event": {"const": "regulator_fingerprint.rotation_received"},
+        "timestamp": {"$ref": "#/properties/timestamp"},
+        "tenant_id": {"$ref": "#/properties/tenant_id"},
+        "correlation_id": {"$ref": "#/properties/correlation_id"},
+        "fields": {
+          "type": "object",
+          "required": ["received_at", "received_via", "regulator_signing_identity", "notice_artifact_sha256"],
+          "properties": {
+            "received_at": {"type": "string", "format": "date-time"},
+            "received_via": {"type": "string", "description": "Channel the notice arrived on (e.g. 'regulator_encrypted_messaging', 'paper_courier')."},
+            "regulator_signing_identity": {"type": "string"},
+            "notice_artifact_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+          },
+          "additionalProperties": true
+        }
+      },
+      "required": ["event", "timestamp", "tenant_id", "correlation_id", "fields"],
+      "additionalProperties": false
+    },
+    "regulator_fingerprint.rotation_validated": {
+      "type": "object",
+      "description": "Emitted after the institution validates the rotation notice through its documented validation paths. overall_validation: FAIL routes to IR Scenario 11 sub-variant (trust-anchor reception failure).",
+      "properties": {
+        "event": {"const": "regulator_fingerprint.rotation_validated"},
+        "timestamp": {"$ref": "#/properties/timestamp"},
+        "tenant_id": {"$ref": "#/properties/tenant_id"},
+        "correlation_id": {"$ref": "#/properties/correlation_id"},
+        "fields": {
+          "type": "object",
+          "required": ["validated_at", "validation_paths_attempted", "validation_results", "overall_validation"],
+          "properties": {
+            "validated_at": {"type": "string", "format": "date-time"},
+            "validation_paths_attempted": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+            "validation_results": {
+              "type": "object",
+              "additionalProperties": {"type": "string", "enum": ["PASS", "FAIL", "SKIPPED"]}
+            },
+            "overall_validation": {"type": "string", "enum": ["PASS", "FAIL"]}
+          },
+          "additionalProperties": true
+        }
+      },
+      "required": ["event", "timestamp", "tenant_id", "correlation_id", "fields"],
+      "additionalProperties": false
+    },
+    "regulator_fingerprint.installed": {
+      "type": "object",
+      "description": "Emitted when the validated fingerprint is installed as the active trust anchor. Closes the rotation lifecycle.",
+      "properties": {
+        "event": {"const": "regulator_fingerprint.installed"},
+        "timestamp": {"$ref": "#/properties/timestamp"},
+        "tenant_id": {"$ref": "#/properties/tenant_id"},
+        "correlation_id": {"$ref": "#/properties/correlation_id"},
+        "fields": {
+          "type": "object",
+          "required": ["installed_at", "old_fingerprint_archived_at", "new_fingerprint_active_from", "change_management_record_id"],
+          "properties": {
+            "installed_at": {"type": "string", "format": "date-time"},
+            "old_fingerprint_archived_at": {"type": "string", "format": "date-time"},
+            "new_fingerprint_active_from": {"type": "string", "format": "date-time"},
+            "change_management_record_id": {"type": "string"}
+          },
+          "additionalProperties": true
+        }
+      },
+      "required": ["event", "timestamp", "tenant_id", "correlation_id", "fields"],
+      "additionalProperties": false
+    },
+    "cold_dr.dryrun_attestation_consumed": {
+      "type": "object",
+      "description": "Annual event recording the institution's consumption of the project's KEY-DR-DRYRUN-{year}.asc attestation. Pairs with IR Scenario 11. This event is institution-wide; tenant_id MUST be the literal '(institution-wide; not per-tenant)'.",
+      "properties": {
+        "event": {"const": "cold_dr.dryrun_attestation_consumed"},
+        "timestamp": {"$ref": "#/properties/timestamp"},
+        "tenant_id": {"const": "(institution-wide; not per-tenant)"},
+        "correlation_id": {"$ref": "#/properties/correlation_id"},
+        "fields": {
+          "type": "object",
+          "required": ["attestation_year", "attestation_artifact_sha256", "signing_identity_validated", "consumption_outcome", "consumed_by", "archived_at"],
+          "properties": {
+            "attestation_year": {"type": "integer", "minimum": 2026},
+            "attestation_artifact_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+            "signing_identity_validated": {"type": "string"},
+            "consumption_outcome": {"type": "string", "enum": ["PASS", "FAIL"]},
+            "consumed_by": {"type": "string"},
+            "archived_at": {"type": "string", "format": "date-time"}
+          },
+          "additionalProperties": true
+        }
+      },
+      "required": ["event", "timestamp", "tenant_id", "correlation_id", "fields"],
+      "additionalProperties": false
+    },
+    "master.reconciliation_completed": {
+      "type": "object",
+      "description": "Emitted at the cadence the institution operates key-fingerprint reconciliation per spec §10.1 (no slower than weekly). fingerprint_unmatched_count > 0 is a high-priority alert (botched rotation, restored-from-wrong-backup, cross-tenant key swap).",
+      "properties": {
+        "event": {"const": "master.reconciliation_completed"},
+        "timestamp": {"$ref": "#/properties/timestamp"},
+        "tenant_id": {"$ref": "#/properties/tenant_id"},
+        "correlation_id": {"$ref": "#/properties/correlation_id"},
+        "fields": {
+          "type": "object",
+          "required": ["period", "key_versions_observed", "key_fingerprints_observed", "fingerprint_unmatched_count"],
+          "properties": {
+            "period": {"type": "string", "description": "Reconciliation window in 'YYYY-MM-DD/YYYY-MM-DD' form (start/end inclusive)."},
+            "key_versions_observed": {"type": "array", "items": {"type": "integer", "minimum": 1}, "minItems": 1},
+            "key_fingerprints_observed": {"type": "array", "items": {"type": "string", "pattern": "^[0-9a-f]{32}$"}, "minItems": 1},
+            "fingerprint_unmatched_count": {"type": "integer", "minimum": 0}
+          },
+          "additionalProperties": true
+        }
+      },
+      "required": ["event", "timestamp", "tenant_id", "correlation_id", "fields"],
+      "additionalProperties": false
+    },
+    "mirror.reconciliation_completed": {
+      "type": "object",
+      "description": "Emitted at the cadence the institution operates mirror-registry signature-validation reconciliation (re-signing pattern only; see supply-chain.md §'Container supply chain'). The SOC team's audit procedure consumes this event to test the bridge-invariant control. unvalidated_image_count > 0 is a high-priority alert (mirror silently stopped validating project signatures).",
+      "properties": {
+        "event": {"const": "mirror.reconciliation_completed"},
+        "timestamp": {"$ref": "#/properties/timestamp"},
+        "tenant_id": {"$ref": "#/properties/tenant_id"},
+        "correlation_id": {"$ref": "#/properties/correlation_id"},
+        "fields": {
+          "type": "object",
+          "required": [
+            "pulled_image_count",
+            "validated_image_count",
+            "unvalidated_image_count",
+            "audit_log_uri",
+            "reconciliation_window_start",
+            "reconciliation_window_end",
+            "bridge_invariant_state"
+          ],
+          "properties": {
+            "pulled_image_count": {"type": "integer", "minimum": 0, "description": "Images the mirror pulled from the project registry during the window."},
+            "validated_image_count": {"type": "integer", "minimum": 0, "description": "Of those, the number whose project-side cosign signature validated at pull time per the mirror's audit log."},
+            "unvalidated_image_count": {"type": "integer", "minimum": 0, "description": "Pulled images with no audit-log validation entry. MUST equal pulled_image_count - validated_image_count. Non-zero is a Scenario 3 finding."},
+            "audit_log_uri": {"type": "string", "format": "uri", "description": "URI of the mirror's WORM audit log the SOC team reads. The log MUST satisfy 7-year retention and WORM integrity per supply-chain.md §'Mirror audit-log retention and integrity'."},
+            "reconciliation_window_start": {"type": "string", "format": "date-time"},
+            "reconciliation_window_end": {"type": "string", "format": "date-time"},
+            "bridge_invariant_state": {"type": "string", "enum": ["HOLDING", "BROKEN"], "description": "HOLDING when validated_image_count == pulled_image_count AND audit log integrity is intact; BROKEN otherwise. BROKEN routes to IR Scenario 13."}
+          },
+          "additionalProperties": true
+        }
+      },
+      "required": ["event", "timestamp", "tenant_id", "correlation_id", "fields"],
+      "additionalProperties": false
+    },
+    "vendor_extension": {
+      "type": "object",
+      "description": "Vendor-namespace extension event. The 'event' name MUST start with 'vendor.' to avoid collision with the standard namespaces (ledger, seal, chain, hsm, config, master_key, master, mirror, audit_file, regulator_fingerprint, cold_dr).",
+      "properties": {
+        "event": {"type": "string", "pattern": "^vendor\\.[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)*$"},
+        "timestamp": {"$ref": "#/properties/timestamp"},
+        "tenant_id": {"$ref": "#/properties/tenant_id"},
+        "correlation_id": {"$ref": "#/properties/correlation_id"},
+        "fields": {"type": "object"}
+      },
+      "required": ["event", "timestamp", "tenant_id", "correlation_id", "fields"],
+      "additionalProperties": false
+    }
+  }
+}

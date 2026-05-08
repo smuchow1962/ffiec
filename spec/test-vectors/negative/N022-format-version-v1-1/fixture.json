@@ -1,0 +1,10 @@
+{
+  "_about": "FFIEC v1 negative test-vector N022. Pointer fixture: describes the tampering recipe applied to the base 001-single-event-empty-prev fixture. A reference runner reads `base_input`, applies the listed `header_overrides`, and feeds the tampered chain to the verifier under test.",
+  "base_input": "../../001-single-event-empty-prev/",
+  "tamper": {
+    "target": "header.format_version",
+    "from": "v1",
+    "to": "v1.1",
+    "everything_else": "untouched (hkdf_inputs_digest valid, genesis_hash all-zero, entry.format_version = v1, payload_hash valid, seal valid)"
+  }
+}

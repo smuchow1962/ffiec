@@ -1,0 +1,25 @@
+{
+  "_comment": "Input fixture for case 019 — v1.0b sign_payload empty-day edge case. The day has zero chain entries. The seal record is still emitted per §4.2 empty-day continuity discipline. Both new v1.0b fields take their degenerate forms.",
+  "seal": {
+    "sign_payload_version": "v1.0b",
+    "algorithm": "ed25519",
+    "format_version": "v1",
+    "tenant_id": "demo-bank-001",
+    "seal_date": "2026-05-08",
+    "merkle_root_hex": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "hkdf_inputs_digest_hex": "1122334455667788990011223344556677889900112233445566778899001122",
+    "cadence": "daily",
+    "dev_mode": false,
+    "key_versions": []
+  },
+  "per_event_distribution": {
+    "_comment": "Empty-day — no chain entries, no key_version values, no kms_handle_uri values.",
+    "key_versions_distinct": [],
+    "kms_handle_uris_distinct": []
+  },
+  "computed_canonical_fields": {
+    "key_versions_canon": "",
+    "canonical_uri_form_bytes_len": 0,
+    "kms_handle_uris_digest_hex": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

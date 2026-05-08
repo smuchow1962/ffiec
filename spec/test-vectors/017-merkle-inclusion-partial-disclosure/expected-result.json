@@ -1,0 +1,46 @@
+{
+  "_about": "FFIEC v1 test-vector case 017 expected verifier output for the partial-disclosure mode per design 07 §10.3. A conforming verifier processing entries.json + seal.json + partial-proof-entry-3.json with a registry-anchored public key matching seal.public_key_id MUST produce output matching this shape. Hash and signature placeholder values pass through; the structural shape (field names, ordering, the completeness_assertion field, the per-entry breakdown, the banner) is normative.",
+  "mode": "partial-disclosure",
+  "verifier_version": "v1.0.0",
+  "spec_version": "v1.0",
+  "format_version": "v1",
+  "tenant_id": "tenant-ffiec-test-1",
+  "tenant_day": "2026-05-08",
+  "seal_signature_valid": true,
+  "seal_key_fingerprint": "PLACEHOLDER:hex(16)/copied-from-seal.public_key_fingerprint_hex16",
+  "registry_anchor": "ffiec-test-registry-snapshot-2026-05-08",
+  "entries_disclosed": 1,
+  "entries_passed": 1,
+  "entries_failed": 0,
+  "completeness_assertion": "NOT-ASSERTED",
+  "per_entry": [
+    {
+      "seq": 4,
+      "leaf_index": 3,
+      "leaf_hash": "PLACEHOLDER:hex(32)/SHA-256(0x00 || b'ffiec-017-entry-3')",
+      "audit_path_length": 3,
+      "result": "pass",
+      "step_outcomes": {
+        "P1_leaf_recompute": "pass",
+        "P2_audit_path_walk": "pass",
+        "P3_root_match": "pass",
+        "P5_tenant_binding": "pass"
+      }
+    }
+  ],
+  "per_batch": {
+    "P4_seal_signature": "valid"
+  },
+  "banner": "PARTIAL-DISCLOSURE VERIFICATION\nThis report attests inclusion of the named entries in the sealed root.\nThis report does NOT attest chain completeness for tenant_day 2026-05-08.",
+  "exit_code": 0,
+  "_exit_code_reference": "design 07 §10.9 maps PASS to exit 0; spec §10.12 governs the broader exit-code contract. Exit 0 here means: every disclosed entry passed P1-P5 and the per-batch P4 seal signature validated against the registry-anchored public key.",
+  "_failure_modes_not_exercised_in_this_case": [
+    "P1 leaf-hash mismatch (would emit 'leaf hash mismatch at seq 4' and exit 1)",
+    "P2 invalid audit-path position (would emit 'invalid audit-path position at seq 4' and exit 1)",
+    "P3 root mismatch (would emit 'audit path does not lead to sealed root at seq 4' and exit 1)",
+    "P4 seal signature failure (would emit 'signature verification failed' and exit 1)",
+    "P5 tenant cross-bind (would emit 'tenant_id mismatch at seq 4: entry not bound to disclosed seal' and exit 1)",
+    "Structural input error (malformed bundle, missing files; exit 2)",
+    "Configuration error (tenant not in registry, snapshot pre-dates tenant_day; exit 3)"
+  ]
+}

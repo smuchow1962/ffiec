@@ -13,7 +13,7 @@ Specifications follow the form `chain-of-custody-vN.M.md`:
 
 | Spec | Version | Status |
 |---|---|---|
-| [`chain-of-custody-v1.md`](chain-of-custody-v1.md) | v1.0-draft | Design phase |
+| [`chain-of-custody-v1.md`](chain-of-custody-v1.md) | v1.0-final | Issued |
 
 ## Conformance
 

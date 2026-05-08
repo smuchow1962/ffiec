@@ -1,0 +1,13 @@
+{
+  "_about": "FFIEC v1 negative test-vector N023. Pointer fixture: describes the tampering recipe applied to the base 001-single-event-empty-prev fixture. A reference runner reads `base_input`, applies the listed `header_overrides`, and feeds the tampered chain to the verifier under test.",
+  "base_input": "../../001-single-event-empty-prev/",
+  "tamper": {
+    "target": "header.format_version",
+    "from": "v1",
+    "to": "V1",
+    "from_bytes_hex": "7631",
+    "to_bytes_hex": "5631",
+    "everything_else": "untouched (hkdf_inputs_digest valid, genesis_hash all-zero, entry.format_version = v1, payload_hash valid, seal valid)",
+    "_note": "The byte-level distinction is two ASCII bytes: `0x76 0x31` (lowercase v1, canonical) vs `0x56 0x31` (uppercase V1, the tampered variant). Every other byte in the chain file is unchanged. A verifier that case-folds the field before comparing produces a false-pass; a verifier that compares bytes-on-the-wire byte-for-byte refuses at step 1."
+  }
+}

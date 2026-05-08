@@ -1,0 +1,31 @@
+{
+  "_about": "FFIEC v1 test-vector case 017 seal record over the 7 entries in entries.json. The merkle_root is the case-016 7-leaf root produced by the same RFC 6962 §2.1 right-promote rule. Hash and signature fields are PLACEHOLDER values; a conforming verifier-toolchain run computes them from the leaves and an HSM-held Ed25519 signing key.",
+  "tenant_id": "tenant-ffiec-test-1",
+  "seal_date": "2026-05-08",
+  "spec_version": "v1.0",
+  "format_version": "v1",
+  "merkle_root_hex": "PLACEHOLDER:hex(32)/case-016-7-leaf-root-recomputed-from-entries-json",
+  "algorithm": "ed25519",
+  "key_versions": [1],
+  "hkdf_inputs_digest_hex": "PLACEHOLDER:hex(32)/SHA-256(HKDF_SALT || HKDF_INFO_BASE||b'|'||tenant_id || (32).to_bytes(4,'little'))",
+  "cadence": "daily",
+  "dev_mode": false,
+  "sign_payload_version": "v1.0a",
+  "public_key_id": "ffiec-test-pk-1",
+  "public_key_fingerprint_hex16": "PLACEHOLDER:hex(16)/first-16-bytes-of-SHA-256(public-key-bytes)",
+  "signed_at_utc": "2026-05-08T23:59:59Z",
+  "signature_hex": "PLACEHOLDER:hex(64)/Ed25519(seal_signing_key, sign_payload)",
+  "_sign_payload_recipe": [
+    "ffiec.chain-of-custody.v1\\n",
+    "v1.0a\\n",
+    "ed25519\\n",
+    "v1\\n",
+    "tenant-ffiec-test-1\\n",
+    "2026-05-08\\n",
+    "<merkle_root_hex>\\n",
+    "<hkdf_inputs_digest_hex>\\n",
+    "daily\\n",
+    "0"
+  ],
+  "_sign_payload_note": "Ten lines (9 LF separators, no trailing newline). The 10th byte is the single ASCII '0' for dev_mode=false. This is the v1.0a 10-line form per spec §4.3 and design 07 §4.3."
+}
