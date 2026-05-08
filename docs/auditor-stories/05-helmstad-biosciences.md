@@ -59,6 +59,8 @@ Where the chain reached, the integrity foundation came from FFIEC-grade cryptogr
 
 The drive in was twenty-five minutes from the hotel through Cambridge morning traffic. Karen had her coffee in the cup holder and the engagement brief on her tablet.
 
+Karen had stopped expecting another Northbridge. The cleanest engagement she had run in years was now five engagements back, and the team had quietly retired the assumption that it would repeat. Helmstad layered FDA Part 11 strict, clinical-trial-duration retention, and a CRO-supplied predictive model on top of a chain primitive the team had been working with for a month. The expectation on the drive in was *this will not be Northbridge*.
+
 *Four bifurcated audits in five weeks*, she thought. *Different industries. Same architecture.*
 
 Northbridge had been the gold standard. TesseraSeal everywhere — every credit decision, every wire, every IAM change, every ETL job. The team had spent four days trying to find a gap and found a stale comment in a YAML file. Karen had driven home that day with the report half-written in her head and the rest of it dictated into her phone.

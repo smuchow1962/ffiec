@@ -78,7 +78,7 @@ Karen had landed at Stuttgart Airport the night before and taken the S-Bahn into
 
 *Two countries*, she thought as she came up the autobahn ramp. *Two companies. One chain that crosses the boundary. EU AI Act for both. BMW watching. 2024 model-drift in the rear view. We test whether the cross-vendor anchor actually composes — what one chain says, the other confirms.*
 
-She took stock of the prior engagements. Northbridge had been the gold standard — full single-tenant deployment, eighteen months mature, the team had spent four days trying to find a gap and found a stale comment in a YAML file. Mercator had been the bifurcation — sepsis CDS on the chain, the EHR off the chain, Patricia Okonkwo's funding-roadmap framing. Stelvio had been the three-zone version — AI side sealed, OT mutable, IT business legacy, Maria Costanza's triage. Atrio had been the multi-tenant test — forty-seven tenants under twelve sponsor-bank IKMs, fourteen hundred verifier runs, zero failures, Naomi Reisinger's coordinated examiner room.
+She took stock of the prior engagements. Northbridge had been the gold standard — full single-tenant deployment, eighteen months mature, the team had spent four days trying to find a gap and found a stale comment in a YAML file. Ten engagements back now. One §10.16 non-conformance on the books, the chain otherwise byte-for-byte clean. Karen had not seen its match in the ten that followed. Mercator had been the bifurcation — sepsis CDS on the chain, the EHR off the chain, Patricia Okonkwo's funding-roadmap framing. Stelvio had been the three-zone version — AI side sealed, OT mutable, IT business legacy, Maria Costanza's triage. Atrio had been the multi-tenant test — forty-seven tenants under twelve sponsor-bank IKMs, fourteen hundred verifier runs, zero failures, Naomi Reisinger's coordinated examiner room.
 
 Then Helmstad. The biopharma. The CRO data feed where Quintessa had PGP-signed the SFTP delivery and Helmstad had recorded the SHA-256 at the boundary, and the source side beyond the boundary lived on Quintessa's SOC 2. Pacific Crescent — the utility, AI gas-pipeline leak detection on the chain, OT historian off the chain, the Brentwood alert that turned out to be a real small leak. Olmstead — the university, AI admissions screening on the chain, Slate free-text rationale-fields off the chain, two override-down decisions where the rationale was gone.
 
@@ -944,6 +944,12 @@ Karen: "Thank you. The formal deliverable will be in your inbox by end of next w
 Hélène: "And from Lumière — thank you. The 90-day retention conversation is one I should have had with myself months ago. Having it forced by the audit is the right reason to have it now. And — for the record — the spec section that names our retention asymmetry as its worked example is a useful place for our policy to land. The §10.20 retention floor will be a permanent line in our model-supply DPA going forward."
 
 Karen: "That is what audits are for. And — the spec is what audits land in. The §10.20 amendment is the durable answer to the question your audit raised."
+
+Karen caught Raj's eye on the screen as the meeting was winding down. "Same coffee debt as Northbridge?"
+
+Raj, deadpan: "Ten engagements ago. Statute of limitations expired."
+
+"Convenient."
 
 The bridge held for another minute while everyone exchanged the small post-meeting pleasantries — handshakes by camera, the small wave from Klaus to the Paris side, a thumbs-up from Aurélien to Mike. Then the bridge dropped.
 

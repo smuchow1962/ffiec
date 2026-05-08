@@ -47,6 +47,8 @@ The week before last had been Northbridge Bank. TesseraSeal everywhere. Every cr
 
 Last week had been Continental Mutual — a mid-size financial services firm in the suburbs of a city Karen tried not to think about on her own time. No chain anywhere. CRM notes overwritten, database backups deletable, CloudWatch logs purgeable by the same engineers who wrote the code. Twelve people with temporary admin that had no expiration date. Karen had walked out of that one with a forty-page report and a feeling she had not been able to shake on the drive home. The CFO at Continental had asked her, on the last day, whether the report was really going to say what the draft said, and she had told him yes, and he had asked whether they could "soften the language" and she had said no.
 
+Northbridge was still sitting on her like an unanswered question. One §10.16 non-conformance and a clean chain — the cleanest engagement she had run in nine years. The week before Continental, twelve Gaps and four Material Findings on a different bank's report Karen had reviewed for a colleague. The open question on the drive in was whether Northbridge had been the product or the institution. Mercator was the test.
+
 Today was something else. Today was half-and-half.
 
 *It never is*, she thought. *Except sometimes, on the parts that are.*

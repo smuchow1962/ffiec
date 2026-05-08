@@ -94,6 +94,10 @@ Karen looked at him sideways. "It never is."
 
 "It never is. But sometimes part of it is. I'm calibrating." She smiled at the stack on the horizon. "Mercator was half of it. Northbridge was all of it. Today is a third of it. That's a different shape."
 
+Raj watched the stack too. "Northbridge spoiled us a little."
+
+"Northbridge was the cleanest engagement I've run in years. Mercator was heavier — three Gaps and a Partial — but still lighter than the average week. This is the third one in the cycle and I've stopped expecting Northbridge to be the pattern."
+
 They pulled into the visitor lot at 8:25.
 
 Maria met them at the badge desk. Polo shirt, steel-toed boots, the kind of handshake that came from a quarter-century of mill floors. "You'll need PPE for the floor. Hard hat, safety glasses, hi-vis vest, hearing protection. Anyone with metal in their shoes other than steel toes — let me know now."

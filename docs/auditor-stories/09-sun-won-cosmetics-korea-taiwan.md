@@ -78,6 +78,8 @@ In the elevator, Karen does her opening monologue for the Seoul four — quietly
 
 > "Two countries, four use cases, three regulators, eight tenants, one chain. Park-CCO has been preparing for this for six weeks. We have done eight of these now — Northbridge, Mercator, Stelvio, Atrio, Helmstad, Pacific Crescent, Olmstead, and we just came from a 23-tenant Israeli AI shop where the test was nation-state segregation. Today's test is the cross-border data-flow basis. The chain is the same chain. The questions are not."
 
+Northbridge sat eight engagements back. One §10.16 non-conformance, the chain otherwise byte-for-byte clean — Karen had not seen another engagement come within reach of it since. Sun-Won was the first East-Asian engagement of the cycle, PIPA + PDPA cross-border was new, the chain primitive was familiar; the question on the drive in was whether the gap between Northbridge and the rest was the product or the institution.
+
 By the time the team rolled into Sun-Won, TesseraSeal had been audited at multiple US institutions plus a multi-tenant SaaS vendor in Tel Aviv. Korea + Taiwan was the first East-Asian engagement — PIPA + PDPA cross-border composition was new — but the chain primitive was familiar.
 
 Raj nods. Diana is already pulling up the PASS-IT documentation on her tablet. Tom is making sure his recorder is on.

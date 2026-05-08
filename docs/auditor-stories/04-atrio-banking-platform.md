@@ -49,6 +49,10 @@ Karen watched the parking deck come into view. "Today is multi-tenant. The harde
 
 "Northbridge was full deployment."
 
+"Northbridge was the cleanest engagement I've run in years. One finding. The chain held byte-for-byte the rest of the way. I've been waiting for an engagement to break the pattern, because that pattern is the unusual one, not the recurring one. Atrio's forty-seven parallels is the BaaS-shaped chance."
+
+"So today is the test."
+
 "Northbridge was a single bank. One IKM. One chain. One tenant in the spec sense. Atrio is forty-seven tenants under twelve IKMs across two regions. Multi-tenant is where you find out."
 
 "Mercator?"
