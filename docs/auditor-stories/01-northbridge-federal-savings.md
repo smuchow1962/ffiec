@@ -484,15 +484,25 @@ Karen walked over to where Tom and Marcus were standing by the window, mid-conve
 
 "Is it a Gap?"
 
-"It's a Nit. The mirror works. The seal works. The documentation says 'near real-time' without quantifying it."
+"That was my first instinct — it's a Nit. The mirror works. The seal works. The documentation just says 'near real-time' without quantifying it. But Elena pulled the spec back open on it."
 
-"That's a Nit."
+Elena slid her laptop around so Karen could see the page. She had §10.16 open. She read the severity-classification paragraph aloud, slowly:
 
-"That's a Nit."
+> *"Imprecise lag wording in a runbook or CC8.1 control description is never a Nit. It is a non-conformance and MUST be classified by the engagement team as such. Auditor reports, examiner workpapers, SOC 2 engagement findings, and internal-audit reports MUST NOT downgrade this finding to a Nit, a documentation observation, or a recommendation."*
 
-Karen looked at Marcus. "Your CAE liaison just told my internal-audit liaison we have zero Gaps at noon."
+She closed the laptop halfway.
 
-Marcus said, "It's noon. There's still time."
+"It's not a Nit," Elena said. "Per §10.16, it's a non-conformance. The wording IS the testable claim. The runbook doesn't name the four numbers — median, 95th-percentile SLO, alerting threshold, RTO — so there's nothing for me to test the connector against. The mirror could be running at a 90-second 95th-percentile lag or at a 9-second one. Without the runbook naming the bound, I can't tell. That's the violation."
+
+Karen said, "The §10.16 severity-classification clause is normative. We don't have discretion to downgrade it."
+
+"We don't."
+
+Karen walked to the whiteboard and wrote: *Finding-001 — non-conformance per §10.16.* Underneath, a smaller line: *It never is.*
+
+Karen looked at Marcus. "Your CAE liaison just told my internal-audit liaison we have zero Gaps at noon. We have one non-conformance, and §10.16 says we have to call it that."
+
+Marcus said, "It's noon. There's still time. And I'd rather hear it now than at the readout."
 
 Karen laughed. She actually laughed. She hadn't laughed during a workpaper-week since 2024.
 
@@ -1148,7 +1158,7 @@ She looked up at Marcus.
 
 "I told the FDIC. I showed them the chain entries for the disagreement and the reconciliation. They closed the MRA on time."
 
-Karen wrote: *FDIC saw the lag window during MRA close. Closed anyway. The Nit I'm about to write is not new information to the regulator.*
+Karen wrote: *FDIC saw the lag window during MRA close. Closed anyway. The non-conformance I'm about to write is not new information to the regulator — but §10.16 still requires us to classify the runbook wording as non-conformant.*
 
 > ### ✓ Confirmation #9 — Operational and chain views reconcile to zero
 >
@@ -1675,18 +1685,25 @@ The team gathered in the engagement room. Marcus had stepped out to give them pr
 Karen wrote on the whiteboard.
 
 ```
-Gaps:     0
-Partials: 0
-Nits:     1
+Gaps:             0
+Partials:         0
+Findings:         1  (non-conformance per §10.16)
+Nits:             0
 ```
 
-Under Nits, she wrote:
+Under Findings, she wrote:
 
-> **Nit-001: Salesforce mirror lag wording.** The Salesforce-to-Herald.Py mirror is captured via a connector. The mirror lag is occasionally up to 90 seconds during peak Salesforce load. The runbook documentation says "near real-time" without quantifying it. Recommend updating documentation to specify a 95th-percentile lag bound and an alerting threshold.
+> **Finding-001: Salesforce SaaS-edge mirror connector — runbook lag wording is non-conformant per §10.16.** The Salesforce-to-Herald.Py mirror connector itself is operating correctly: seal coverage is complete, reconciliation diff was zero, and the connector emits `connector.lag_observation` events at the cadence §10.16 requires. The non-conformance is in the runbook wording and the CC8.1 control description, both of which describe the mirror as "near real-time" without naming the four quantified bounds §10.16 requires. Remediation is required before the next engagement cycle.
 
-> ### ⚠️ Nit-001 — Documentation precision
+> ### 🚨 Finding-001 — Non-conformance per §10.16 (SaaS-edge mirror connector lag bounds)
 >
-> The Salesforce SaaS edge is captured via a Herald.Py mirror connector. The connector is reliable; the seal coverage is complete; the reconciliation diff was zero. The wording "near real-time" in the runbook is imprecise. Replace with a quantified bound (e.g., "95th-percentile lag under 90 seconds; alerting fires above 120 seconds").
+> The Salesforce SaaS edge is captured via a Herald.Py mirror connector. The connector itself is operating correctly: seal coverage is complete, the reconciliation diff was zero, and the connector emits `connector.lag_observation` events at the cadence §10.16 requires.
+>
+> **The non-conformance is in the runbook wording.** Northbridge's CC8.1 control description and the operational runbook describe the Salesforce mirror as "near real-time." Per spec §10.16, this phrasing — and any other speed-by-adjective wording without the four quantified bounds (median lag, 95th-percentile SLO, alerting threshold, RTO) cited by number — is non-conformant. The §10.16 severity-classification clause is normative: this finding is never a Nit, a documentation observation, or a recommendation, even when the underlying connector is operating well. The engagement team has no discretion to downgrade.
+>
+> **Remediation required before the next engagement cycle.** Northbridge MUST update the runbook and the CC8.1 description to publish the four numbers. Recommended starting values, derived from the connector's observed performance during the audit window: median 12 seconds, 95th-percentile SLO 90 seconds, alerting threshold 150 seconds, RTO 60 minutes. The institution sets the actual numbers; the spec requires only that the numbers be named and that the connector's `lag_observation` events be testable against them.
+>
+> **Severity:** non-conformance (downgrade prohibited per §10.16). **Tracked under:** engagement findings register, item 001. **Remediation deadline:** before next FFIEC IT supplementary review.
 
 She turned around.
 
@@ -1702,7 +1719,13 @@ Luis said, "Object-lock at the storage tier with a separate trust boundary. That
 
 Chen said, "Cross-region reconciliation as a sealed event. I'm stealing that pattern."
 
-Elena said, "The mirror lag Nit is the only thing I have. The Salesforce side itself is fine. The mirror itself is fine. The wording is fine *to a Northbridge engineer who knows what 'near real-time' means in their ops context.* It is not fine *to an examiner who has never seen the system before.*"
+Elena said, "I almost wrote it as a Nit. The Salesforce side is fine. The mirror connector is fine. The reconciliation diff was zero. Everything operationally is working — and that was my instinct, that this is just sloppy documentation."
+
+She paused.
+
+"Then I read §10.16. The severity-classification clause is normative — it says we MUST NOT downgrade this to a Nit, even when the underlying control is operating well. The wording IS the testable claim. Northbridge's runbook says 'near real-time' and that's it. I have nothing to test the connector against. So it's a non-conformance, full stop. Not a documentation Nit."
+
+Tom wrote in his notes: *§10.16 severity-classification clause removes engagement-team discretion to downgrade. Document the principle for the next cycle.*
 
 Tom said, "I told Marcus we'd have a draft report to him by end of day tomorrow. He said no rush. The CAE function here is staffed for this. I appreciated that."
 
@@ -1710,15 +1733,15 @@ Tom added, "He also asked me whether the report was something he could share wit
 
 Karen looked at the whiteboard.
 
-"Last week I wrote a report with twelve Gaps and four Material Findings. This week I'm writing a report with zero and a Nit."
+"Last week I wrote a report with twelve Gaps and four Material Findings. This week I'm writing a report with zero Gaps, zero Partials, and one non-conformance. The bank has one outstanding item to remediate before the next engagement cycle, and §10.16 tells us exactly how to classify it."
 
 She paused.
 
-"I want to be careful in the report not to sound like a brochure. State the facts. Show the verifier output. Note the Nit. The bank knows what it has. Our job is to confirm it, not to celebrate it."
+"I want to be careful in the report not to sound like a brochure. State the facts. Show the verifier output. Record the §10.16 non-conformance with the spec citation visible. The bank knows what it has. Our job is to confirm it, not to celebrate it — and not to soften a non-conformance the spec says we cannot soften."
 
 Tom nodded.
 
-"One more thing," Karen said. "When the FFIEC examiners come back next year, this report should still be useful to them. I want the workpapers to include the verifier outputs we collected. Marcus already pulled a SOC 2 evidence pack for us — let's reference it as Appendix A. Spec version v1.0a. Public-key fingerprint as of engagement date. Sample entry IDs. The Nit. That's the report."
+"One more thing," Karen said. "When the FFIEC examiners come back next year, this report should still be useful to them. I want the workpapers to include the verifier outputs we collected. Marcus already pulled a SOC 2 evidence pack for us — let's reference it as Appendix A. Spec version v1.0a. Public-key fingerprint as of engagement date. Sample entry IDs. Finding-001 with the §10.16 citation, classified as non-conformance, with the remediation deadline written next to it. That's the report."
 
 Karen capped her marker.
 
@@ -1776,7 +1799,7 @@ He almost smiled. He turned and walked out.
 - The AI advisor wrapper captures synchronously. The customer-facing surface fails closed when capture fails. Customers see a soft error rather than an un-audited recommendation.
 - The verifier's design is unprivileged. The Ed25519 public key is published. Verification works on a coffee-shop wifi.
 - The SRE on-call demonstrated a live seal in 3.1 seconds without ceremony. He had done it before.
-- The day ended with zero Gaps, zero Partials, and one Nit about documentation wording.
+- The day ended with zero Gaps, zero Partials, zero Nits, and one non-conformance per §10.16 — the SaaS-edge mirror runbook describes the connector as "near real-time" without naming the four quantified bounds the spec requires. The cryptographic substrate is sound; the operational controls are sound; the runbook wording is the gap. Northbridge has one outstanding item to remediate before the next engagement cycle.
 
 ---
 
