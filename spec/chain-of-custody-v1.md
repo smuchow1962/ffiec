@@ -909,6 +909,7 @@ Implementations MUST emit operational events for control evidence per the schema
 - Chain-coverage map publication (per §10.19, Round-17 M&A-P3): `chain.coverage_map_published` (`coverage_map_version`, `effective_utc`, `coverage_map_sha256`). Emitted whenever the institution publishes or updates the §10.19 chain-coverage map. The event is the cryptographic anchor that lets an acquirer-side auditor running an 18-month lookback determine which map version was in force on a given date.
 - Consumer-correlation index attestation (per §10.23 Shape 2, Round-17 CFPB-G2): `consumer_index.attestation` (`index_snapshot_sha256`, `consumer_count`, `coverage_period_start_utc`, `coverage_period_end_utc`). Emitted by institutions operating §10.23 Shape 2 (index-attestation rather than chain-anchored index entries). The CFPB's verifier independently recomputes the index hash from the chain and compares against this attestation. Institutions operating §10.23 Shape 1 (each CUEC entry as its own chain entry) do not emit this event.
 - Entity succession (per §10.24, Round-17 M&A-G1): `chain.entity_succession` (`from_entity_legal_name`, `to_entity_legal_name`, optional `from_entity_lei`, optional `to_entity_lei`, `effective_utc`, `kind`, optional `regulator_filing_id`, `dual_signatures` array following §10.17 schema, optional `from_tenant_id` / `to_tenant_id` when `tenant_id` is renamed at succession). Emitted when the chain experiences a legal-entity change of operator (merger, acquisition, divestiture, rename, subsidiary transfer). Bound under the seal of the transfer-day per §4.3 sign_payload v1.0b.
+- Trusted-time drift detection (per §10.30): `clock.drift_detected` (`trusted_time_source` per the §10.30 enumeration of `ntp_nist` / `ntp_usno` / `gps_disciplined` / `rfc3161` / `institution_named`, `observed_drift_ns` signed integer, `threshold_ns` positive integer matching the institution's CC8.1-named threshold, `observed_at_utc` RFC 3339 UTC with 6-digit microsecond precision and trailing `Z`). Emitted whenever the local-clock-vs-trusted-source drift exceeds the institution's threshold (typical: 100 ms for streaming-mode institutions per §10.27). Strict greater-than: equal-to-threshold does not fire. Sub-second precision is load-bearing because §10.27 streaming-mode cadence operates at sub-second granularity.
 
 Operational events MUST be retained at least as long as the chain events they relate to.
 
@@ -1128,7 +1129,9 @@ Verifiers exposing a CLI MUST use the following exit codes:
 
 The discriminator between exit codes 1 and 2 is "could the §7 procedure begin?" — yes → exit 1 (a §7 step rejected the chain on its merits); no → exit 2 (the verifier never reached §7). This matters in examiner harnesses and SOC sample-comparison scripts that branch on the distinction: an exit-2 result is a deployment / artifact problem (the institution provided a malformed file or an empty file), while an exit-1 result is an integrity finding (the chain reached §7 and failed a named step).
 
-Implementations MAY define additional exit codes ≥ 4 for vendor-specific diagnostics; the conformance contract is codes 0-3. Examiner harnesses and SOC sample-comparison scripts MUST treat exit codes ≥ 4 as opaque diagnostic output and MUST NOT branch on them; the normative reason string on stdout is the load-bearing signal.
+Spec §10.29 (Streaming-mode verifier procedure) extends the contract with three streaming-state codes — `4` = streaming-all-pass-so-far, `5` = streaming-anomaly-detected, `6` = streaming-key-rotation-pending-confirmation. Streaming-state codes are non-terminal: a streaming-mode verifier emits them as it consumes the chain stream and may transition between them; a terminal code (0-3) ends the streaming run. Conformance contract under §10.12 + §10.29 is codes 0-6.
+
+Implementations MAY define additional exit codes ≥ 7 for vendor-specific diagnostics. Examiner harnesses and SOC sample-comparison scripts MUST treat exit codes ≥ 7 as opaque diagnostic output and MUST NOT branch on them; the normative reason string on stdout is the load-bearing signal.
 
 ### 10.13 Evidentiary artifacts (informative)
 
@@ -1437,7 +1440,7 @@ The §7 verification procedure is the cryptographic substrate; the reference ver
 
 **CC8.1 citation discipline (normative).** An institution citing "the verifier" in CC8.1 MUST name (a) the implementation it is referencing (the reference verifier, a named clean-room implementation, or a vendor-shipped implementation), (b) the version, and (c) the verification key the institution uses to authenticate the binary at the moment it runs the verifier. Without these three names, "the verifier" is ambiguous — different examiners reading the institution's CC8.1 could land on different implementations, different versions, and different trust posture for the binary. The three-name citation lets an examiner reading the CC8.1 reproduce the institution's verifier invocation byte-identically.
 
-**Cross-reference.** §7 (the verification procedure the verifier implements); §10.12 (CLI exit-code contract — `0`/`1`/`2`/`3`, `≥4` vendor-specific); §10.18 (CC8.1 cross-referencing — the verifier citation appears in the institution's CC8.1 alongside the spec section pointers); §11 References (the pinned reference-verifier version per spec version); `docs/vendor-conformance-attestation.md` (the test-vector-corpus-passing procedure that lets a clean-room implementation claim conformance).
+**Cross-reference.** §7 (the verification procedure the verifier implements); §10.12 (CLI exit-code contract — `0`/`1`/`2`/`3` terminal; `4`/`5`/`6` streaming per §10.29; `≥7` vendor-specific); §10.18 (CC8.1 cross-referencing — the verifier citation appears in the institution's CC8.1 alongside the spec section pointers); §11 References (the pinned reference-verifier version per spec version); `docs/vendor-conformance-attestation.md` (the test-vector-corpus-passing procedure that lets a clean-room implementation claim conformance).
 
 ### 10.27 Configurable seal cadence (normative)
 
@@ -1488,7 +1491,7 @@ For institutions operating sub-daily cadence per §10.27, IKM rotation crossing 
 
 Operational events (`master.rotation.completed` per §10.2) are emitted at rotation time regardless of cadence. The institution's CC8.1 names the cadence-aware rotation procedure.
 
-**Cross-reference.** §10.10 IKM rotation crossing the seal boundary (this section's parent); §10.10.1 hourly-cadence rotation (engages for `hourly` and `per_hour`); §4.2 `key_versions` schema row.
+**Cross-reference.** §10.10 IKM rotation crossing the seal boundary (this section's parent); §10.10.1 hourly-cadence rotation (engages for `hourly` and `per_hour`); §4.2 `key_versions` schema row; §10.29 streaming-mode verifier procedure (consumes the `master.rotation.completed` events §10.28 emits and dispatches the §10.29 state machine on them).
 
 ### 10.29 Streaming-mode verifier procedure (normative)
 
@@ -1502,7 +1505,53 @@ The §10.12 verifier CLI exit-code contract extends with streaming-state codes:
 
 Streaming-mode verification is conformant under any cadence; the procedure is identical to batch verification on a per-event and per-seal-record basis but is invoked incrementally rather than at end-of-day. Test vector `022-streaming-verifier-incremental` pins the incremental verdict shape.
 
-**Cross-reference.** §7 verification procedure; §10.12 exit codes; §10.27 configurable cadence.
+**Input-event enumeration (normative).** A streaming-mode verifier consumes a stream of inputs of three kinds:
+
+- `chain_entry` — a single chain entry with a per-event MAC the verifier recomputes and compares.
+- `seal` — a streaming-cadence seal record (Merkle root + Ed25519 signature) covering the entries accumulated since the previous seal.
+- `rotation` — a `master.rotation.completed` operational event (per §10.2) signaling that the institution has rotated to a new key generation per §10.28.
+
+A streaming-mode verifier MUST reject any input whose kind is outside this three-element enumeration with `procedure-could-not-begin` (exit code 1). Inputs are case-sensitive and byte-locked.
+
+Rotation events MUST be authenticated by the streaming-mode source (e.g., signed by the institution's HSM as part of the `master.rotation.completed` operational-event payload per §10.2). A streaming-mode verifier reading from an unauthenticated channel is a §10.12 deployment misconfiguration, not a §10.29 verifier conformance issue. The state machine itself does not authenticate rotation events; that work is the responsibility of the source-channel-authentication layer the institution stands up around the verifier.
+
+**State-machine transitions (normative).** The streaming verifier starts at `4` (`streaming-all-pass-so-far`) and transitions on each consumed input per the following table:
+
+| Current verdict | Input              | Per-input result | Next verdict |
+|-----------------|--------------------|------------------|--------------|
+| `4`             | `chain_entry`      | PASS             | `4`          |
+| `4`             | `chain_entry`      | FAIL             | `5`          |
+| `4`             | `seal`             | PASS             | `4`          |
+| `4`             | `seal`             | FAIL             | `5`          |
+| `4`             | `rotation`         | (n/a)            | `6`          |
+| `6`             | `seal`             | PASS             | `4`          |
+| `6`             | `seal`             | FAIL             | `5`          |
+| `6`             | `chain_entry`      | PASS             | `6`          |
+| `6`             | `chain_entry`      | FAIL             | `5`          |
+| `6`             | `rotation`         | (n/a)            | `5`          |
+| `5`             | (any)              | (any)            | `5`          |
+
+Three rules govern the table:
+
+1. **Rotation confirmation.** A pending rotation (`6`) returns to `4` only when the next streaming seal record validates under the new key generation. A passing `seal` confirms the rotation; a failing one is an anomaly.
+2. **Back-to-back rotation.** A second `rotation` input observed before an intervening confirming seal is a §10.28 integrity-claim violation: the rotation procedure requires a seal under the new key before another rotation, and a verifier observing two rotations without a seal between them MUST transition to `5` rather than re-arming `6`.
+3. **Kind-check ordering.** The kind check (against the `chain_entry` / `seal` / `rotation` enumeration above) is unconditional and runs before the verdict-state dispatch. The table's `(any)` columns refer to inputs that have already passed the kind check — the row `5 | (any) | (any) | 5` (anomaly stickiness) covers inputs that pass the kind check, and a verifier that has surfaced exit code `5` still rejects unknown event kinds with exit code `1` rather than silently absorbing them under stickiness.
+
+`5` (anomaly-detected) is sticky: a verifier that has surfaced an anomaly does not reset on subsequent inputs. The institution's IR program engages once `5` is reached; the streaming run continues only insofar as the operator runs it to completion to enumerate further evidence, but no input can clear the `5` verdict.
+
+**Finalize collapse (normative).** When the streaming-mode verifier reaches end-of-stream (the institution closes the chain, or the operator stops the verifier), the streaming verdict (`4`/`5`/`6`) collapses to a terminal verdict (`0`/`3`):
+
+| Streaming verdict at end-of-stream | Terminal verdict |
+|------------------------------------|------------------|
+| `4` streaming-all-pass-so-far      | `0` PASS         |
+| `5` streaming-anomaly-detected     | `3` chain-anomaly |
+| `6` streaming-key-rotation-pending-confirmation | `3` chain-anomaly (rotation observed but never confirmed by seal under new key — control-completeness failure) |
+
+A `6` verdict that survives to end-of-stream is a control-completeness failure: the institution's rotation procedure produced a rotation event but the next streaming seal under the new key never arrived. This collapses to `3` (chain-anomaly) rather than `0` (PASS) because §10.28 requires the rotation to be sealed; an unconfirmed rotation breaks the chain's integrity claim regardless of whether any specific entry's MAC failed.
+
+**Verifier-state immutability after finalize (normative).** Once the streaming-mode verifier emits a terminal verdict, the verifier instance is read-only — further input MUST be rejected with `procedure-could-not-begin` (exit code 1) rather than reopening the streaming run. An institution that needs to verify additional entries after a terminal verdict starts a new streaming-verifier instance.
+
+**Cross-reference.** §7 verification procedure; §10.12 exit codes; §10.27 configurable cadence; §10.28 streaming-mode rotation discipline; §10.30 trusted-time integration; test vector `022-streaming-verifier-incremental`.
 
 ### 10.30 Trusted-time integration for streaming-mode (normative)
 
