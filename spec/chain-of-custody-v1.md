@@ -1491,7 +1491,43 @@ For institutions operating sub-daily cadence per §10.27, IKM rotation crossing 
 
 Operational events (`master.rotation.completed` per §10.2) are emitted at rotation time regardless of cadence. The institution's CC8.1 names the cadence-aware rotation procedure.
 
-**Cross-reference.** §10.10 IKM rotation crossing the seal boundary (this section's parent); §10.10.1 hourly-cadence rotation (engages for `hourly` and `per_hour`); §4.2 `key_versions` schema row; §10.29 streaming-mode verifier procedure (consumes the `master.rotation.completed` events §10.28 emits and dispatches the §10.29 state machine on them).
+**Cadence-interval boundary computation (normative).** The cadence-interval boundaries are calendar-aligned in UTC. For a given timestamp `T`:
+
+| Cadence | Interval start (`T` floored to) |
+|---|---|
+| `per_second` | `YYYY-MM-DDThh:mm:ss.000000Z` (floor to UTC second) |
+| `per_minute` | `YYYY-MM-DDThh:mm:00.000000Z` (floor to UTC minute) |
+| `per_hour` / `hourly` | `YYYY-MM-DDThh:00:00.000000Z` (floor to UTC hour) |
+| `daily` | `YYYY-MM-DDT00:00:00.000000Z` (floor to UTC midnight) |
+| `weekly` | Monday `YYYY-MM-DDT00:00:00.000000Z` (ISO 8601 week start) |
+
+The interval end is the start plus the cadence's interval (1 second / 1 minute / 1 hour / 1 day / 7 days). Implementations that compute boundaries differently (e.g., on a calendar-week boundary other than Monday, or on a local-time-zone boundary) are non-conformant; the verifier MUST reject seal records whose `seal_period_start_utc` does not align to the §10.28 boundary discipline with reason `seal_period_start_utc {T} does not align to {cadence} boundary` (a sub-case of §7 step 12).
+
+**`key_versions` partition (normative).** Given a rotation event at timestamp `R` with prior key version `K_prior` and new key version `K_new`, the **crossing interval** is the cadence-interval whose start ≤ `R` < end. The seal record's `key_versions` field for any cadence-interval starting at `T` MUST be:
+
+| Interval position relative to crossing | `key_versions` value |
+|---|---|
+| Strictly before the crossing (`T < crossing_start`) | `[K_prior]` |
+| The crossing interval (`T == crossing_start`) | `[K_prior, K_new]` (in that order) |
+| Strictly after the crossing (`T > crossing_start`) | `[K_new]` |
+
+The two-element list MUST be ordered prior-then-new; a verifier reading `[K_new, K_prior]` MUST reject the seal as `key_versions order violation at seal_period_start_utc {T}` (§7 step 12 sub-case). The order is normative because §10.10's boundary-crossing discipline specifies the prior key as the dispatch fall-through when the per-entry `key_version` is not the new key.
+
+**`master.rotation.completed` event payload (normative).** The §10.2 `master.rotation.completed` event payload that the §10.29 streaming verifier consumes carries the following fields, byte-locked across implementations:
+
+```json
+{
+  "event": "master.rotation.completed",
+  "cadence": "<§10.27 enumerated value>",
+  "prior_key_version": <int ≥ 1>,
+  "new_key_version": <int ≥ 1>,
+  "rotation_at_utc": "<RFC 3339 UTC, 6-digit microseconds, trailing Z>"
+}
+```
+
+`prior_key_version` and `new_key_version` MUST differ. `rotation_at_utc` MUST be formatted as `YYYY-MM-DDTHH:MM:SS.uuuuuuZ` with exactly 6 digits of microsecond precision and the literal trailing `Z` (the same byte-form §10.30 uses for `clock.drift_detected.observed_at_utc`). Whole-second-resolution timestamps would erase the crossing-interval signal at sub-second cadence, so the 6-digit microsecond zero-padding is load-bearing.
+
+**Cross-reference.** §10.10 IKM rotation crossing the seal boundary (this section's parent); §10.10.1 hourly-cadence rotation (engages for `hourly` and `per_hour`); §4.2 `key_versions` schema row; §4.2 `seal_period_start_utc` schema row (boundary-alignment check site); §7 step 12 (verifier cadence-and-boundary check); §10.2 operational-events catalog (`master.rotation.completed` event-type registration); §10.29 streaming-mode verifier procedure (consumes the `master.rotation.completed` events §10.28 emits and dispatches the §10.29 state machine on them); §10.30 trusted-time integration (the timestamp source the rotation orchestrator uses to populate `rotation_at_utc`).
 
 ### 10.29 Streaming-mode verifier procedure (normative)
 
