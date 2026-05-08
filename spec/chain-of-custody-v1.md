@@ -296,11 +296,14 @@ For a tenant-day with zero events, the Merkle root is `SHA-256(b"")` (the SHA-25
 | `signature` | bytes[64] | Ed25519 signature; see §4.3 |
 | `signatures` | list of `{algorithm, signature}` | Optional list form for the dual-algorithm transitional period (post-quantum coexistence with Ed25519). When present, the seal is co-signed under multiple algorithms; each entry has its own `algorithm` identifier and its own raw signature bytes. **Each signature in the list MUST cover its own algorithm-bound `sign_payload`** (Variant B): each algorithm's `sign_payload` is constructed per §4.3 with that algorithm's identifier on its dedicated line. The seal's `sign_payload_version` field selects the reconstruction form (pre-amendment 6-line, amendment 10-line, or future-amendment); the algorithm dispatch occupies the algorithm line of whichever form applies. A single shared `sign_payload` covering all algorithms (Variant A) is non-conformant — it leaks the algorithm-confusion defense by letting an attacker present an algorithm-X signature on a payload that names algorithm-Y. The verifier dispatches per-algorithm: for each entry in `signatures`, reconstruct the algorithm-specific `sign_payload` under the seal's `sign_payload_version`, verify the signature against the algorithm's public key. **The `signatures` list MUST INCLUDE the primary algorithm's entry** (not just the secondary algorithm); the top-level `signature`/`algorithm` fields and the corresponding entry in the list carry byte-identical bytes, by design, so a verifier processing only the list is complete. Single-algorithm seals OMIT this field. |
 | `signed_at` | RFC 3339 UTC | Wall-clock when the HSM signed the root |
-| `cadence` | enum | `"hourly"` \| `"daily"` \| `"weekly"`; see §4.2.1 |
+| `cadence` | enum | `"per_second"` \| `"per_minute"` \| `"per_hour"` \| `"hourly"` \| `"daily"` \| `"weekly"`; see §4.2.1 (extended by §10.27) |
+| `seal_period_start_utc` | RFC 3339 UTC | REQUIRED when `cadence` is non-daily (`per_second`, `per_minute`, `per_hour`, `hourly`, `weekly`); the start instant of the cadence interval the seal covers (e.g. `"2026-05-08T14:30:45Z"` for a 1-second seal at 14:30:45 UTC). MAY be present for `daily` cadence (set to `seal_date` 00:00:00 UTC). Institution-trusted ledger-side metadata per the trust posture below; NOT bound under §4.3 sign_payload — see "Trust posture for `seal_period_start_utc`" below. |
 | `late_binding_count` | int64 | Count of events included in the next day's seal due to late arrival; see §4.2.2 |
 | `hsm_cluster_member` | string | Optional; advisory pointer to which HSM signed |
 | `dev_mode` | bool | Optional; `true` only when the seal was signed by a development software-key adapter (see §10.7). The verifier MUST refuse to validate a `dev_mode=true` seal as a production seal under `--strict`. |
 | `sign_payload_version` | string | optional | The byte-form generation of the seal's `sign_payload` reconstruction. Pre-amendment seals (produced before 2026-05-07) omit this field; the verifier defaults to the pre-amendment 6-line `sign_payload` form. Amendment seals (produced 2026-05-07 onwards under v1.0-final-amendment) MUST set this field to `"v1.0a"`. Future v1.x amendments that extend `sign_payload` further MUST use a new value (e.g. `"v1.0b"`). The field is bound into the amendment-form `sign_payload` so a tampered value is detected at signature verification. |
+
+**Trust posture for `seal_period_start_utc` (normative).** The `seal_period_start_utc` field (added per §10.27) is stamped by the ledger server when the seal record is produced; it is NOT part of the §4.3 `sign_payload` byte-form covered by the HSM signature. The verifier consumes `seal_period_start_utc` as institution-trusted ledger-side metadata for §10.27's adjacent-boundary continuity check, parallel to `received_at` per §4.2.2. The institution's CC8.1 (or equivalent) control description names the ledger's append-only storage posture and the operational controls preventing post-ingest rewriting of `seal_period_start_utc`. A ledger that mutates `seal_period_start_utc` after the seal is produced is a control failure independent of the chain's cryptographic integrity; SOC engagements test this control via the `audit-procedures.md` storage-integrity sample. The trust posture is intentional and parallels `received_at`: the chain's MAC covers the SDK's at-capture content, the §4.3 `sign_payload` covers the day's Merkle root with the binding fields enumerated above, and the institution's append-only storage controls cover the ledger's post-ingest seal-record retention — three independent evidence layers, no one of which carries the others' burden. The §10.27 streaming-mode adjacent-boundary check at §7 step 12 surfaces a forged `seal_period_start_utc` only insofar as the forgery breaks the cadence-interval continuity invariant; the institution's storage-integrity controls are the cryptographically-independent backstop.
 
 **Within-day key rotation and `key_versions` (normative).** When key rotation occurs within a single tenant-day, the seal record's `key_versions` list contains all `key_version` values present in the day's events, in ascending numeric order (e.g., `[1, 2]` for a rotation from v1 to v2 mid-day). The list is therefore single-element on a steady-state day and multi-element on any tenant-day whose events span more than one IKM generation, regardless of whether the rotation crossed the seal boundary (per §10.10) or completed entirely within the day. Test vector 010 (`tenant-ikm-rotation-mid-day`) demonstrates the byte values for the within-day case; the day-after rotation scenario in §10.10 demonstrates the boundary-crossing case. The two scenarios share the same seal-record shape — the verifier handles both via the per-entry `key_version` lookup at §7 step 7 and does not require special-case logic.
 
@@ -310,9 +313,9 @@ For a tenant-day with zero events, the Merkle root is `SHA-256(b"")` (the SHA-25
 
 #### 4.2.1 Cadence (normative)
 
-The default seal cadence is daily. Implementations MAY support hourly or weekly cadence configured per tenant. Cadence relaxation (daily → weekly, weekly → monthly) requires written examiner approval per `docs/regulator-pack/examiner-approval-template.md`. Cadence tightening (daily → hourly) requires examiner notification but not approval.
+The default seal cadence is daily. Implementations MUST support cadence configurable across the §10.27-extended enumeration: `per_second`, `per_minute`, `per_hour`, `hourly`, `daily`, `weekly`. Sub-daily values (`per_second`, `per_minute`, `per_hour`) are streaming-mode per §10.27. Cadence relaxation (daily → weekly, weekly → monthly) requires written examiner approval per `docs/regulator-pack/examiner-approval-template.md`. Cadence tightening (daily → hourly, daily → sub-daily) requires examiner notification but not approval.
 
-The seal record MUST carry the cadence value (`hourly` | `daily` | `weekly`) so the verifier confirms the institution's claimed cadence matches the recorded cadence.
+The seal record MUST carry the cadence value (one of `per_second` | `per_minute` | `per_hour` | `hourly` | `daily` | `weekly`) so the verifier confirms the institution's claimed cadence matches the recorded cadence. For non-daily cadence (`per_second`, `per_minute`, `per_hour`, `hourly`, `weekly`), the seal record additionally carries `seal_period_start_utc` (RFC 3339 UTC) marking the cadence-interval boundary; see the §4.2 schema row for the per-cadence requirement matrix, §10.27 for the streaming-mode discipline, and §10.10.1 for the hourly-cadence rotation discipline that applies to both `hourly` and `per_hour` values.
 
 #### 4.2.2 Day-boundary semantics (normative)
 
@@ -358,7 +361,7 @@ Where:
 - `iso8601_date(tenant_day)` is the YYYY-MM-DD UTC date the seal covers.
 - `merkle_root` is the 32-byte Merkle apex from §4.2.
 - `hkdf_inputs_digest` is the 32-byte per-tenant digest defined in §3, computed for the day's chain construction.
-- `cadence` is the ASCII string `"hourly"`, `"daily"`, or `"weekly"` per §4.2.1. The seal record's `cadence` field MUST equal the value bound here.
+- `cadence` is the ASCII string per the §4.2.1 enumeration as extended by §10.27 — one of `"per_second"`, `"per_minute"`, `"per_hour"`, `"hourly"`, `"daily"`, `"weekly"`. The seal record's `cadence` field MUST equal the value bound here. The `seal_period_start_utc` field (per §4.2 schema) is NOT part of the `sign_payload` byte-form — it is institution-trusted ledger-side metadata per its §4.2 trust posture, parallel to `received_at` per §4.2.2.
 - `dev_mode` serializes as a single ASCII byte: `"1"` (0x31) when `dev_mode = true`, `"0"` (0x30) when `dev_mode = false` or absent. The serialization is fixed to a single byte for byte-level reproducibility; implementations MUST NOT emit the literal strings `"true"` / `"false"`, JSON booleans, or any other form here.
 
 Each inter-field separator is a single `\n` (0x0A) byte. The terminal field (`dev_mode`'s single byte) has NO trailing `\n`; the byte length of the amendment-form `sign_payload` is exactly the sum of its field bytes plus nine `0x0A` bytes (the magic line's terminator, plus eight inter-field terminators between the nine fields that follow it). Implementations that append a trailing `\n` to the structure produce a different byte sequence and a different signature.
@@ -845,7 +848,7 @@ A conforming verifier MUST execute the following ordered procedure. Each step's 
    **`key_versions` cross-check (normative).** After signature validation, the verifier MUST cross-check the seal record's `key_versions` list against the actual `key_version` distribution observed in the day's chain entries: `seal.key_versions == sorted(set(entry.key_version for entry in day_events))`. Mismatch → `seal.key_versions does not match per-event key_version distribution`. The cross-check's role differs by `sign_payload_version`: under the pre-amendment 6-line form and the v1.0a 10-line form, `seal.key_versions` is NOT bound under the signature, so the cross-check is the only line of defense against a silent rewrite of `seal.key_versions` (a coordinated forgery rewriting both the seal's `key_versions` and a per-entry `key_version` is still caught by step 8 fingerprint mismatch). Under the v1.0b 12-line form, `key_versions_canon` IS bound under the signature, so a tampered `seal.key_versions` produces a signature failure earlier in the same step 11. The cross-check still runs on v1.0b chains as defense-in-depth — it catches the case where `seal.key_versions` is consistent with `key_versions_canon` (so signature passes) but diverges from the per-event distribution (which would mean the per-event `key_version` values were tampered with in a way that step 8 should already catch). Two independent failures (signature + cross-check, or step 8 + cross-check) provide the strongest forensic narrative; the cross-check is cheap and adds no signature-dependent state.
 
    The `key_versions` cross-check executes after signature dispatch in ALL cases (a)–(e), regardless of signature outcome, because the cross-check is a distinct integrity property not contingent on signature validation. A coordinated forgery rewriting `key_versions` AND a per-entry `key_version` is caught by step 8 fingerprint check; the cross-check is cheap and adds no signature-dependent state. A verifier that short-circuits the cross-check on signature failure (case (c)/(e) under `--strict`, for example) misses the silent-rewrite catch the cross-check is designed for.
-12. **Cadence and dev-mode check.** Assert `seal.cadence` matches the institution's claimed cadence (per §4.2.1) and (under `--strict`) refuse `seal.dev_mode == true`. Mismatch → `cadence mismatch` or `dev-mode seal in production verification — refused`.
+12. **Cadence and dev-mode check.** Assert `seal.cadence` is one of the §10.27 enumerated values (`per_second` | `per_minute` | `per_hour` | `hourly` | `daily` | `weekly`); out-of-enumeration → `cadence "X" is not in the §10.27 enumeration`. Then assert `seal.cadence` matches the institution's claimed cadence (per §4.2.1, extended by §10.27); mismatch → `cadence mismatch`. For non-daily cadence (all values except `daily`), assert adjacent seal records' `seal_period_start_utc` differ by exactly one cadence-interval; gap → `missing seal at expected boundary {T}`. For `daily` cadence, assert adjacent seal records' `seal_date` differ by exactly 24 hours; gap → `missing seal at expected boundary {T}`. Assert chain does not mix `per_hour` and `hourly` mid-chain (§10.27); transition → `cadence form changed mid-chain at {boundary}`. Under `--strict` refuse `seal.dev_mode == true` with `dev-mode seal in production verification — refused`.
 
 12a. **GenAI model identifier completeness check (per-event, when applicable).** For each chain entry that carries any attribute under the OTel `gen_ai.*` namespace prefix (i.e., the entry represents a model call per OpenTelemetry GenAI Semantic Conventions; the discriminator is the literal namespace `gen_ai.` — entries with `tool.*` or `audit.*` only do NOT trigger this check), assert that BOTH `gen_ai.request.model` and `gen_ai.response.model` are present and non-empty per spec §4.4 normative requirement. Missing either → report `gen_ai_model_identifier_missing at seq N: {field_name} required for chain entries representing model calls`. Under `--strict`: FAIL. Under non-strict: PASS-WITH-ANOMALY (control-completeness for SR 11-7 reproducibility, NOT chain-integrity). The check fires only on chain entries representing model calls; entries with no `gen_ai.*` attribute (e.g., tool calls, audit-only events) are unaffected. The check executes inline during the per-event walk (after step 9, before the verifier moves to the per-day step 10) — implementations MUST NOT defer it to a second pass; deferral makes the check observable-at-scale (memory-overhead and latency for the deferred queue) and is non-conformant.
 
@@ -1435,6 +1438,79 @@ The §7 verification procedure is the cryptographic substrate; the reference ver
 **CC8.1 citation discipline (normative).** An institution citing "the verifier" in CC8.1 MUST name (a) the implementation it is referencing (the reference verifier, a named clean-room implementation, or a vendor-shipped implementation), (b) the version, and (c) the verification key the institution uses to authenticate the binary at the moment it runs the verifier. Without these three names, "the verifier" is ambiguous — different examiners reading the institution's CC8.1 could land on different implementations, different versions, and different trust posture for the binary. The three-name citation lets an examiner reading the CC8.1 reproduce the institution's verifier invocation byte-identically.
 
 **Cross-reference.** §7 (the verification procedure the verifier implements); §10.12 (CLI exit-code contract — `0`/`1`/`2`/`3`, `≥4` vendor-specific); §10.18 (CC8.1 cross-referencing — the verifier citation appears in the institution's CC8.1 alongside the spec section pointers); §11 References (the pinned reference-verifier version per spec version); `docs/vendor-conformance-attestation.md` (the test-vector-corpus-passing procedure that lets a clean-room implementation claim conformance).
+
+### 10.27 Configurable seal cadence (normative)
+
+This section extends §4.2.1's cadence enumeration to support sub-daily streaming-mode cadence for institutions whose decisioning clocks run faster than calendar days (real-time payments, sub-second AI fraud-decisioning, live regulator-side sampling).
+
+**Normative cadence values.** The seal record's `cadence` field MUST hold one of the following values:
+
+- `"per_second"` — streaming-mode, one seal record per UTC second
+- `"per_minute"` — streaming-mode, one seal record per UTC minute
+- `"per_hour"` — streaming-mode, one seal record per UTC hour
+- `"hourly"` — non-streaming, one seal record per UTC hour
+- `"daily"` — non-streaming, one seal record per UTC day (the default)
+- `"weekly"` — non-streaming, one seal record per UTC week (Monday 00:00:00 UTC boundary)
+
+A seal record carrying any other value is non-conformant. Verifiers MUST refuse it at §7 step 12 (the cadence-and-dev-mode check) with reason `cadence "X" is not in the §10.27 enumeration`. This is a new sub-case under step 12 distinct from the existing `cadence mismatch` reason (which fires when the seal's cadence value does not match the institution's claimed cadence): the new reason fires when the seal's value is outside the §10.27 enumeration entirely.
+
+**`per_hour` and `hourly` distinction (normative).** The two values are byte-distinct under the wire format: a verifier reading `cadence = "per_hour"` MUST NOT canonicalize to `cadence = "hourly"` for any verification step. Both values produce the same one-hour seal interval, but they are NOT interchangeable in any chain:
+
+- `"hourly"` is the non-streaming canonical form. Institutions emitting hourly seals as their daily-cadence-replacement use this value. §10.10.1 hourly-cadence rotation discipline applies.
+- `"per_hour"` is the streaming-mode synonym at one-hour granularity. Institutions operating §10.28 streaming-mode rotation discipline with one-hour cadence use this value. §10.10.1 hourly-cadence rotation discipline ALSO applies (a streaming-mode institution operating per_hour cadence is hourly-cadence under §10.10.1).
+
+The institution selects one value per chain in CC8.1 and does not mix the two within a single tenant's chain. A chain that mixes both forms across adjacent seals is non-conformant; the verifier reports it as `cadence form changed mid-chain at seal_date {D}` (control-completeness failure under §7 step 12).
+
+**Default.** When the seal record omits the `cadence` field (legacy daily-cadence chains produced before §10.27 landed), verifiers default to `"daily"`. Institutions producing chains under §10.27 SHOULD emit `cadence = "daily"` explicitly even though the omitted-equals-daily default is preserved.
+
+**Streaming-mode definition.** A cadence is streaming-mode when its value is `per_second`, `per_minute`, or `per_hour`. Institutions operating streaming-mode cadence MUST also engage:
+
+- §10.28 streaming-mode IKM rotation discipline
+- §10.29 streaming-mode verifier procedure (verifier exit codes 4/5/6)
+- §10.30 trusted-time integration (normative for streaming-mode, RECOMMENDED otherwise)
+
+**Sign_payload binding (normative).** The `cadence` field is bound under the §4.3 `sign_payload` form on its dedicated line. A tampered cadence value in the seal record is detected at signature verification (signature reconstruction with the field as written produces a different `sign_payload` than the signer used).
+
+**Verifier behavior (normative).** The verifier walking a tenant's chain with non-default cadence MUST:
+
+1. Read the `cadence` field from each seal record. Confirm it is one of the §10.27 enumerated values; reject otherwise with the reason above (step 12 check).
+2. Confirm seal records cover the verification period continuously. For `daily` cadence, adjacent seal records' `seal_date` MUST differ by exactly 24 hours. For all non-daily cadence (`per_second`, `per_minute`, `per_hour`, `hourly`, `weekly`), adjacent seal records' `seal_period_start_utc` (per §4.2 schema) MUST differ by exactly one cadence-interval. A gap surfaces as `missing seal at expected boundary {T}`. The `seal_period_start_utc` field is institution-trusted ledger-side metadata per its §4.2 trust posture — the cadence-interval continuity invariant is the verifier's check; the institution's storage-integrity controls are the cryptographically-independent backstop.
+3. Confirm the cadence value is consistent across the chain (no mid-chain changes between `per_hour` and `hourly`, etc.); a transition surfaces as `cadence form changed mid-chain at {boundary}`.
+4. Emit an output anomaly line `cadence: <value>` so an examiner reading the verifier output sees the institution's cadence posture immediately.
+
+**HSM throughput (informative).** Sub-second cadence requires HSM signing throughput proportional to `1 second / cadence_interval`. FIPS 140-2 Level 3 HSMs typically support tens of thousands of Ed25519 signatures per second, accommodating sub-second cadence at typical institution scale. The institution's CC8.1 names the HSM model and its signing throughput; the change-management procedure verifies throughput before transitioning to a tighter cadence.
+
+**Cross-reference.** §4.2 schema (`cadence` field, `seal_period_start_utc` field); §4.2.1 cadence (the §10.27-extended enumeration); §4.3 sign_payload form (binds the cadence value); §7 step 12 (verifier cadence check); §10.10.1 hourly-cadence rotation (applies to both `hourly` and `per_hour`); §10.28 streaming-mode rotation; §10.29 streaming-mode verifier; §10.30 trusted-time integration; test vector `020-streaming-seal-cadence-1s` exercises 1-second cadence.
+
+### 10.28 Streaming-mode IKM rotation discipline (normative)
+
+For institutions operating sub-daily cadence per §10.27, IKM rotation crossing a cadence-interval boundary follows the §10.10 boundary-crossing discipline at the cadence interval rather than the daily boundary. The cadence-interval crossing the rotation event is sealed under both the prior and new key generations; the seal records covering the crossing interval list both `key_version` values in `key_versions`. The verifier dispatches per-entry `key_version` lookup at §7 step 7 across the rotation interval; both key generations remain valid for the chain entries they signed.
+
+Operational events (`master.rotation.completed` per §10.2) are emitted at rotation time regardless of cadence. The institution's CC8.1 names the cadence-aware rotation procedure.
+
+**Cross-reference.** §10.10 IKM rotation crossing the seal boundary (this section's parent); §10.10.1 hourly-cadence rotation (engages for `hourly` and `per_hour`); §4.2 `key_versions` schema row.
+
+### 10.29 Streaming-mode verifier procedure (normative)
+
+The §7 verification procedure operates in two modes: batch mode (the default; consumes a complete tenant-day or chain-file) and **streaming mode** (consumes the chain stream incrementally as it ships). Streaming-mode verifiers produce per-event PASS/FAIL on the per-event MAC, per-cadence-interval PASS/FAIL on streaming seal records, and an incremental verdict.
+
+The §10.12 verifier CLI exit-code contract extends with streaming-state codes:
+
+- `4` — streaming, all-pass-so-far (verifier is consuming a live stream and has not detected an anomaly)
+- `5` — streaming, anomaly-detected (the verifier has detected an integrity anomaly in the stream; the institution's IR program engages)
+- `6` — streaming, key-rotation-pending-confirmation (the verifier observed a rotation event and is awaiting the next seal under the new key)
+
+Streaming-mode verification is conformant under any cadence; the procedure is identical to batch verification on a per-event and per-seal-record basis but is invoked incrementally rather than at end-of-day. Test vector `022-streaming-verifier-incremental` pins the incremental verdict shape.
+
+**Cross-reference.** §7 verification procedure; §10.12 exit codes; §10.27 configurable cadence.
+
+### 10.30 Trusted-time integration for streaming-mode (normative)
+
+Per §10.14, RFC 3161 trusted-timestamp integration is RECOMMENDED. For institutions operating streaming-mode cadence per §10.27 (sub-daily cadence), trusted-time integration is **normative**: the institution MUST integrate a trusted-time source (NIST, USNO, GPS-disciplined, or RFC 3161 timestamp authority) for chain entries and seal records, and the institution's CC8.1 names the source.
+
+The operational-events catalog gains `clock.drift_detected` per §10.2 — emitted whenever clock drift exceeds the institution's CC8.1-named threshold (typical: 100 ms for streaming-mode institutions). The streaming-mode verifier consults the `clock.drift_detected` event stream when validating temporal claims.
+
+**Cross-reference.** §10.14 trusted-time integration (the base — RECOMMENDED for non-streaming, normative for streaming per this section); §10.2 operational events; §10.4 NTP discipline (the floor for non-streaming institutions); §10.27 configurable cadence; §10.29 streaming-mode verifier.
 
 ## 11. References
 
