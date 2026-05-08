@@ -7,11 +7,14 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"os"
+
+	"github.com/mmpworks/ffiec/cliutil"
 )
+
+const progName = "ledgerctl"
 
 const usageRoot = `ledgerctl — institution-side admin CLI for examiner credential provisioning
 
@@ -30,16 +33,6 @@ Run "ledgerctl <command> --help" for the flags of any command.
 See README.md for the design and the credential-bundle schema.
 `
 
-// usageError tags errors that map to exit code 2 (wrong invocation).
-// Runtime errors (everything else) map to exit code 1.
-type usageError struct{ msg string }
-
-func (u *usageError) Error() string { return u.msg }
-
-func usagef(format string, a ...interface{}) error {
-	return &usageError{msg: fmt.Sprintf(format, a...)}
-}
-
 func main() {
 	os.Exit(Main(os.Args[1:], os.Stdin, os.Stdout, os.Stderr))
 }
@@ -54,17 +47,7 @@ func Main(args []string, _ io.Reader, stdout, stderr io.Writer) int {
 		fmt.Fprint(stderr, usageRoot)
 		return 2
 	}
-	err := dispatch(args, stdout, stderr)
-	if err == nil {
-		return 0
-	}
-	var ue *usageError
-	if errors.As(err, &ue) {
-		fmt.Fprintf(stderr, "ledgerctl: %s\n", ue.msg)
-		return 2
-	}
-	fmt.Fprintf(stderr, "ledgerctl: %v\n", err)
-	return 1
+	return cliutil.ReportAndExit(progName, stderr, dispatch(args, stdout, stderr))
 }
 
 func dispatch(args []string, stdout, stderr io.Writer) error {
@@ -77,6 +60,6 @@ func dispatch(args []string, stdout, stderr io.Writer) error {
 		fmt.Fprint(stdout, usageRoot)
 		return nil
 	default:
-		return usagef("unknown command %q", args[0])
+		return cliutil.Usagef("unknown command %q", args[0])
 	}
 }
