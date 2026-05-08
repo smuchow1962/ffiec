@@ -3,7 +3,7 @@
 **Context:**
 Northbridge Federal Savings — a regional US bank, ~$45B consolidated assets, OCC-supervised national bank, FDIC-insured. Engagement type: FFIEC IT Handbook supplementary review. The bank closed an MRA on customer-data integrity two quarters ago. This is the verification revisit.
 
-**Posture going in:** the audit team has not seen this engagement before. Northbridge has been running something called "TesseraSeal" across customer-data capture for 18 months — independent of any prior conversation with this audit team. The team will encounter the product for the first time at the kickoff meeting. The bank's claim, going into the room, is that every customer-facing surface (CRM mirror, voice/recordings, branch tablets, API edges, IAM events, the AI advisor) lands in a sealed chain-of-custody ledger called Herald Core, that the regulator-facing surface is called Herald.Compliance, that daily seals run via a CloudHSM-managed signing key, that the verifier CLI is `herald-verify`, and that the whole stack conforms to a public spec called FFIEC chain-of-custody v1.0a. The team has heard pitches before that promised this much. Skeptical-but-listening is the working posture.
+**Posture going in:** the audit team has not seen this engagement before. Northbridge has been running something called "TesseraSeal" across customer-data capture for 18 months — independent of any prior conversation with this audit team. The team will encounter the product for the first time at the kickoff meeting. The bank's claim, going into the room, is that every customer-facing surface (CRM mirror, voice/recordings, branch tablets, API edges, IAM events, the AI advisor) is captured by a Python SDK called Vidimus, that the captures land in a sealed chain-of-custody ledger called Herald Core, that the regulator-facing product wrapping the whole stack is called TesseraSeal, that daily seals run via a CloudHSM-managed signing key, that the verifier CLI is `herald-verify`, and that the whole stack conforms to a public spec called FFIEC chain-of-custody v1.0a. The team has heard pitches before that promised this much. Skeptical-but-listening is the working posture.
 
 ---
 
@@ -52,17 +52,53 @@ Tom shook his hand. "Marcus."
 
 Marcus stayed standing. He didn't sit. He didn't pull out a deck-of-decks.
 
-"At the bottom is Herald Core. That's the append-only ledger. Above it is Herald.Py — that's the SDK we instrumented every customer-facing surface with: CRM mirror, voice transcription, branch tablets, the core-banking API edges, IAM, the AI wealth advisor. Every event lands in the ledger as a sealed entry. Daily, the system computes a Merkle root over the day's entries and signs it with a CloudHSM-resident Ed25519 key. The signed seal is published on a regulator-facing surface called Herald.Compliance. The verifier CLI is `herald-verify`. The whole stack conforms to a public spec — FFIEC chain-of-custody v1.0a — and the verifier is open-source, so you can run it on your own laptops without any of our credentials at any layer."
+"At the bottom is Herald Core. That's the append-only ledger — the underlying logging substrate. Above it is Vidimus — that's the Python capture SDK we instrumented every customer-facing surface with: CRM mirror, voice transcription, branch tablets, the core-banking API edges, IAM, the AI wealth advisor. Every event lands in the ledger as a sealed entry. Daily, the system computes a Merkle root over the day's entries and signs it with a CloudHSM-resident Ed25519 key. The signed seal is published on a regulator-facing surface. The whole product wrapping the SDK, the ledger, and the regulator-facing surface is TesseraSeal. The marketing line on the deck is 'TesseraSeal — Powered By Vidimus.' The verifier CLI is `herald-verify`. The whole stack conforms to a public spec — FFIEC chain-of-custody v1.0a — and the verifier is open-source, so you can run it on your own laptops without any of our credentials at any layer."
 
 He paused.
 
 "That's the elevator. I know it's a lot to take in cold."
 
+Tom was writing the names down in his notebook, slowly, in block letters. *TesseraSeal. Vidimus. Herald Core.* He looked up.
+
+"Help me with the names. I want to make sure I'm spelling them right and I want to know what they mean. The spec text is going to land in workpapers."
+
+Marcus nodded.
+
+"TesseraSeal. One word, capital T, capital S. Vidimus. One word, capital V. Herald Core, two words."
+
+Raj had been typing the spec URL. He stopped. He looked up at the slide for a moment, then at Marcus.
+
+"Tessera," he said quietly. "Roman token of admission. A soldier carried a tessera frumentaria to claim grain rations — a tally-stick, signed, proof of identity. The word also covers the small tiles in mosaic work. Token, tile, tally. Plus 'seal' — the cryptographic signature. Token-and-seal evidence system."
+
+Marcus didn't smile. He nodded once.
+
+"That's the read."
+
+Tom wrote it down. Then he looked back at Marcus.
+
+"Vidimus?"
+
+"Latin," Marcus said. "*We have seen.* It's a notary's term. A vidimus is an officially attested copy of a document — the notary inspected the original and certifies the copy. Goes back to medieval chancery practice. The SDK captures and chains evidence. The name fits."
+
+Raj was nodding slowly. He'd already gotten there.
+
+"*Vidimus*," Raj said. "The notary writes that on the attested copy. 'We have seen.'"
+
+Tom wrote *Latin: vidimus = "we have seen" (notarial)* in his notebook, then *Latin/Greek: tessera = token, tile, tally* underneath. He underlined *notarial*.
+
+Marcus said, calmly: "Marketing chose the names. But they fit what the product does. Vidimus captures — *we have seen*. TesseraSeal binds the captures into a token-and-seal evidence system. Herald Core is the underlying logging engine — that name is engineering, not marketing. The marketing line is 'TesseraSeal — Powered By Vidimus.' I won't ask you to repeat it."
+
 Karen wrote on her notepad: **TesseraSeal — verify claims.**
 
-Underneath: *spec public; verifier OSS; key on Compliance page; ledger append-only.* She underlined "verify."
+Underneath, a second line: *Vidimus = "we have seen"? notary's term, or marketing?*
 
-Raj was already typing the spec name into his laptop search bar.
+Underneath that: *spec public; verifier OSS; key on TesseraSeal page; ledger append-only.* She underlined "verify."
+
+*Names that mean something are easy to ship,* she thought. *Names that live up to themselves are harder. We'll see which one this is.*
+
+*It never is*, she thought again. *Except sometimes the marketing department gets a Latin dictionary and picks the right word. We'll see.*
+
+Raj resumed typing — the spec name into his laptop search bar.
 
 "Can I see the spec?" he said. "URL."
 
@@ -88,11 +124,11 @@ Mike said, "Eighteen months. So this isn't new to you, but it's new to us."
 
 Tom said, "Same drill as the FDIC visit in February, then?"
 
-"Same drill," Marcus said. "I'll route you through the surfaces. SRE on-call is Greg today. Greg has done this before. Verifier credentials are already provisioned for your laptops — read-only, scoped to the Compliance surface."
+"Same drill," Marcus said. "I'll route you through the surfaces. SRE on-call is Greg today. Greg has done this before. Verifier credentials are already provisioned for your laptops — read-only, scoped to the TesseraSeal surface."
 
 Karen blinked. "You provisioned us before we asked."
 
-"The verifier's design is that you don't need our credentials at all. The Ed25519 public key is published on the Herald.Compliance page. You can pull a seal record and verify it on a coffee shop wifi if you want. The credentials are just to save you the trouble of typing the tenant ID."
+"The verifier's design is that you don't need our credentials at all. The Ed25519 public key is published on the TesseraSeal page. You can pull a seal record and verify it on a coffee shop wifi if you want. The credentials are just to save you the trouble of typing the tenant ID."
 
 *Hm.*
 
@@ -130,7 +166,7 @@ Elena, who had been quietly reading the Salesforce architecture page, looked up.
 
 "You're not running Salesforce-native logs."
 
-"We are running Salesforce-native logs," Marcus said. "We also mirror every customer-touching field change into Herald.Py via a connector. The Salesforce-native log is the operational log. The Herald mirror is the chain-of-custody log."
+"We are running Salesforce-native logs," Marcus said. "We also mirror every customer-touching field change into Vidimus via a connector. The Salesforce-native log is the operational log. The Vidimus mirror is the chain-of-custody log."
 
 "Two logs," Elena said.
 
@@ -383,7 +419,7 @@ Each one matched.
 
 Marcus pulled up the seal for 2026-04-15. Merkle root, signature, public-key fingerprint `7f3a9...`, leaf count, the date range, and a JCS hash of the metadata block.
 
-Raj copied the public-key fingerprint and pasted it into a comparison against the published Compliance page. Match.
+Raj copied the public-key fingerprint and pasted it into a comparison against the published TesseraSeal page. Match.
 
 "Run the verifier on this seal."
 
@@ -539,7 +575,7 @@ Elapsed: 0.8s
 
 > ### ✓ Confirmation #4 — Single-entry verification resolves end-to-end
 >
-> A single API-call entry, picked from operational logs by transaction ID, verified through the full chain-of-custody pipeline: per-event hash, per-tenant HMAC, Merkle inclusion proof, daily seal Ed25519 signature against the published public key. 0.8 seconds, no Northbridge credentials beyond read scope on the Compliance surface.
+> A single API-call entry, picked from operational logs by transaction ID, verified through the full chain-of-custody pipeline: per-event hash, per-tenant HMAC, Merkle inclusion proof, daily seal Ed25519 signature against the published public key. 0.8 seconds, no Northbridge credentials beyond read scope on the TesseraSeal surface.
 
 Mike rotated. He picked a different request. A failed authorization. A retry. A reversal.
 
@@ -573,7 +609,7 @@ PASS.
 
 "How does the model recommendation get from the model into the chain?"
 
-"Herald.Py wraps the inference call. The wrapper captures inputs, outputs, model version, prompt fingerprint, retrieval context. Synchronous capture. The chain entry lands before the recommendation is rendered to the customer. Wire identification per §4.4.3 — the OTLP transport carries a posture marker on the resource so a verifier reading the wire envelope can confirm it's a chain entry, not a generic OpenTelemetry trace. Severity per §4.4.4 — chain-of-custody traffic carries the `AUDIT` severity tier so SeverityNumber filtering at the collector can't accidentally drop chain entries on a misconfigured sampler. We also emit the deployment-intent attribute set per §4.4.2 — `audit.deployment.intent`, `audit.deployment.policy_version`, and the canary or A/B fields when applicable. The advisor surface is currently `production` intent under `audit.deployment.policy_version=northbridge-mrm-2026q2`. When MRM runs a canary we flip `intent=canary` for the canary cohort and the chain captures the per-decision intent classification."
+"Vidimus wraps the inference call. The wrapper captures inputs, outputs, model version, prompt fingerprint, retrieval context. Synchronous capture. The chain entry lands before the recommendation is rendered to the customer. Wire identification per §4.4.3 — the OTLP transport carries a posture marker on the resource so a verifier reading the wire envelope can confirm it's a chain entry, not a generic OpenTelemetry trace. Severity per §4.4.4 — chain-of-custody traffic carries the `AUDIT` severity tier so SeverityNumber filtering at the collector can't accidentally drop chain entries on a misconfigured sampler. We also emit the deployment-intent attribute set per §4.4.2 — `audit.deployment.intent`, `audit.deployment.policy_version`, and the canary or A/B fields when applicable. The advisor surface is currently `production` intent under `audit.deployment.policy_version=northbridge-mrm-2026q2`. When MRM runs a canary we flip `intent=canary` for the canary cohort and the chain captures the per-decision intent classification."
 
 "Synchronous? Latency cost?"
 
@@ -617,11 +653,11 @@ Mike asked one more thing.
 
 "What happens if the buffer write fails?"
 
-"The recommendation isn't rendered. The customer sees a soft error. The retry logic is in the Herald.Py wrapper. There's a circuit breaker; if it trips, the AI advisor fails closed and customers get a 'temporarily unavailable' message until the path recovers. The bank prefers a degraded-experience customer to an un-audited recommendation."
+"The recommendation isn't rendered. The customer sees a soft error. The retry logic is in the Vidimus wrapper. There's a circuit breaker; if it trips, the AI advisor fails closed and customers get a 'temporarily unavailable' message until the path recovers. The bank prefers a degraded-experience customer to an un-audited recommendation."
 
 > ### ✓ Confirmation #5 — AI advisor fails closed when capture fails
 >
-> The customer-facing AI recommendation surface is gated on successful chain capture. A failed capture results in a degraded customer experience, not an un-audited recommendation. This is enforced in the Herald.Py wrapper, not as an operational policy.
+> The customer-facing AI recommendation surface is gated on successful chain capture. A failed capture results in a degraded customer experience, not an un-audited recommendation. This is enforced in the Vidimus wrapper, not as an operational policy.
 
 Mike wrote that down. He underlined it.
 
@@ -1061,7 +1097,7 @@ Luis was nodding. He wrote: *genesis-block anti-spoof — fork shows up in two p
 
 Karen asked: "Is the SDK source open?"
 
-Marcus said, "Herald.Py is Apache 2.0 open source. The state-management code is in `herald/_buffer.py` and `herald/_runtime.py`. Anyone — your team included — can audit the resume logic. The repo is on GitHub."
+Marcus said, "Vidimus is Apache 2.0 open source. The state-management code is in `herald/_buffer.py` and `herald/_runtime.py`. Anyone — your team included — can audit the resume logic. The repo is on GitHub."
 
 Karen wrote that down. *SDK is OSS. Resume logic is auditable.*
 
@@ -1190,7 +1226,7 @@ Marcus didn't pause.
 
 He held up one finger.
 
-"One. **SDK side — emission-time genesis anti-spoof.** Herald.Py's `HmacChainWriter` in `herald._crypto.chain` refuses to emit `prev_hash = 32 zero bytes` at any `seq > 1` per §4.4 genesis-block uniqueness. The check sits inside the writer's `with` block, before the HMAC compute. If a buggy `seed_run_state` caller — or a corrupted in-memory state, or a deliberate tampered seed — tries to push genesis-form bytes at `seq > 1`, the SDK raises `ChainConfigurationError` with reason cited to §4.4. The chain entry never leaves the SDK boundary."
+"One. **SDK side — emission-time genesis anti-spoof.** Vidimus's `HmacChainWriter` in `herald._crypto.chain` refuses to emit `prev_hash = 32 zero bytes` at any `seq > 1` per §4.4 genesis-block uniqueness. The check sits inside the writer's `with` block, before the HMAC compute. If a buggy `seed_run_state` caller — or a corrupted in-memory state, or a deliberate tampered seed — tries to push genesis-form bytes at `seq > 1`, the SDK raises `ChainConfigurationError` with reason cited to §4.4. The chain entry never leaves the SDK boundary."
 
 Two fingers.
 
@@ -1346,13 +1382,13 @@ She turned around.
 
 "I want to be sure the three layers are actually independent. Marcus, who owns each one?"
 
-"SDK is the Herald.Py team. Sink and verifier are the Herald.Compliance team — different repo, different code review process, different release cadence. The spec is the working group. Three different communities; three different change paths. A coordinated tampering would have to fool all three independently. That's the §1.4 compositional security argument made operational."
+"SDK is the Vidimus team. Sink and verifier are the TesseraSeal team — different repo, different code review process, different release cadence. The spec is the working group. Three different communities; three different change paths. A coordinated tampering would have to fool all three independently. That's the §1.4 compositional security argument made operational."
 
 Karen wrote: *§1.4 compositional security — three independent code paths under three independent ownership models.*
 
 > ### ✓ Confirmation #10 — Silent-restart attack closed at three independent layers
 >
-> Marcus demonstrated the silent-restart attack class against a sandbox tenant. The Herald.Py SDK refused at seed time and at emit time per §4.4 emission-time anti-spoof. The Herald.Compliance C# sink refused at file open via `ImmutableAuditFileSink.LoadResumeStateIfFileExists`, raising `HeraldComplianceErrorCode 5061 DuplicateGenesisAttempt` with the §4.4 normative reason string. The Herald.Compliance C# verifier refused on a hand-constructed corrupted file, raising `HeraldComplianceErrorCode 5060 GenesisFormAtNonGenesisSeq` per §4.4 + §7 step 6. Karen reproduced the verifier refusal on her personal laptop with the open-source `herald-verify` — same exit code, same normative reason. The §1.4 compositional-security argument is operational: three independent code paths, three independent owning teams, all citing the same spec section.
+> Marcus demonstrated the silent-restart attack class against a sandbox tenant. The Vidimus SDK refused at seed time and at emit time per §4.4 emission-time anti-spoof. The TesseraSeal C# sink refused at file open via `ImmutableAuditFileSink.LoadResumeStateIfFileExists`, raising `HeraldComplianceErrorCode 5061 DuplicateGenesisAttempt` with the §4.4 normative reason string. The TesseraSeal C# verifier refused on a hand-constructed corrupted file, raising `HeraldComplianceErrorCode 5060 GenesisFormAtNonGenesisSeq` per §4.4 + §7 step 6. Karen reproduced the verifier refusal on her personal laptop with the open-source `herald-verify` — same exit code, same normative reason. The §1.4 compositional-security argument is operational: three independent code paths, three independent owning teams, all citing the same spec section.
 
 Karen sat down.
 
@@ -1537,7 +1573,7 @@ She opened it again.
 
 "One more," she said. "I want to verify a seal record on a laptop with no Northbridge credentials at all. Not even the read-scope ones."
 
-She switched to her personal laptop. She pulled up the Herald.Compliance public page. She copied the published Ed25519 public-key fingerprint. She pulled down a seal record from the same page — the bank's documentation said this surface was unprivileged-readable for any seal older than 24 hours, and she picked one from the prior week.
+She switched to her personal laptop. She pulled up the TesseraSeal public page. She copied the published Ed25519 public-key fingerprint. She pulled down a seal record from the same page — the bank's documentation said this surface was unprivileged-readable for any seal older than 24 hours, and she picked one from the prior week.
 
 She ran the standalone verifier locally.
 
@@ -1557,11 +1593,11 @@ Elapsed: 2.4s
 
 She closed her personal laptop.
 
-"That's the property I needed to see. The chain verifies without us trusting Northbridge at all. We trust the public key on the Compliance page, and we trust the open-source verifier we ran. Everything else is mathematics."
+"That's the property I needed to see. The chain verifies without us trusting Northbridge at all. We trust the public key on the TesseraSeal page, and we trust the open-source verifier we ran. Everything else is mathematics."
 
 > ### ✓ Confirmation #14 — Seal verification works with zero Northbridge-side trust
 >
-> Karen ran the standalone verifier on her personal laptop using only the published Ed25519 public-key fingerprint and a seal record pulled from the public Herald.Compliance surface. Verification passed in 2.4 seconds. No Northbridge credentials were used at any layer of the verification path. This is the assurance property that makes the system useful to a regulator who has not personally inspected the bank's infrastructure.
+> Karen ran the standalone verifier on her personal laptop using only the published Ed25519 public-key fingerprint and a seal record pulled from the public TesseraSeal surface. Verification passed in 2.4 seconds. No Northbridge credentials were used at any layer of the verification path. This is the assurance property that makes the system useful to a regulator who has not personally inspected the bank's infrastructure.
 
 Karen wasn't done.
 
@@ -1693,11 +1729,11 @@ Nits:             0
 
 Under Findings, she wrote:
 
-> **Finding-001: Salesforce SaaS-edge mirror connector — runbook lag wording is non-conformant per §10.16.** The Salesforce-to-Herald.Py mirror connector itself is operating correctly: seal coverage is complete, reconciliation diff was zero, and the connector emits `connector.lag_observation` events at the cadence §10.16 requires. The non-conformance is in the runbook wording and the CC8.1 control description, both of which describe the mirror as "near real-time" without naming the four quantified bounds §10.16 requires. Remediation is required before the next engagement cycle.
+> **Finding-001: Salesforce SaaS-edge mirror connector — runbook lag wording is non-conformant per §10.16.** The Salesforce-to-Vidimus mirror connector itself is operating correctly: seal coverage is complete, reconciliation diff was zero, and the connector emits `connector.lag_observation` events at the cadence §10.16 requires. The non-conformance is in the runbook wording and the CC8.1 control description, both of which describe the mirror as "near real-time" without naming the four quantified bounds §10.16 requires. Remediation is required before the next engagement cycle.
 
 > ### 🚨 Finding-001 — Non-conformance per §10.16 (SaaS-edge mirror connector lag bounds)
 >
-> The Salesforce SaaS edge is captured via a Herald.Py mirror connector. The connector itself is operating correctly: seal coverage is complete, the reconciliation diff was zero, and the connector emits `connector.lag_observation` events at the cadence §10.16 requires.
+> The Salesforce SaaS edge is captured via a Vidimus mirror connector. The connector itself is operating correctly: seal coverage is complete, the reconciliation diff was zero, and the connector emits `connector.lag_observation` events at the cadence §10.16 requires.
 >
 > **The non-conformance is in the runbook wording.** Northbridge's CC8.1 control description and the operational runbook describe the Salesforce mirror as "near real-time." Per spec §10.16, this phrasing — and any other speed-by-adjective wording without the four quantified bounds (median lag, 95th-percentile SLO, alerting threshold, RTO) cited by number — is non-conformant. The §10.16 severity-classification clause is normative: this finding is never a Nit, a documentation observation, or a recommendation, even when the underlying connector is operating well. The engagement team has no discretion to downgrade.
 >
