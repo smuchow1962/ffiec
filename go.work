@@ -3,5 +3,6 @@ go 1.23
 use (
 	./core
 	./ledger
+	./testkit
 	./verifier
 )
