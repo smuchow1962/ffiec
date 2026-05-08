@@ -68,6 +68,20 @@ Raj was already typing the spec name into his laptop search bar.
 
 Marcus read it off. Raj wrote it down.
 
+Karen had a follow-up while she was on the topic.
+
+"You said v1.0a and the verifier is open source. Walk me through the Daubert grounding briefly. If a counterparty challenges the chain in court, what does your expert witness lay foundation on?"
+
+Marcus didn't pause.
+
+"Section 1.1 of the spec frames the four factors. Testability — §7 is the byte-exact procedure, with positive and negative test vectors public, so any third party can falsify a verifier's PASS. Peer review — the spec ships under a working-group process, the reference implementation is Apache 2.0, the corpus is public. Known error rate — §1.3 is explicit on the security definitions: per-event MAC has EUF-CMA security under HMAC-SHA-256, the daily seal has second-preimage resistance under SHA-256, the HSM signature has EUF-CMA security under Ed25519. A false negative — a tampered chain that verifies as PASS — requires simultaneous compromise of three independent custody layers per §1.4, plus the residual SDK-process scenario §1.2 names. General acceptance — the primitives are FIPS-standardized."
+
+"§1.2 epistemic scope?"
+
+"§1.2 names what the chain proves and what it doesn't. Chain proves the AI said X at time T, and the record wasn't tampered after capture. Chain does NOT prove the statement was accurate, the statement complied with policy, or the statement was unbiased. We name the line clearly so witness testimony stays on the integrity foundation, not the truth foundation."
+
+Karen wrote: *§1.1 / §1.2 / §1.3 / §1.4 — Daubert framing is in the spec text, not in vendor marketing.*
+
 Mike said, "Eighteen months. So this isn't new to you, but it's new to us."
 
 "It's new to you. It's not new to the FDIC — they've examined under it twice. The closing report from the prior-year MRA references the verifier outputs by entry-ID. I have copies in the workpaper pack."
@@ -176,9 +190,9 @@ Before Raj opened the database session, he wanted something else.
 
 "Marcus," he said. "Print me the chain envelope schema. The full attribute table. Whatever the spec calls Required and Optional. I want to read it before I touch the database."
 
-"Section 4.4 of the spec," Marcus said. He nodded at the second screen. "Greg, pull the v1.0a attribute table and the canonical-bytes definition. Both."
+"Section 4.4 of the spec," Marcus said. "And Appendix A is the consolidated single-page schema reference if you want it on one sheet. Greg, pull both — §4.4 attribute table, Appendix A consolidated reference, and the canonical-bytes definition. All three."
 
-Two blocks appeared on the screen. The first one was the attribute table. Raj read it slowly, top to bottom.
+Three blocks appeared on the screen. The first one was the attribute table. Raj read it slowly, top to bottom.
 
 ```
 # FFIEC chain-of-custody v1.0b — chain envelope (per-event)
@@ -213,7 +227,56 @@ service.name                   = <string>      # Required at Resource
 service.version                = <string>      # Required at Resource
 ```
 
-Raj didn't say anything for a full minute. He read the block twice. Then he started in.
+Marcus paged forward.
+
+"Per §4.4.6 — SaaS-edge connector source attribution. Any chain entry produced by a mirror connector lining up against a source platform — Salesforce CDC, HubSpot, Dataverse, similar — carries this family. We'll come back to it when Luis walks the Salesforce path, but you should see it now since it's part of the schema you're verifying."
+
+A second block appeared underneath.
+
+```
+# FFIEC chain-of-custody v1.0b — connector source attribution (per spec §4.4.6)
+
+audit.connector_source.system            = <string>        # Required on connector entries
+audit.connector_source.replay_id         = <string|int>    # Required when source provides one
+audit.connector_source.commit_timestamp  = <RFC3339-UTC>   # Required when source provides one
+audit.connector_source.commit_user       = <string>        # RECOMMENDED
+audit.connector_source.lag_observed_ms   = <int>           # RECOMMENDED
+audit.connector_source.change_kind       = <string>        # RECOMMENDED
+                                                           # CREATE | UPDATE | DELETE | <named>
+```
+
+Raj read it twice.
+
+"Six attributes. All under the per-event MAC. So if a connector lies about which Salesforce ReplayId it mirrored, the chain entry's MAC fails to recompute."
+
+"Right. The whole family is inside the canonical bytes per §5. The discipline §4.4.6 adds on top of that is the stable `run_id` rule — connectors derive `run_id` from a stable source-side identifier (the source record's primary key, or a deterministic hash over a documented field set), not from a per-process UUID. That way the chain is keyed to the source artifact across connector restarts, not to the connector's process state."
+
+Raj wrote: *§4.4.6 — six normative attributes; stable source-id-derived run_id.*
+
+"And the consolidated Appendix A schema reference?"
+
+Marcus paged again. A third block appeared — the Appendix A consolidated chain envelope schema reference, the single-page form. Every required attribute, every optional attribute, every namespace, the §4.4.6 connector_source family, the §4.4.1 routing family, the §4.4.2 deployment-intent family — all on one sheet, cross-referenced to the section that normates each one.
+
+"Appendix A is informative, but it's the page I keep open during code reviews," Marcus said. "If a new attribute namespace lands in the spec, Appendix A is updated alongside the normative section. The reviewer reads one page, walks back to the normative section by the cross-reference, and confirms the binding rule. I'd rather have one page indexed than five sections to grep."
+
+Raj wrote that down. He pinned the Appendix A reference in his browser.
+
+```
+canonical bytes (v1.0b, per spec §5) = RFC 8785 JCS over the event with:
+  EXCLUDED: ffiec.chain.payload_hash, ffiec.chain.prev_hash,
+            ffiec.chain.key_version, ffiec.chain.key_fingerprint,
+            ffiec.chain.mac_computed_at_utc, ffiec.chain.kms_handle_uri,
+            ffiec.chain.format_version, ffiec.chain.algorithm,
+            ffiec.chain.seq
+            (the chain stamp itself is excluded — it's computed from
+             these bytes; §5 names this the canonical-form exclusion rule)
+  INCLUDED: everything else, including ffiec.chain.{spec, chain_kind,
+            run_id, tenant_id, captured_at}, the OTel envelope per §5,
+            the gen_ai.* / tool.* / audit.* payloads, and (when present)
+            the audit.connector_source.* family per §4.4.6.
+```
+
+Raj didn't say anything for a full minute. He read the first block twice, then the second, then the canonical-bytes definition. Then he started in.
 
 "What goes into `payload_hash` exactly?"
 
@@ -241,7 +304,7 @@ Raj wrote that down. Then he wrote a follow-up underneath, with a star next to i
 
 "`tenant_id` is Optional. What do the canonical bytes look like for a single-tenant deployment?"
 
-"If the field is absent at the source, it's absent in the canonical bytes — JCS doesn't emit a key for a field the producer didn't set. The HKDF derivation falls back to a documented single-tenant label. The fingerprint computation uses the empty string for the `utf8(tenant_id)` portion of `SHA-256(utf8(tenant_id) || ikm)[:16]`. Section 3 covers it. Northbridge sets `tenant_id="northbridge-bank-prod"` everywhere — we're explicitly not single-tenant in the SDK's sense, even though we're a single bank."
+"If the field is absent at the source, it's absent in the canonical bytes — JCS doesn't emit a key for a field the producer didn't set. The HKDF derivation falls back to a documented single-tenant label. The fingerprint computation uses the empty string for the `utf8(tenant_id)` portion of `SHA-256(utf8(tenant_id) || ikm)[:16]`. Section 3 covers `tenant_id`, `key_version`, and `key_fingerprint` as definitions; the §3 character class — `^[A-Za-z0-9_.\-]{1,255}$` — is normatively enforced both at the SDK construct time and at the verifier's file-header pre-flight per §7 step 3a. Northbridge sets `tenant_id=\"northbridge-bank-prod\"` everywhere — we're explicitly not single-tenant in the SDK's sense, even though we're a single bank."
 
 "Why?"
 
@@ -255,28 +318,19 @@ Marcus paused. Not because he didn't have the answer — because this was the qu
 
 "Three things. First, the `key_fingerprint` is in the canonical bytes — re-emitting with a different `key_version` doesn't change the fingerprint, so the MAC won't recompute under a different key. Second, the per-tenant HKDF derivation is keyed on IKM generation; a wrong `key_version` produces a different HKDF output and the MAC fails. Third, the daily Merkle seal is computed over the day's entries as written; you can't slip a re-emitted entry into a sealed day. The combination is what makes key-rotation transparent to the verifier — the verifier reads the entry, picks the correct IKM generation by version, recomputes, and either matches or doesn't."
 
-Raj said, "I want to see the canonical bytes the MAC actually covers."
+Raj pointed back at the canonical-bytes block already on screen.
 
-Marcus typed. The second block appeared on the screen.
+"That's a clean exclusion set," he said. "The chain stamp is the only thing not under its own MAC. Everything else is bound. Including the connector_source family — once those land on a chain entry they're inside the canonical bytes, so a connector can't lie about the Salesforce side without breaking the MAC."
 
-```
-canonical bytes (v1.0a, per spec §5) = RFC 8785 JCS over the event with:
-  EXCLUDED: ffiec.chain.payload_hash, ffiec.chain.prev_hash,
-            ffiec.chain.key_version, ffiec.chain.key_fingerprint,
-            ffiec.chain.mac_computed_at_utc, ffiec.chain.kms_handle_uri
-            (the chain stamp itself is excluded — it's computed from these bytes)
-  INCLUDED: everything else, including ffiec.chain.{spec, format_version,
-            chain_kind, run_id, tenant_id, captured_at, seq}
-            plus the entire payload (event-class-specific attributes + body)
-```
+"Section 5 is the smallest section in the spec," Marcus said. "It needs to be unambiguous more than it needs to be long. The exclusion list is normative byte-for-byte; two implementations that disagree on the exclusion set produce different bytes, different HMACs, and the verifier rejects one of them."
 
-Raj read it twice.
+Raj wrote *§5 is short on purpose; exclusion list is normative* on his notepad and underlined it.
 
-"That's a clean exclusion set," he said. "The chain stamp is the only thing not under its own MAC. Everything else is bound."
+"And the captured-JSON-vs-canonical-bytes split — for FRE 1001-1004 best-evidence?"
 
-"Section 5 is the smallest section in the spec," Marcus said. "It needs to be unambiguous more than it needs to be long."
+"That's §5.2. The captured JSON is the content-bearing form — what the human reads. The canonical bytes are the integrity-bearing form — what the MAC covers. Both are originals under FRE 1001(d). In discovery the institution produces both, names which one answers which question, and lets the canonical bytes carry the MAC verification while the captured JSON carries the human-readable narrative. The chain's §7 procedure is the procedural answer to an FRE 1003 authenticity challenge."
 
-Raj wrote *§5 is short on purpose* on his notepad and underlined it.
+Karen wrote that down. *§5.2 — captured JSON for content, canonical bytes for integrity. Both originals under FRE 1001(d).*
 
 "OK," he said. "Now I want to look at the database."
 
@@ -305,7 +359,7 @@ He did the same thing for the HMAC, recomputing it with the per-tenant HKDF-deri
 
 > ### ✓ Confirmation #2 — Per-event MAC and chain hash both recompute
 >
-> Raj independently recomputed both the SHA-256 entry hash and the HMAC-SHA-256 MAC for a sampled entry, using the documented v1.0a 10-line `sign_payload` form. Both matched. The HKDF tenant-binding label resolved to the documented `tenant=northbridge` derivation.
+> Raj independently recomputed both the SHA-256 entry hash and the HMAC-SHA-256 MAC for a sampled entry per §4.1 (Primitive 1 — HMAC chain at capture). The MAC's algorithm agility is named in §4.1.3, but for v1.0b the algorithm is fixed to HMAC-SHA-256 and the verifier dispatch is unconditional. Both recomputes matched. Constant-time comparison per §10.8 was visible in the verifier source. The HKDF tenant-binding label resolved to the documented `tenant=northbridge` derivation per §3.
 
 Raj sat back. He took a long drink of coffee.
 
@@ -323,7 +377,7 @@ Each one matched.
 
 "What's the daily seal cadence?"
 
-"Daily," Marcus said. "Merkle root over the day's entries. Signed Ed25519 by a CloudHSM-resident key. Key fingerprints rotate quarterly. The current fingerprint is on the Compliance page."
+"Daily — per §4.2.1 cadence rules. Merkle root over the day's entries computed RFC 6962. Signed Ed25519 by a CloudHSM-resident key under FIPS 140-2 Level 3 custody per §10.5. The signing key is non-extractable; the ledger requests the signature, never the key. IKM rotation crosses the seal boundary under §10.10 with a documented rotation procedure. IKM generation requirements per §10.6.1 — minimum 32 bytes, generated inside the HSM's hardware RNG, never exposed to application memory. Key fingerprints rotate quarterly. The current fingerprint is on the Compliance page. Constant-time fingerprint comparison per §10.8 — the verifier never short-circuits on the first differing byte, and Raj already saw that in the open-source verifier code."
 
 "Show me a daily seal record."
 
@@ -356,7 +410,7 @@ Raj read the output twice.
 herald-verify --tenant=northbridge --date=2026-04-15 --strict --explain
 ```
 
-A 47-line trace scrolled past. Every step from genesis traversal through Merkle tree resolution to signature verification was named and timed.
+A 47-line trace scrolled past. Every step from genesis traversal through Merkle tree resolution to signature verification was named and timed. The trace named §7 step 0 (the pre-flight JCS self-test that runs before any chain processing — the verifier canonicalizes a baked-in fixture and constant-time compares against a baked-in expected output, refusing to start if its own JCS implementation is non-conformant), §7 step 8 (fingerprint check before any MAC compute), §7 step 11 (signature dispatch on `sign_payload_version` — the verifier reconstructed the v1.0b 12-line form because the seal record carried `sign_payload_version="v1.0b"`), and §7 step 12a (GenAI model-identifier completeness, skipped because the entry carried no `gen_ai.*` attributes).
 
 Raj closed the laptop halfway. Not all the way. Halfway.
 
@@ -509,7 +563,7 @@ PASS.
 
 "How does the model recommendation get from the model into the chain?"
 
-"Herald.Py wraps the inference call. The wrapper captures inputs, outputs, model version, prompt fingerprint, retrieval context. Synchronous capture. The chain entry lands before the recommendation is rendered to the customer."
+"Herald.Py wraps the inference call. The wrapper captures inputs, outputs, model version, prompt fingerprint, retrieval context. Synchronous capture. The chain entry lands before the recommendation is rendered to the customer. Wire identification per §4.4.3 — the OTLP transport carries a posture marker on the resource so a verifier reading the wire envelope can confirm it's a chain entry, not a generic OpenTelemetry trace. Severity per §4.4.4 — chain-of-custody traffic carries the `AUDIT` severity tier so SeverityNumber filtering at the collector can't accidentally drop chain entries on a misconfigured sampler. We also emit the deployment-intent attribute set per §4.4.2 — `audit.deployment.intent`, `audit.deployment.policy_version`, and the canary or A/B fields when applicable. The advisor surface is currently `production` intent under `audit.deployment.policy_version=northbridge-mrm-2026q2`. When MRM runs a canary we flip `intent=canary` for the canary cohort and the chain captures the per-decision intent classification."
 
 "Synchronous? Latency cost?"
 
@@ -528,6 +582,26 @@ Mike asked another thing.
 Mike said, "That's better than what most banks have for write paths."
 
 Marcus didn't smile. He just nodded.
+
+Mike had one more.
+
+"What about adverse-action notices? ECOA, FCRA. The model surfaces a 'no' on a credit decision — does the chain capture the reason translation?"
+
+"§10.11 ECOA + state-insurance translation, plus §10.11.2 for FCRA reinvestigation timing. The chain captures the model's raw output, the institution's reason-code mapping, the actual notice text generated for the consumer, and the timestamps for FCRA's 30-day reinvestigation window. The translation event is its own chain entry of `chain_kind=translation` per §4.4. The institution's CC8.1 names the reason-code dictionary version under which each translation ran. If a consumer disputes an adverse action and the bank reinvestigates, the reinvestigation timeline is itself chained — start, intermediate review steps, conclusion — so the FCRA §611 timing is mechanically auditable rather than reconstructed from email threads."
+
+Mike wrote that down. He underlined `chain_kind=translation`.
+
+He had another.
+
+"Training-data retention. If the AI advisor was trained on a dataset that's later challenged, can you tie the deployed model back to the training corpus that produced it?"
+
+"§10.20 — training-data retention vs deployment-window discipline. The training corpus's per-record retention floor is the deployment window plus the chain's retention horizon. We retain the training-record hashes — not the records themselves; PII discipline lives in §10.22 redaction and §10.23 consumer-correlation index integrity — for the duration the model is in production plus the chain retention. If the model is decommissioned, the training-record hash retention rolls forward by the §10.20 floor so a post-deployment challenge still has the chain artifact to walk against. When we hand a model off to a new vendor — quarterly retraining run from a different lab, for instance — §10.21 cross-vendor model-handover schema names the artifacts: model card, training-data summary, evaluation outputs, hashes for each. The handover event lands as a chain entry with the §10.21 attribute family. We've never used it for a real handover, but the schema is wired up in case we do."
+
+Mike wrote: *§10.20 floor; §10.21 handover; §10.22 redaction discipline; §10.23 consumer-correlation index.*
+
+"And entity succession?"
+
+"§10.24. If Northbridge merges with another bank, or if a subsidiary spins out, the chain entries don't move. The successor entity inherits the keys, the IKM custody, and the chain history under documented procedure. The chain's integrity guarantee is preserved across the M&A boundary. §10.24 names the procedure shape; the actual transition is institution-side governance work."
 
 Mike asked one more thing.
 
@@ -551,15 +625,19 @@ Chen and Luis tag-teamed the next hour.
 
 Luis went first. He wanted to know what the Herald Core retention story looked like, and specifically whether anyone could delete log groups.
 
-"Append-only," Marcus said. "The chain table itself is append-only by role. The seal records are append-only by role. The retention policy is enforced by the storage tier — object lock, immutability window matching the FFIEC retention requirement, no role with delete permission inside the window."
+"Append-only," Marcus said. "The chain table itself is append-only by role. The seal records are append-only by role. The retention policy is enforced by the storage tier — object lock, immutability window matching the §10.13 evidentiary-artifacts retention guidance, no role with delete permission inside the window."
+
+"How long?"
+
+"Seven years for the chain itself, longer for the daily seal records — they're tiny, retention is cheap, and §10.13 frames retention as evidentiary-artifact discipline rather than a single fixed number. The institution's CC8.1 names the actual retention duration; we set it to seven years from `received_at` per §4.2.2 day-boundary semantics. The day-boundary partition is determined by the ledger's receive timestamp, not the application host's `captured_at`, so retention math is unambiguous even when application clocks drift."
 
 "Even an account root?"
 
-"Even an account root. The signing key is in CloudHSM, and the storage account has a separate trust boundary. Account root in the application AWS account cannot reach into the storage account's bucket."
+"Even an account root. The signing key is in CloudHSM under §10.5 FIPS 140-2 Level 3 custody, and the storage account has a separate trust boundary. Account root in the application AWS account cannot reach into the storage account's bucket."
 
 "What about the storage account's root?"
 
-"Object lock with a compliance-mode retention period. Account root in the storage account cannot bypass it either. The retention period exceeds the FFIEC requirement by a margin."
+"Object lock with a compliance-mode retention period. Account root in the storage account cannot bypass it either. The retention period exceeds the §10.13 baseline by a margin."
 
 > ### ✓ Confirmation #6 — Append-only at the storage tier, not at the convention tier
 >
@@ -648,9 +726,12 @@ The second screen lit with two panes.
   "assignee_id": "0051Hp00001AGENT001",
   "queue": "refunds-tier-1",
   "assigned_at_utc": "2026-05-08T13:43:02.481Z",
-  "source_replay_id": 9874321,
-  "source_commit_timestamp": 1746719234123,
-  "source_lag_observed_ms": 1358,
+  "audit.connector_source.system": "salesforce-cdc",
+  "audit.connector_source.replay_id": 9874321,
+  "audit.connector_source.commit_timestamp": "2026-05-08T13:43:01.123Z",
+  "audit.connector_source.commit_user": "0051Hp00001AGENT001",
+  "audit.connector_source.lag_observed_ms": 1358,
+  "audit.connector_source.change_kind": "UPDATE",
   "redaction_policy_id": "northbridge-pii-v7",
   "redaction_policy_version": "2026-04-15"
 }
@@ -662,13 +743,17 @@ Luis leaned forward.
 
 Marcus traced it with a stylus.
 
-"Salesforce's `replayId=9874321` and `commitTimestamp=1746719234123` are both captured into the chain entry as `source_replay_id` and `source_commit_timestamp`. Anyone can verify the Salesforce side independently — Salesforce keeps replay IDs for 72 hours, longer with EventLogFile. Pull the raw CDC stream by replay ID, line up against the chain entry, confirm the source-side metadata matches. The chain entry's MAC binds those two fields into the canonical bytes, so the connector can't claim a different replay-ID after the fact."
+"This is where you'll see the §4.4.6 family doing its job. Six attributes, all under `audit.connector_source.*` — `system`, `replay_id`, `commit_timestamp`, `commit_user`, `lag_observed_ms`, `change_kind`. They used to be institution-determined fields under whatever names the connector author chose. As of v1.0b they're spec-normative — every conformant SaaS-edge connector emits them under that exact namespace, so an examiner reading any institution's chain knows exactly where to look."
+
+He moved the stylus to the first three attributes.
+
+"`audit.connector_source.system` says `salesforce-cdc` — the institution's connector-registry name for this source platform's change-stream mechanism. `audit.connector_source.replay_id=9874321` lines up byte-for-byte against the Salesforce CDC envelope on the left. `audit.connector_source.commit_timestamp` is Salesforce's own clock at the moment the underlying record committed there — distinct from `captured_at` (the mirror process's wall clock) and from `received_at` (the ledger's ingest stamp). Anyone can verify the Salesforce side independently — Salesforce keeps replay IDs for 72 hours, longer with EventLogFile. Pull the raw CDC stream by replay ID, line up against the chain entry, confirm the source-side metadata matches. The chain entry's MAC binds the whole connector_source family into the canonical bytes per §5, so the connector can't claim a different replay-ID after the fact."
 
 He moved the stylus.
 
-"The mirror connector recorded `source_lag_observed_ms=1358` — meaning 1.358 seconds elapsed between Salesforce's commit and the chain entry's MAC computation. That's well inside the §10.16 lag bound the bank published in CC8.1."
+"`audit.connector_source.lag_observed_ms=1358` — meaning 1.358 seconds elapsed between Salesforce's commit and the chain entry's MAC computation. That aggregates into the §10.16 `connector.lag_observation` operational event the institution emits on a separate cadence. The 1.358 seconds is well inside the §10.16 lag bound the bank published in CC8.1 per §10.18 cross-referencing."
 
-Karen wrote down: *§10.16 — the lag bound is published.*
+Karen wrote down: *§4.4.6 — six normative connector_source attributes; §10.16 lag bound published; §10.18 CC8.1 cross-references the bound.*
 
 Marcus moved the stylus again.
 
@@ -790,6 +875,15 @@ async def _emit_chain_entry(sf_event: dict[str, Any], tenant_id: str) -> None:
 
     event_name, attrs = _translate(entity, change_type, payload)
 
+    # The connector composes audit.connector_source.* attributes via
+    # the typed helper from herald._compliance_events — the 9th typed
+    # helper, landed alongside the §4.4.6 normalization. Validates the
+    # attribute family at SDK-write time so a typo or swapped type
+    # doesn't ship a non-conformant chain entry.
+    from herald._compliance_events import connector_source
+
+    commit_iso = commit_dt.isoformat()
+
     with herald.run(
         run_id=run_id,
         actor_id=commit_user,
@@ -798,10 +892,14 @@ async def _emit_chain_entry(sf_event: dict[str, Any], tenant_id: str) -> None:
         herald.audit(
             event=event_name,
             **attrs,
-            source_replay_id=sf_event["event"]["replayId"],
-            source_commit_timestamp=commit_ts_ms,
-            source_lag_observed_ms=lag_ms,
-            source_change_type=change_type,
+            **connector_source(
+                system="salesforce-cdc",
+                replay_id=sf_event["event"]["replayId"],
+                commit_timestamp=commit_iso,
+                commit_user=commit_user,
+                lag_observed_ms=lag_ms,
+                change_kind=change_type,
+            ),
         )
 
 
@@ -865,7 +963,7 @@ Luis read it twice. He stopped at the `with herald.run(...)` block.
 
 Marcus nodded. He had been waiting for this question, too.
 
-"Layered answer. The `with herald.run(...)` block, on entry, asks the SDK for the chain tail for `(tenant_id, run_id)`. The SDK checks three places in order."
+"Layered answer. This is §10.25 — Run resume and chain-tail acquisition. The SDK MUST acquire the chain tail before emitting the next entry, regardless of whether the run is fresh, in-process, or being resumed across a process boundary. The `with herald.run(...)` block, on entry, asks the SDK for the chain tail for `(tenant_id, run_id)`. The SDK checks three places in order — that's the §10.25 three-place tail acquisition."
 
 He held up one finger.
 
@@ -877,21 +975,50 @@ Two fingers.
 
 Three fingers.
 
-"Three. Ledger query — the rejoin path. When local persistence is missing or corrupted — fresh container, lost disk, full DR scenario — the SDK calls Herald Core's ingestion API. `GET /chains/{tenant_id}/{run_id}/tail` returns the latest seq, payload_hash, key_version. Network access is required for this path; it's the fallback."
+"Three. Ledger query — the rejoin path. When local persistence is missing or corrupted — fresh container, lost disk, full DR scenario — the SDK calls Herald Core's ingestion API. `GET /chains/{tenant_id}/{run_id}/tail` returns the latest seq, payload_hash, key_version. Network access is required for this path; it's the fallback. The SDK doesn't hard-code a ledger URL — operators wire in their own implementation through a `LedgerTailProvider` protocol. Here's what ours looks like."
+
+A snippet appeared on the second screen.
+
+```python
+# E:/northbridge/connectors/sf_mirror/ledger_tail.py
+from herald._run_resume import LedgerTail, register_ledger_tail_provider
+
+import httpx
+
+def northbridge_ledger_tail(tenant_id: str, run_id: str) -> LedgerTail | None:
+    response = httpx.get(
+        f"https://herald-core.northbridge-internal.com"
+        f"/chains/{tenant_id}/{run_id}/tail",
+        timeout=5.0,
+    )
+    if response.status_code == 404:
+        return None
+    response.raise_for_status()
+    data = response.json()
+    return LedgerTail(
+        last_seq=data["seq"],
+        last_payload_hash=bytes.fromhex(data["payload_hash"]),
+    )
+
+# Wire the provider once at process start, after herald.configure(...)
+register_ledger_tail_provider(northbridge_ledger_tail)
+```
+
+"That's the whole rejoin seam. The runtime queries it when local persistence misses and `rejoin_on_cold_start=True`. The protocol is in `herald._run_resume`. The provider raises on transport errors so the SDK fails closed rather than silently degrading to genesis — that's the §10.25 DR rejoin discipline."
 
 He paused.
 
-"If none of the three find a tail, the run is genuinely new. Genesis: `seq=1`, `prev_hash=32 zero bytes`. The spec calls this the genesis-block anti-spoof — only a fresh run gets zero bytes."
+"If none of the three find a tail, the run is genuinely new. Genesis: `seq=1`, `prev_hash=32 zero bytes` per §4.4 genesis-block uniqueness. The spec calls this the genesis-block anti-spoof — only a fresh run gets zero bytes."
 
 Luis was writing.
 
 Marcus continued.
 
-"On flush — when the SDK ships a batch to the ledger — the ledger does a cross-check. The SDK declares its claimed `prev_hash` for the batch's first entry. The ledger compares against its own last-known `payload_hash` for `(tenant_id, run_id)`. Mismatch, ledger refuses with a named reason. Per §7 step 9 — the spec calls it `expected_prev_hash` discipline. The SDK can't unilaterally claim continuity; the ledger has to agree."
+"On flush — when the SDK ships a batch to the ledger — the ledger does a cross-check. The SDK declares its claimed `prev_hash` for the batch's first entry. The ledger compares against its own last-known `payload_hash` for `(tenant_id, run_id)`. Mismatch, ledger refuses with a named reason. Per §10.25 ledger ingestion cross-check, in concert with the §7 step 6 / step 9 verifier discipline — the spec calls it `expected_prev_hash` discipline because the verifier walks the chain link from the previous entry's `payload_hash`, not from the entry's claimed `prev_hash`. The SDK can't unilaterally claim continuity; the ledger has to agree."
 
 Karen looked up. "What if two connector processes try to write to the same run at once?"
 
-"The SDK's file lock on the persistence sidecar fails the second one immediately. The application layer is responsible for one-process-per-run. The SDK enforces it locally so the second process can't even open the run, and the ledger enforces it remotely because the prev_hash disagreement at flush would surface."
+"§10.25 single-writer-per-run rule. The SDK uses a cross-platform file lock — `RunWriterLock` in `herald._run_lock` — that fails the second one with a hard refusal, not a best-effort warning. The application layer is responsible for one-process-per-run. The SDK enforces it locally so the second process can't even open the run, and the ledger enforces it remotely because the prev_hash disagreement at flush would surface anyway. Two layers of defense, both named in §10.25."
 
 Marcus pulled up the runtime configuration on the screen.
 
@@ -936,11 +1063,11 @@ Chen took over.
 
 "Multi-region setup?"
 
-"Pattern A from spec §10.15 — multi-region active-active. Both regions write to local Herald Core. ETL reconciliation runs on a schedule, publishes a sealed `master.cross_region_replication_completed` event each batch. The reconciliation entry itself is in the chain."
+"Pattern A from spec §10.15 — multi-region active-active. Both regions write to local Herald Core. ETL reconciliation runs on a schedule, publishes a sealed `master.cross_region_replication_completed` event each batch per §10.15 invariant 5 freshness requirement. The reconciliation entry itself is in the chain. The HSM partition that signs each region's seals went through the §10.17 partition-ceremony attestation when it was provisioned — the ceremony itself produces a chained `chain.partition_ceremony_attended` event with the attestation hash and the attendee list, so the chain proves which HSM partition signs which region's seals."
 
 "So the cross-region reconciliation is auditable as a chain entry."
 
-"Yes."
+"Yes. And the empty-day posture is normative too — §4.2 covers it. A tenant-day with zero events still produces a sealed Merkle root (the empty-tree root, RFC 6962 well-defined). An attacker who tries to claim 'no events that day' by deleting the seal record gets caught because the absence of a seal record is itself an anomaly the verifier flags. Empty-day collisions are mathematically prevented because the empty-tree root is a single fixed value across all empty-tenant-days; we can't conflate two tenant-days into one seal."
 
 Chen pulled up the most recent reconciliation event. Sealed. Verified. The reconciliation report metadata showed a delta of zero between regions for the previous 24 hours.
 
@@ -1041,6 +1168,188 @@ Karen made a note. *NB-prior-MRA closed cleanly. This is the verification revisi
 
 ---
 
+## 🛡️ 3:20 PM — Silent-Restart Attack Demo
+
+Karen had a question that had been sitting in the back of her notepad since the §10.25 walkthrough. She wanted to ask it directly.
+
+"Marcus. Walk me through a specific attack. What stops someone with chain-write access from silently restarting this chain at `seq=1` to hide entries? Pick a privileged engineer at the bank. Pick yourself. You decide yesterday's bad assignment shouldn't exist. Can you re-emit a fresh `seq=1` for the same `(tenant_id, run_id)` and orphan the prior entries?"
+
+Marcus didn't pause.
+
+"Three layers say no. SDK side, ledger side, verifier side. Each layer refuses independently with a §4.4-cited reason — so an attacker who finds a way around one layer hits the next."
+
+He held up one finger.
+
+"One. **SDK side — emission-time genesis anti-spoof.** Herald.Py's `HmacChainWriter` in `herald._crypto.chain` refuses to emit `prev_hash = 32 zero bytes` at any `seq > 1` per §4.4 genesis-block uniqueness. The check sits inside the writer's `with` block, before the HMAC compute. If a buggy `seed_run_state` caller — or a corrupted in-memory state, or a deliberate tampered seed — tries to push genesis-form bytes at `seq > 1`, the SDK raises `ChainConfigurationError` with reason cited to §4.4. The chain entry never leaves the SDK boundary."
+
+Two fingers.
+
+"Two. **Ledger side — `ImmutableAuditFileSink.LoadResumeStateIfFileExists`.** The C# sink reads the existing chain file's header and tail at sink open. If the new write attempts genesis form for a `(tenant_id, run_id)` whose chain is already established, the sink raises `HeraldComplianceErrorCode 5061 DuplicateGenesisAttempt` with the §4.4 named reason `genesis already established for (tenant=T, run=R): refusing duplicate genesis`. This was the FileMode.Append silent-restart hole the spec's §10.25 reviewer surfaced — the sink used to open the file in append mode and trust the writer's claimed seq. It doesn't anymore. The sink reads first, then opens for append, and refuses if the existing tail and the incoming header disagree."
+
+Three fingers.
+
+"Three. **Verifier side — `ChainVerifier`.** If any chain file presents `prev_hash = 32 zero bytes` at `seq > 1`, the C# verifier fails with `HeraldComplianceErrorCode 5060 GenesisFormAtNonGenesisSeq` per §4.4 + §7 step 6. Same name as §7 step 6 structural-walk — the spec's normative reason string is `prev_hash is genesis-form (zero bytes) at seq=N where N > 1`. Verifier exit code 3 per §10.12. So even if an attacker somehow lands tampered bytes on disk that the sink missed, the verifier walks the file and the verifier refuses."
+
+He pulled up the C# error-code catalog. Raj wrote them down.
+
+```
+HeraldComplianceErrorCodes (Herald.Compliance, plugin range 5000+)
+  5060  GenesisFormAtNonGenesisSeq    — verifier-side, §4.4 + §7 step 6
+  5061  DuplicateGenesisAttempt       — sink-side, §4.4 + §10.25 ingestion
+  5062  ChainTailMismatch             — sink-side, §10.25 ingestion cross-check
+  5063  ForkDetected                  — verifier-side, §10.25 fork detection
+```
+
+Karen wrote on her notepad. *Five-thousand range. Compliance plugin. Stable across point releases per the catalog header.*
+
+Then she said: "Demo it."
+
+Marcus didn't smile. He nodded at Greg.
+
+"Sandbox tenant," Greg said. "Spinning it up."
+
+The second screen split into three panes — SDK side (Python REPL), sink side (C# log stream), verifier side (PowerShell on Karen's laptop). Greg loaded a small fixture chain into the sandbox, three entries deep.
+
+He turned to Marcus.
+
+"Drive."
+
+Marcus opened the Python REPL. He typed slowly so the room could read.
+
+```python
+# Sandbox: open the same (tenant_id, run_id) that already has 3 entries
+# and try to silently restart it at seq=1.
+import herald
+from herald._crypto.chain import HmacChainWriter, GENESIS_PREV_HASH
+
+writer = HmacChainWriter(
+    tenant_id="sandbox-demo",
+    ikm=sandbox_ikm,
+    key_version=1,
+)
+
+# Tamper attempt: seed state with genesis-form bytes at seq=5.
+writer.seed_run_state(
+    run_id="run-existing-001",
+    last_seq=4,
+    last_payload_hash=GENESIS_PREV_HASH,  # the silent-restart payload
+)
+```
+
+The REPL raised immediately:
+
+```
+ChainConfigurationError: HmacChainWriter.seed_run_state: refused to seed
+last_payload_hash = 32 zero bytes per spec §4.4 (genesis prev_hash is
+valid only at seq=1; seeding it at last_seq=4 would silently fork the
+chain on the next emission).
+```
+
+Marcus said: "Layer one — SDK refuses at seed time. Try the next path."
+
+He swapped to a fresh writer and tried to emit genesis form via a corrupted in-memory state path:
+
+```python
+writer2 = HmacChainWriter(
+    tenant_id="sandbox-demo",
+    ikm=sandbox_ikm,
+    key_version=1,
+)
+# Pretend a buggy callsite somehow corrupted the state to (seq=4, GENESIS).
+writer2._run_state["run-existing-001"] = (4, GENESIS_PREV_HASH)
+
+writer2.commit_entry(
+    run_id="run-existing-001",
+    tenant_id="sandbox-demo",
+    canonical_bytes=b"{\"event\":\"tamper-attempt\"}",
+)
+```
+
+The REPL raised:
+
+```
+ChainConfigurationError: HmacChainWriter: refused to emit prev_hash = 32
+zero bytes at seq=5 for run_id='run-existing-001' per spec §4.4. Genesis
+prev_hash is valid only at seq=1; emitting it later would silently fork
+the chain.
+```
+
+Marcus said: "Same layer, emit-time check. The SDK's two §4.4 checks bracket the writer — seed-time and emit-time. Neither one trusts the other; both name §4.4."
+
+He moved to the sink side. He pre-staged a tampered chain file containing a legitimate header and three legitimate entries, then prepared a writer process that would attempt to silently re-genesis the same `(tenant_id, run_id)`.
+
+```
+[15:23:41] ImmutableAuditFileSink.Open(tenant=sandbox-demo,
+                                       run=run-existing-001)
+[15:23:41] LoadResumeStateIfFileExists: existing file present, 4 entries
+[15:23:41] tail: seq=4, payload_hash=a7c3...
+[15:23:41] incoming write: seq=1, prev_hash=00000000...000
+[15:23:41] HeraldComplianceErrorCode 5061 DuplicateGenesisAttempt
+[15:23:41] reason: genesis already established for
+           (tenant=sandbox-demo, run=run-existing-001):
+           refusing duplicate genesis
+[15:23:41] sink open refused; no bytes written to chain file
+```
+
+Marcus said: "Layer two — sink refuses at file-open time. The sink reads the existing tail before allowing any write. The §4.4 normative reason string is byte-for-byte the spec's: `genesis already established for (tenant=T, run=R): refusing duplicate genesis`."
+
+He moved to the third pane. Karen pulled the deliberately corrupted chain file off the sandbox — a chain whose 5th entry on disk had `prev_hash = 32 zero bytes` baked into it (constructed by hand for this demo, not produced by the SDK or the sink).
+
+```
+herald-verify --tenant=sandbox-demo --chain-file=corrupted.chain --strict
+```
+
+```
+Status: FAIL
+Step: 6
+Exit: 3
+Reason: prev_hash is genesis-form (zero bytes) at seq=5 where N > 1
+        (HeraldComplianceErrorCode 5060 GenesisFormAtNonGenesisSeq,
+         per spec §4.4 + §7 step 6)
+Elapsed: 0.3s
+```
+
+Marcus said: "Layer three — verifier refuses on the walk. Same `5060 GenesisFormAtNonGenesisSeq` error code, same §4.4 named reason. The verifier never trusts the writer's claimed `prev_hash` per §7 step 9 `expected_prev_hash` discipline; the genesis-form bytes can't sneak past."
+
+Karen ran the same fixture on her personal laptop using the open-source `herald-verify` she'd already pulled.
+
+```
+Status: FAIL
+Step: 6
+Exit: 3
+Reason: prev_hash is genesis-form (zero bytes) at seq=5 where N > 1
+Elapsed: 0.3s
+```
+
+Same result. No Northbridge credentials. Same byte-for-byte normative reason string.
+
+She walked over to the whiteboard and wrote, in capital letters:
+
+```
+SILENT-RESTART ATTACK CLOSED AT THREE LAYERS:
+  SDK    (herald._crypto.chain          — §4.4 emit-time anti-spoof)
+  SINK   (ImmutableAuditFileSink C#     — §4.4 + §10.25 ingestion)
+  VERIFIER (ChainVerifier C#            — §4.4 + §7 step 6)
+```
+
+She turned around.
+
+"I want to be sure the three layers are actually independent. Marcus, who owns each one?"
+
+"SDK is the Herald.Py team. Sink and verifier are the Herald.Compliance team — different repo, different code review process, different release cadence. The spec is the working group. Three different communities; three different change paths. A coordinated tampering would have to fool all three independently. That's the §1.4 compositional security argument made operational."
+
+Karen wrote: *§1.4 compositional security — three independent code paths under three independent ownership models.*
+
+> ### ✓ Confirmation #10 — Silent-restart attack closed at three independent layers
+>
+> Marcus demonstrated the silent-restart attack class against a sandbox tenant. The Herald.Py SDK refused at seed time and at emit time per §4.4 emission-time anti-spoof. The Herald.Compliance C# sink refused at file open via `ImmutableAuditFileSink.LoadResumeStateIfFileExists`, raising `HeraldComplianceErrorCode 5061 DuplicateGenesisAttempt` with the §4.4 normative reason string. The Herald.Compliance C# verifier refused on a hand-constructed corrupted file, raising `HeraldComplianceErrorCode 5060 GenesisFormAtNonGenesisSeq` per §4.4 + §7 step 6. Karen reproduced the verifier refusal on her personal laptop with the open-source `herald-verify` — same exit code, same normative reason. The §1.4 compositional-security argument is operational: three independent code paths, three independent owning teams, all citing the same spec section.
+
+Karen sat down.
+
+*It never is*, she thought. *Except today, the three layers are owned by three different teams, and they all refuse the same attack with the same spec citation.*
+
+---
+
 ## 😬 3:45 PM — The Friction Builds (In a New Direction)
 
 Karen wanted to push harder. She had a half-formed sense that something was off — not because she had found anything, but because she hadn't found anything, and her professional instinct was that this was the time things broke.
@@ -1082,6 +1391,16 @@ herald-verify --tenant=northbridge --seal-id=ce_8b1c... --strict
 
 PASS. Step: 12. 0.6 seconds.
 
+She glanced at the seal record's `dev_mode` field: `false`. She read off Greg's screen.
+
+"§10.7 — software-key adapter exclusion in production. The dev adapter compiles out of the production binary entirely. Even if someone tried to flip `dev_mode=true` in the seal record, the verifier under `--strict` refuses with `dev-mode seal in production verification — refused`. And under v1.0b the `dev_mode` field is bound under the HSM signature per §4.3 12-line `sign_payload`, so a flipped value produces a signature failure rather than passing through."
+
+Greg nodded.
+
+"And the trusted-time placement?"
+
+"§10.14 — trusted-time integration is informative. We pin signing-time off CloudHSM's monotonic time source rather than the SDK host clock. The `signed_at` field in the seal record is the HSM's clock, not the application's. The application host's clock is forensic-only per §4.4 `mac_computed_at_utc`."
+
 Greg stood up.
 
 "Anything else?"
@@ -1092,7 +1411,7 @@ Greg stood up.
 
 He walked out.
 
-> ### ✓ Confirmation #10 — Live seal demonstrated end-to-end in under 4 seconds
+> ### ✓ Confirmation #11 — Live seal demonstrated end-to-end in under 4 seconds
 >
 > Manual seal job kicked off, completed, and verified during the engagement window. The SRE on-call demonstrated the workflow without ceremony. CloudHSM signature acquired, Merkle root sealed, verifier returned PASS in under one second after seal completion.
 
@@ -1158,9 +1477,9 @@ She picked a twelfth. A signing-key-rotation boundary. Q1 to Q2 of last year, on
 
 PASS. PASS. The verifier handled the key rotation transparently — both entries verified against their respective signing-key fingerprints, with the rotation event itself being a sealed chain entry that linked the two key periods.
 
-> ### ✓ Confirmation #11 — Verifier handles signing-key rotations transparently
+> ### ✓ Confirmation #12 — Verifier handles signing-key rotations transparently
 >
-> Quarterly key rotation events are themselves sealed chain entries. The verifier resolves the correct signing-key fingerprint per entry based on seal-date metadata. Cross-rotation verification works without any operator intervention. Karen sampled both sides of a Q1→Q2 rotation boundary; both passed.
+> Quarterly key rotation events are themselves sealed chain entries per §10.10 (rotation crossing the seal boundary). The verifier resolves the correct signing-key fingerprint per entry based on seal-date metadata. Cross-rotation verification works without any operator intervention. Karen sampled both sides of a Q1→Q2 rotation boundary; both passed. Northbridge operates single-algorithm Ed25519 today; §4.3.2 names the dual-algorithm transitional posture for post-quantum migration (Ed25519 co-signed with a NIST PQC algorithm), and the verifier already dispatches on the seal record's `signatures` list when a dual-algorithm seal lands.
 
 She picked a thirteenth — a deliberately torturous one. An entry from a tenant-binding label that she couldn't find in the public registry.
 
@@ -1198,7 +1517,7 @@ Reason: chain anomaly detected. prev_hash mismatch
         at entry_id=ce_test_corrupt_002.
 ```
 
-> ### ✓ Confirmation #12 — Verifier exit codes are meaningfully distinct
+> ### ✓ Confirmation #13 — Verifier exit codes are meaningfully distinct
 >
 > Exit 0 (PASS), exit 1 (procedure-could-not-begin), exit 2 (procedure-began-and-failed), exit 3 (chain-anomaly) are all reachable and meaningfully distinct. Karen exercised exit 0, exit 1 against a deprecated-tenant entry, and exit 3 against the spec test vector.
 
@@ -1230,15 +1549,72 @@ She closed her personal laptop.
 
 "That's the property I needed to see. The chain verifies without us trusting Northbridge at all. We trust the public key on the Compliance page, and we trust the open-source verifier we ran. Everything else is mathematics."
 
-> ### ✓ Confirmation #13 — Seal verification works with zero Northbridge-side trust
+> ### ✓ Confirmation #14 — Seal verification works with zero Northbridge-side trust
 >
 > Karen ran the standalone verifier on her personal laptop using only the published Ed25519 public-key fingerprint and a seal record pulled from the public Herald.Compliance surface. Verification passed in 2.4 seconds. No Northbridge credentials were used at any layer of the verification path. This is the assurance property that makes the system useful to a regulator who has not personally inspected the bank's infrastructure.
+
+Karen wasn't done.
+
+"One more attack. Show me what happens if I claim there are TWO chains for the same `(tenant_id, run_id)`. A fork. I'm a privileged engineer with ledger storage write access; I synthesize a parallel chain file claiming the same run identity. Both files have valid genesis blocks, both pass the per-event MAC, both have a sealed Merkle root. What does the verifier do when it sees them?"
+
+Marcus said, "§10.25 fork-detection responsibility. The ledger never accepts the fork at ingestion — the cross-check refuses the second batch with the duplicate-genesis reason. But if an attacker has privileged write access to the storage tier and lands two files anyway, the verifier is the next line of defense. The reference verifier walks a directory tree, notices duplicate `(tenant_id, run_id)` at the file-discovery layer, and refuses to walk either branch under `--strict`."
+
+He pulled up the C# verifier.
+
+"`AuditFileVerifier.DetectForks` — the static helper. Takes a list of file paths, returns a `ForkDetectionResult` with the forks listed by `(tenant_id, chain_id)` plus any unreadable files. Same logic in the Go `herald-verify --detect-forks` flag — independent implementations, same §10.25 detection responsibility."
+
+Greg pre-staged two chain files for the same `(tenant_id, run_id)` in the sandbox. Both had valid genesis blocks, both walked clean per the per-event MAC. Both files were on disk because Greg manually placed them there for the demo — neither would have made it through the sink's ingestion cross-check on a real deployment.
+
+```
+herald-verify --tenant=sandbox-demo --chain-dir=./forked --detect-forks --strict
+```
+
+```
+Status: FORK DETECTED
+Exit: 3
+Reason: duplicate (tenant_id, run_id) detected: two chain files claim
+        the same run identifier — possible fork or unauthorized
+        duplicate genesis (HeraldComplianceErrorCode 5063 ForkDetected,
+        per spec §10.25 fork-detection responsibility)
+
+Affected:
+  tenant_id = "sandbox-demo"
+  run_id    = "run-existing-001"
+  files     = ["./forked/file-a.chain", "./forked/file-b.chain"]
+Elapsed: 0.4s
+```
+
+Karen ran the same fixture on her personal laptop with the open-source verifier:
+
+```
+Status: FORK DETECTED
+Exit: 3
+Reason: duplicate (tenant_id, run_id) detected: two chain files claim
+        the same run identifier — possible fork or unauthorized
+        duplicate genesis
+Elapsed: 0.4s
+```
+
+Same exit code. Same §10.25 reason. No Northbridge-side trust required.
+
+Marcus said: "Under non-strict the verifier walks both branches and reports each separately, so the institution's IR program has the data to disambiguate which branch is the legitimate one. Under `--strict` the verifier refuses both — it won't pick a branch on its own. The disambiguation is human work and IR-program work; the verifier just surfaces the fork."
+
+Karen wrote on the whiteboard, under the silent-restart line:
+
+```
+FORK DETECTION — verifier flags duplicate (tenant_id, run_id)
+                 per §10.25 (HeraldComplianceErrorCode 5063)
+```
+
+> ### ✓ Confirmation #15 — Verifier detects duplicate (tenant_id, run_id) and refuses to silently pick a branch
+>
+> Marcus pre-staged two chain files for the same `(tenant_id, run_id)` in the sandbox — both internally consistent, both passing the per-event MAC walk in isolation. Karen ran `herald-verify --detect-forks` on the directory; the verifier reported `Status: FORK DETECTED` with `HeraldComplianceErrorCode 5063 ForkDetected` and the §10.25 normative reason `duplicate (tenant_id, run_id) detected: two chain files claim the same run identifier — possible fork or unauthorized duplicate genesis`. Under `--strict` the verifier refused to walk either branch. Karen reproduced the result on her personal laptop with the open-source verifier — same exit code 3, same reason. Fork detection is the verifier's responsibility per §10.25 and is not contingent on any institution-side privilege.
 
 Tom had been watching the standalone-verifier run from the next chair. He had a question.
 
 "How is `herald-verify` distributed?" he said. "Where did Karen pull that binary from? If a future examiner is going to download it cold, what does that path look like?"
 
-Marcus said, "Separate repo from the spec. `github.com/<vendor>/herald-verify`. Go binary, Apache 2.0, reproducible builds. Each release ships Linux, macOS, and Windows binaries plus a manifest of SHA-256 and SHA-512 hashes, Cosign signatures tied to a published public key — sigstore.dev — a CycloneDX-format SBOM, and a source tarball. An examiner downloads from GitHub Releases, verifies the Cosign signature against the published key, runs the binary. No connection to Northbridge required at any stage."
+Marcus said, "§10.26 — Reference verifier distribution. The spec normates the distribution discipline now, not just the implementation behavior. Separate repo from the spec. `github.com/<vendor>/herald-verify`. Go binary, Apache 2.0, reproducible builds. Each release ships Linux, macOS, and Windows binaries plus a manifest of SHA-256 and SHA-512 hashes, Cosign signatures tied to a published public key — sigstore.dev — a CycloneDX-format SBOM, and a source tarball. An examiner downloads from GitHub Releases, verifies the Cosign signature against the published key, runs the binary. No connection to Northbridge required at any stage."
 
 "Where's the spec repo, then?"
 
@@ -1262,6 +1638,14 @@ Marcus had four reasons. He gave them in order.
 
 "Four. An examiner downloading from a GitHub Releases page with Cosign signatures tied to a published key is a stronger trust statement than downloading from a spec repo. The release-signing path is purpose-built for binary trust. The spec repo's signing path isn't. We picked the right channel for each artifact."
 
+He pulled up §10.26 on the screen and read the first paragraph aloud.
+
+> "The reference verifier ships in a repository SEPARATE from the spec, under an OSI-approved license (Apache 2.0 is the typical choice and is the license the reference implementation uses). The separation lets the verifier cycle through patch releases, security fixes, and platform-binary additions without touching the spec text, and lets a clean-room implementer write a second verifier against the spec without inheriting the reference verifier's source. The spec is the binding contract; the verifier is one conformant realization of it."
+
+"Per-release artifact discipline is also normative now," Marcus said. "Reproducible builds, signed release artifacts, per-platform binaries, SHA-256 and SHA-512 manifests, CycloneDX SBOM. All five MUST per release. The CC8.1 citation discipline names three things institutions cite when they reference 'the verifier' — the implementation, the version, and the verification key. Without those three, 'the verifier' is ambiguous."
+
+Tom wrote on his notepad, next to "verifier OSS, separate repo": *§10.26 — distribution discipline is normative; CC8.1 cites implementation + version + verification key.*
+
 Karen nodded slowly. *That's the right separation.*
 
 She thought about it for another beat.
@@ -1274,7 +1658,7 @@ She thought about it for another beat.
 
 Tom finished writing.
 
-> ### ✓ Confirmation #14 — Verifier is OSS, distributed separately, signed at release
+> ### ✓ Confirmation #16 — Verifier is OSS, distributed separately, signed at release
 >
 > `herald-verify` lives in its own GitHub repo, Apache 2.0 licensed, reproducible builds, Cosign-signed releases tied to a published public key. The examiner's trust path is download → cosign-verify → run. No Northbridge-side credential, no spec-repo dependency. The spec at `github.com/ffiec-chain-spec/spec` references the verifier as the reference implementation but does not bundle it. Karen and Tom independently agreed on the rationale for the separation — different licenses, different change cadences, different trust channels, and a clean handover path when the spec transfers to FFIEC's repo.
 
