@@ -3,7 +3,7 @@
 **Context:**
 Northbridge Federal Savings — a regional US bank, ~$45B consolidated assets, OCC-supervised national bank, FDIC-insured. Engagement type: FFIEC IT Handbook supplementary review. The bank closed an MRA on customer-data integrity two quarters ago. This is the verification revisit.
 
-**Posture going in:** TesseraSeal in use across ALL data capture for 18 months. Herald.Py instruments every customer-facing surface (CRM mirror, voice/recordings, branch tablets, API edges, IAM events, the AI advisor). Herald Core is the ledger backend. Herald.Compliance is the regulator-facing surface. Daily seals run via a CloudHSM-managed signing key. Verifier CLI is `herald-verify`. Spec is FFIEC chain-of-custody v1.0a.
+**Posture going in:** the audit team has not seen this engagement before. Northbridge has been running something called "TesseraSeal" across customer-data capture for 18 months — independent of any prior conversation with this audit team. The team will encounter the product for the first time at the kickoff meeting. The bank's claim, going into the room, is that every customer-facing surface (CRM mirror, voice/recordings, branch tablets, API edges, IAM events, the AI advisor) lands in a sealed chain-of-custody ledger called Herald Core, that the regulator-facing surface is called Herald.Compliance, that daily seals run via a CloudHSM-managed signing key, that the verifier CLI is `herald-verify`, and that the whole stack conforms to a public spec called FFIEC chain-of-custody v1.0a. The team has heard pitches before that promised this much. Skeptical-but-listening is the working posture.
 
 ---
 
@@ -26,7 +26,9 @@ Northbridge Federal Savings — a regional US bank, ~$45B consolidated assets, O
 
 The team rolled in to the Northbridge engagement room with the look of people who had spent last week somewhere unpleasant.
 
-Karen poured coffee. She stared at the slide on the projector — a clean architecture diagram, every box labeled, every arrow ending at something called "Herald Core ledger."
+Karen poured coffee. She stared at the slide on the projector — a clean architecture diagram, every box labeled, every arrow ending at something called "Herald Core ledger." Above the diagram, in modest type: **TesseraSeal — chain-of-custody for customer-data capture.**
+
+She had not heard the name before.
 
 She turned to Raj.
 
@@ -40,11 +42,37 @@ Raj nodded without looking up from his laptop. "Bet you a coffee you find a Gap 
 
 Marcus Tan walked in. Mid-fifties. Pressed shirt. Coffee in his left hand, a thin folder under his right arm.
 
-"Karen. Tom. Welcome back to Northbridge."
+"Karen. Tom. Welcome to Northbridge."
 
 Tom shook his hand. "Marcus."
 
-"Same drill as the FDIC visit in February?" Tom asked.
+"You'll see a name on the deck you may not have run into before," Marcus said, gesturing at the slide. "TesseraSeal. We've been on it for eighteen months. It's the chain-of-custody layer behind every customer-data capture path the bank operates. I'd rather walk you through what it is than make you guess from the diagram."
+
+"Go ahead," Karen said.
+
+Marcus stayed standing. He didn't sit. He didn't pull out a deck-of-decks.
+
+"At the bottom is Herald Core. That's the append-only ledger. Above it is Herald.Py — that's the SDK we instrumented every customer-facing surface with: CRM mirror, voice transcription, branch tablets, the core-banking API edges, IAM, the AI wealth advisor. Every event lands in the ledger as a sealed entry. Daily, the system computes a Merkle root over the day's entries and signs it with a CloudHSM-resident Ed25519 key. The signed seal is published on a regulator-facing surface called Herald.Compliance. The verifier CLI is `herald-verify`. The whole stack conforms to a public spec — FFIEC chain-of-custody v1.0a — and the verifier is open-source, so you can run it on your own laptops without any of our credentials at any layer."
+
+He paused.
+
+"That's the elevator. I know it's a lot to take in cold."
+
+Karen wrote on her notepad: **TesseraSeal — verify claims.**
+
+Underneath: *spec public; verifier OSS; key on Compliance page; ledger append-only.* She underlined "verify."
+
+Raj was already typing the spec name into his laptop search bar.
+
+"Can I see the spec?" he said. "URL."
+
+Marcus read it off. Raj wrote it down.
+
+Mike said, "Eighteen months. So this isn't new to you, but it's new to us."
+
+"It's new to you. It's not new to the FDIC — they've examined under it twice. The closing report from the prior-year MRA references the verifier outputs by entry-ID. I have copies in the workpaper pack."
+
+Tom said, "Same drill as the FDIC visit in February, then?"
 
 "Same drill," Marcus said. "I'll route you through the surfaces. SRE on-call is Greg today. Greg has done this before. Verifier credentials are already provisioned for your laptops — read-only, scoped to the Compliance surface."
 
@@ -54,15 +82,17 @@ Karen blinked. "You provisioned us before we asked."
 
 *Hm.*
 
-Karen wrote `NB-001` on her notepad. Underneath: *seal verification is unprivileged.*
+Karen added a second line under her **TesseraSeal — verify claims** note: *seal verification is unprivileged.*
 
-She paused. She added a second line: *check this claim before lunch.*
+She paused. She added a third line: *check this claim before lunch.*
 
 "Let's start with the architecture overview," she said. "I want to know what you think you have. Then we'll go look."
 
 Marcus didn't bristle. He clicked to the next slide.
 
 *Most CAEs bristle when I say 'then we'll go look,'* Karen thought. *He didn't. Either he is very tired, or he has nothing to defend. We'll find out which.*
+
+*And we'll find out today whether 'TesseraSeal' is a slogan or a system.*
 
 ---
 
@@ -141,6 +171,114 @@ Elena wrote: *connector lifecycle is auditable.*
 ---
 
 ## 🧠 10:00 AM — Database Deep Dive
+
+Before Raj opened the database session, he wanted something else.
+
+"Marcus," he said. "Print me the chain envelope schema. The full attribute table. Whatever the spec calls Required and Optional. I want to read it before I touch the database."
+
+"Section 4.4 of the spec," Marcus said. He nodded at the second screen. "Greg, pull the v1.0a attribute table and the canonical-bytes definition. Both."
+
+Two blocks appeared on the screen. The first one was the attribute table. Raj read it slowly, top to bottom.
+
+```
+# FFIEC chain-of-custody v1.0b — chain envelope (per-event)
+# Per spec §4.4 attribute table
+
+ffiec.chain.spec               = "v1.0"        # Required
+ffiec.chain.format_version     = "v1"          # Required
+ffiec.chain.posture            = "ffiec"       # Required (resource-level)
+ffiec.chain.chain_kind         = <enum>        # Required: audit | model_call | tool_call | routing | translation | operational
+ffiec.chain.run_id             = <string>      # Required: run identifier (= chain_id)
+ffiec.chain.tenant_id          = <string>      # Optional: 1-255 chars [A-Za-z0-9_.-] per §3
+ffiec.chain.captured_at        = <RFC3339-ns>  # Required: UTC nanosecond precision
+ffiec.chain.seq                = <int>         # Required: 1-indexed position
+ffiec.chain.payload_hash       = <64-hex>      # Required: HMAC-SHA-256 (lowercase hex)
+ffiec.chain.prev_hash          = <64-hex>      # Required: previous payload_hash; 32 zero bytes for seq=1
+ffiec.chain.key_version        = <int>         # Required: 1-indexed IKM generation
+ffiec.chain.key_fingerprint    = <32-hex>      # Required: SHA-256(utf8(tenant_id) || ikm)[:16]
+ffiec.chain.mac_computed_at_utc = <RFC3339>    # Required: writer's wallclock (forensic, not security)
+ffiec.chain.kms_handle_uri     = <string>      # Required: KMS handle URI; "plaintext-dev" marks dev adapter
+ffiec.chain.canonical_encoding = "rfc8785-jcs" # Optional, default at format_version=v1
+ffiec.chain.late_binding       = <bool>        # Optional: true for events arriving after their day was sealed
+ffiec.chain.region             = <string>      # Optional: SDK's binding region for multi-region resilience
+
+# Herald-internal canonical-bytes-load-bearing fields (per OtlpAttributeKeys.cs)
+herald.event_id                = <UUID>        # Required for byte-reconstruction
+herald.duration_ns             = <int>         # Optional; absence encodes None at the receiver
+herald.kind                    = <SpanKind>    # OTel SpanKind shape
+herald.severity                = <string>      # AUDIT | INFO | WARN | ERROR | FATAL
+
+# Standard OTel
+service.name                   = <string>      # Required at Resource
+service.version                = <string>      # Required at Resource
+```
+
+Raj didn't say anything for a full minute. He read the block twice. Then he started in.
+
+"What goes into `payload_hash` exactly?"
+
+"HMAC-SHA-256 over the canonical bytes of the event," Marcus said. "Per §4.4.1. The canonical bytes are RFC 8785 JCS over the entire event, with a documented exclusion set — the chain stamp itself is excluded, since the chain stamp is computed from those bytes. The HMAC key is the per-tenant HKDF-derived key from the IKM. Lowercase hex, 64 characters."
+
+"And `kms_handle_uri` is Required, but it's not in the canonical bytes?"
+
+"It's Required because every entry needs to identify which KMS-managed IKM generated the per-tenant HKDF key. It's not in the per-event MAC's canonical bytes because the MAC is over the *event*, not over the operational metadata that names the key. The handle URI is operational metadata — what KMS, which key alias, which version. It binds the entry to a key without circular-defining what the MAC covers. Forensic, not security."
+
+"Why the distinction?"
+
+"Because if you put the URI inside the MAC, then rotating the URI string — say, renaming the key alias for an unrelated reason — would invalidate every prior MAC. We pin the *fingerprint* under the MAC via `key_fingerprint`. The URI is a label that points at the same key the fingerprint identifies. The fingerprint is what the verifier checks."
+
+Raj nodded slowly. He underlined `key_fingerprint` on his notepad.
+
+"What's the difference between `mac_computed_at_utc` and `captured_at`?"
+
+"`captured_at` is the wallclock at the moment of the application event — the customer interaction, the API call, the model inference. That's the timestamp the business cares about. `mac_computed_at_utc` is the wallclock at the moment the SDK actually sealed the entry. They're usually within a few milliseconds, but they can diverge if the SDK is under buffer pressure or recovering from a sidecar fault. Per §4.4, `mac_computed_at_utc` is forensic — it tells you what the writer's clock said at MAC time, even if the writer's clock was wrong. We don't trust it for security. We trust it for forensic reconstruction."
+
+"If the writer's clock is wrong, does the verifier care?"
+
+"The verifier doesn't trust either timestamp for cryptographic purposes. It cares about chain order, prev_hash linkage, MAC validity, and Merkle inclusion. Timestamps are for humans investigating an incident. The spec is explicit about that — §4.4 calls out 'forensic, not security' on `mac_computed_at_utc`."
+
+Raj wrote that down. Then he wrote a follow-up underneath, with a star next to it: *come back to clock-skew handling under §10.16 lag bounds.*
+
+"`tenant_id` is Optional. What do the canonical bytes look like for a single-tenant deployment?"
+
+"If the field is absent at the source, it's absent in the canonical bytes — JCS doesn't emit a key for a field the producer didn't set. The HKDF derivation falls back to a documented single-tenant label. The fingerprint computation uses the empty string for the `utf8(tenant_id)` portion of `SHA-256(utf8(tenant_id) || ikm)[:16]`. Section 3 covers it. Northbridge sets `tenant_id="northbridge-bank-prod"` everywhere — we're explicitly not single-tenant in the SDK's sense, even though we're a single bank."
+
+"Why?"
+
+"Because the bank has subsidiary entities. Each subsidiary is a separate `tenant_id` under the same Herald Core deployment. The prod tenant is `northbridge-bank-prod`. The wealth-management subsidiary is `northbridge-wealth-prod`. The merchant-services subsidiary is `northbridge-merchant-prod`. Three tenants, three HKDF derivations, three independent chains."
+
+Raj nodded.
+
+"One more. What stops someone from re-emitting an entry with a different `key_version` to claim it was sealed under a rotated key?"
+
+Marcus paused. Not because he didn't have the answer — because this was the question he was waiting for.
+
+"Three things. First, the `key_fingerprint` is in the canonical bytes — re-emitting with a different `key_version` doesn't change the fingerprint, so the MAC won't recompute under a different key. Second, the per-tenant HKDF derivation is keyed on IKM generation; a wrong `key_version` produces a different HKDF output and the MAC fails. Third, the daily Merkle seal is computed over the day's entries as written; you can't slip a re-emitted entry into a sealed day. The combination is what makes key-rotation transparent to the verifier — the verifier reads the entry, picks the correct IKM generation by version, recomputes, and either matches or doesn't."
+
+Raj said, "I want to see the canonical bytes the MAC actually covers."
+
+Marcus typed. The second block appeared on the screen.
+
+```
+canonical bytes (v1.0a, per spec §5) = RFC 8785 JCS over the event with:
+  EXCLUDED: ffiec.chain.payload_hash, ffiec.chain.prev_hash,
+            ffiec.chain.key_version, ffiec.chain.key_fingerprint,
+            ffiec.chain.mac_computed_at_utc, ffiec.chain.kms_handle_uri
+            (the chain stamp itself is excluded — it's computed from these bytes)
+  INCLUDED: everything else, including ffiec.chain.{spec, format_version,
+            chain_kind, run_id, tenant_id, captured_at, seq}
+            plus the entire payload (event-class-specific attributes + body)
+```
+
+Raj read it twice.
+
+"That's a clean exclusion set," he said. "The chain stamp is the only thing not under its own MAC. Everything else is bound."
+
+"Section 5 is the smallest section in the spec," Marcus said. "It needs to be unambiguous more than it needs to be long."
+
+Raj wrote *§5 is short on purpose* on his notepad and underlined it.
+
+"OK," he said. "Now I want to look at the database."
 
 Raj opened the database session. He had a list of forty queries he runs against any chain-of-custody system. He started with the soft ones.
 
@@ -343,6 +481,28 @@ Mike rotated. He picked a different request. A failed authorization. A retry. A 
 
 All three: PASS, PASS, PASS.
 
+In the verifier output for the reversal, Mike noticed an attribute he hadn't seen before. He scrolled back through his earlier samples. It wasn't on most of them.
+
+```
+ffiec.chain.late_binding = true
+```
+
+"Marcus, what's `late_binding=true`?"
+
+Marcus said, "Section 4.2.2 of the spec. An event whose `received_at` UTC date is after the seal day was already sealed gets stamped with `late_binding=true` and lands in the next day's seal. The original seal isn't altered. The verifier reports `late-binding entries: N` as an anomaly line under PASS. Normal operational case — a connector backlog or a clock-skew event — but it's visible. You can't sneak a late event in without it being labeled as late."
+
+"So this reversal arrived after its day was sealed."
+
+"Probably a pre-dawn reversal that was stuck behind a connector retry. The chain entry's `captured_at` is the original transaction time. The seal that includes it is the next day's seal. The `late_binding=true` flag tells the verifier to expect a seal-date offset. Without the flag, that offset would look like a tampered timestamp."
+
+Mike wrote: *late_binding=true is a positive declaration, not a hidden state.*
+
+"And the verifier counts them?"
+
+"Counts them, prints the total in the anomaly section under PASS. If a day suddenly has thousands of late-binding entries, that's a connector-health signal worth chasing. Most days, it's single digits."
+
+Mike nodded. He moved on.
+
 He picked an AI-advisor recommendation — the kind of event that he expected to be the thinnest seam. The model output, the system prompt fingerprint, the retrieval context, the customer ID, the recommendation text.
 
 PASS.
@@ -423,6 +583,355 @@ Luis wrote that down.
 
 *This is the part where most banks tell me 'we'll get to it next quarter,'* he thought. *They've gotten to it.*
 
+Luis paused.
+
+"One more thing before I hand off to Chen," he said. "I want to see what's actually getting captured. Source side and chain side, end to end. The Salesforce mirror connector specifically — that's the surface Elena flagged this morning. Show me the raw CDC event Salesforce produces, and show me what the chain wrote for the same event. Side by side."
+
+Marcus said, "I can do that. Greg, split-pane terminal. Pull a single CDC event from the test-replay archive and the matching chain entry. The case-assigned event from yesterday afternoon would be a good one — it crossed the connector lag window cleanly."
+
+The second screen lit with two panes.
+
+**Left pane — Salesforce CDC stream (raw source side):**
+
+```jsonc
+{
+  "schema": "OYZGY...PUL",
+  "payload": {
+    "ChangeEventHeader": {
+      "entityName": "Case",
+      "recordIds": ["500Hp00001abcXYZ"],
+      "changeType": "UPDATE",
+      "changedFields": ["Status", "OwnerId", "Description"],
+      "transactionKey": "001a2b3c-4d5e-6789-abcd-ef0123456789",
+      "sequenceNumber": 1,
+      "commitTimestamp": 1746719234123,
+      "commitNumber": 12345678,
+      "commitUser": "0051Hp00001AGENT001"
+    },
+    "Status": "Working",
+    "OwnerId": "0051Hp00001AGENT001",
+    "Description": "Customer requesting refund per email dated 2026-05-08. Damaged item ORD-7741922.",
+    "LastModifiedDate": "2026-05-08T13:43:02.123Z"
+  },
+  "event": {
+    "replayId": 9874321
+  }
+}
+```
+
+**Right pane — the chain-of-custody log entry written by the Salesforce mirror connector (a single line of NDJSON in the chain file):**
+
+```jsonc
+{
+  "ffiec.chain.spec": "v1.0",
+  "ffiec.chain.format_version": "v1",
+  "ffiec.chain.chain_kind": "audit",
+  "ffiec.chain.run_id": "500Hp00001abcXYZ",
+  "ffiec.chain.tenant_id": "northbridge-bank-prod",
+  "ffiec.chain.captured_at": "2026-05-08T13:43:02.481000000Z",
+  "ffiec.chain.seq": 3,
+  "ffiec.chain.payload_hash": "9b3c7e1a4f8d62b0c5a1e9f4d2b8c0e3a7d1f5b9c4e8d2a6b0f3e7d1a4b8c2e5",
+  "ffiec.chain.prev_hash":    "ad7e2c9f1b4d8e3a0c5b9d2e6f1a4c7e0b3d9f2a5c8e1b4d7f0a3c6e9b2d5f8a",
+  "ffiec.chain.key_version": 4,
+  "ffiec.chain.key_fingerprint": "7f3a9c1e5b8d2f4a6c0e9b3d7f1a4c8e",
+  "ffiec.chain.mac_computed_at_utc": "2026-05-08T13:43:03.122Z",
+  "ffiec.chain.kms_handle_uri": "aws-cloudhsm:cluster/cluster-7y8a/key/k-northbridge-prod-2026q2",
+  "ffiec.chain.canonical_encoding": "rfc8785-jcs",
+  "ffiec.chain.region": "us-east-1",
+  "herald.event_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+  "herald.kind": "INTERNAL",
+  "herald.severity": "AUDIT",
+  "service.name": "northbridge-sf-mirror",
+  "service.version": "2.4.1",
+  "event": "case.assigned",
+  "case_id": "500Hp00001abcXYZ",
+  "assignee_id": "0051Hp00001AGENT001",
+  "queue": "refunds-tier-1",
+  "assigned_at_utc": "2026-05-08T13:43:02.481Z",
+  "source_replay_id": 9874321,
+  "source_commit_timestamp": 1746719234123,
+  "source_lag_observed_ms": 1358,
+  "redaction_policy_id": "northbridge-pii-v7",
+  "redaction_policy_version": "2026-04-15"
+}
+```
+
+Luis leaned forward.
+
+"Walk me through the lineage," he said. "How does the right side prove it captured the left side."
+
+Marcus traced it with a stylus.
+
+"Salesforce's `replayId=9874321` and `commitTimestamp=1746719234123` are both captured into the chain entry as `source_replay_id` and `source_commit_timestamp`. Anyone can verify the Salesforce side independently — Salesforce keeps replay IDs for 72 hours, longer with EventLogFile. Pull the raw CDC stream by replay ID, line up against the chain entry, confirm the source-side metadata matches. The chain entry's MAC binds those two fields into the canonical bytes, so the connector can't claim a different replay-ID after the fact."
+
+He moved the stylus.
+
+"The mirror connector recorded `source_lag_observed_ms=1358` — meaning 1.358 seconds elapsed between Salesforce's commit and the chain entry's MAC computation. That's well inside the §10.16 lag bound the bank published in CC8.1."
+
+Karen wrote down: *§10.16 — the lag bound is published.*
+
+Marcus moved the stylus again.
+
+"`redaction_policy_id` and `redaction_policy_version` are bound under the per-event MAC. If anyone retroactively edits the policy, the chain entry's signed reference to the old version doesn't change — the mismatch surfaces at audit. The policy itself is in a separate signed registry; the chain entry pins which policy version was active at capture time."
+
+"And `tenant_id` plus `service.name` together —"
+
+"— makes the source unambiguous. `ffiec.chain.tenant_id="northbridge-bank-prod"` plus `service.name="northbridge-sf-mirror"` says: this entry was written by the Salesforce mirror connector running under the production-bank tenant, not by some other Northbridge process. The Wealth subsidiary's connector would write under `northbridge-wealth-prod`. They don't overlap. They can't overlap — the IKM generations are different, so the MACs wouldn't validate cross-tenant."
+
+Karen's pen had not stopped moving. She had a different question.
+
+"What if Salesforce silently drops a CDC event? The chain wouldn't see it."
+
+Marcus said, "The connector reconciles against Salesforce's source-side commitNumber sequence on a 5-minute cadence. Gaps trigger `connector.outage` events that get chained. If Salesforce drops one, the gap shows up in the chain itself, not just in the connector's logs. Section 10.16 of the spec covers SaaS-edge connectors specifically — the freshness invariant requires the connector to either reconcile a missing source-side sequence within the published bound, or emit a chained outage entry naming the gap. We can't claim a gap doesn't exist by staying silent — silence inside the lag window is itself a violation."
+
+"Show me one of the outage entries."
+
+Marcus typed. A third pane appeared.
+
+```jsonc
+{
+  "ffiec.chain.run_id": "northbridge-sf-mirror",
+  "ffiec.chain.chain_kind": "operational",
+  "ffiec.chain.seq": 8847,
+  "ffiec.chain.captured_at": "2026-03-17T14:08:23.000000000Z",
+  "service.name": "northbridge-sf-mirror",
+  "event": "connector.outage",
+  "outage_kind": "source_sequence_gap",
+  "expected_commitNumber_low": 12340012,
+  "expected_commitNumber_high": 12340034,
+  "observed_commitNumber_at_resume": 12340035,
+  "missing_count": 23,
+  "remediation_action": "salesforce_eventlogfile_replay_initiated",
+  "remediation_run_id": "sf-replay-2026-03-17-008"
+}
+```
+
+"That's the connector saying 'I lost 23 events between commitNumbers 12340012 and 12340034, and I'm replaying them from Salesforce's EventLogFile.' The remediation run is its own chain — `sf-replay-2026-03-17-008` — and each replayed event lands as a chained entry tagged `late_binding=true` because they arrive after the day they were originally committed. The verifier reports them as anomaly-line late-binding under PASS. Visible, named, traceable."
+
+Luis wrote: *outages are positive events. Silence is a violation.*
+
+> ### ✓ Confirmation #7 — SaaS-edge connector lineage is end-to-end visible
+>
+> Luis side-by-sided the Salesforce CDC source event and the chain entry written by the mirror connector. The Salesforce-side metadata (`replayId`, `commitTimestamp`) is bound under the per-event MAC as `source_replay_id` and `source_commit_timestamp`. The connector's observed lag is recorded against the §10.16-published bound. Source-side sequence gaps surface as chained `connector.outage` events; replayed events land with `late_binding=true`. The chain itself reports gaps — silence is not an option.
+
+Luis didn't move on.
+
+"One more thing," he said. "Show me the actual connector. The Python code that turns Salesforce CDC events into chain entries. I want to see what your engineer wrote."
+
+Marcus said, "Greg, pull `subscriber.py` from the sf_mirror repo. Read-only, current main."
+
+The connector source filled the second screen.
+
+```python
+# E:/northbridge/connectors/sf_mirror/subscriber.py
+"""
+Salesforce CDC mirror connector — Northbridge production.
+
+Subscribes to Salesforce Change Data Capture (CDC) channels for the
+Case, EmailMessage, and Account entities. Translates each CDC event
+to a chain-of-custody entry under tenant_id="northbridge-bank-prod"
+via the Herald.Py SDK. The chain handles the integrity bind; this
+connector is responsible for fidelity (no source events lost) and
+freshness (lag stays inside §10.16 bounds published in CC8.1).
+
+Per FFIEC chain-of-custody v1.0b §10.16 + §10.18 + §10.19.
+"""
+
+import asyncio
+import logging
+from datetime import datetime, timezone
+from typing import Any
+
+import herald
+from aiosfstream import SalesforceStreamingClient
+
+logger = logging.getLogger(__name__)
+
+CDC_CHANNELS = (
+    "/data/CaseChangeEvent",
+    "/data/EmailMessageChangeEvent",
+    "/data/AccountChangeEvent",
+)
+
+
+async def subscribe(
+    sf_client: SalesforceStreamingClient,
+    tenant_id: str = "northbridge-bank-prod",
+) -> None:
+    """
+    Subscribe to all CDC channels for the configured tenant. For each
+    event, write a chain-of-custody entry with the Salesforce-side
+    metadata bound under the per-event MAC.
+    """
+    async for sf_event in sf_client.subscribe(CDC_CHANNELS):
+        await _emit_chain_entry(sf_event, tenant_id)
+
+
+async def _emit_chain_entry(sf_event: dict[str, Any], tenant_id: str) -> None:
+    payload = sf_event["payload"]
+    header = payload["ChangeEventHeader"]
+    entity = header["entityName"]
+    record_id = header["recordIds"][0]  # CDC envelopes one record at a time
+    change_type = header["changeType"]
+    commit_user = header["commitUser"]
+    commit_ts_ms = header["commitTimestamp"]
+
+    # Run is keyed on the Salesforce record ID. A given Case stays in one
+    # run for its entire lifecycle, so seq advances monotonically across
+    # all CDC events for that record.
+    run_id = record_id
+
+    # Source-side observed lag — CDC commit to here. Used for §10.16
+    # connector.lag_observation events emitted on a separate cadence
+    # (see lag_observer.py).
+    now_utc = datetime.now(timezone.utc)
+    commit_dt = datetime.fromtimestamp(commit_ts_ms / 1000, tz=timezone.utc)
+    lag_ms = int((now_utc - commit_dt).total_seconds() * 1000)
+
+    event_name, attrs = _translate(entity, change_type, payload)
+
+    with herald.run(
+        run_id=run_id,
+        actor_id=commit_user,
+        tenant_id=tenant_id,
+    ):
+        herald.audit(
+            event=event_name,
+            **attrs,
+            source_replay_id=sf_event["event"]["replayId"],
+            source_commit_timestamp=commit_ts_ms,
+            source_lag_observed_ms=lag_ms,
+            source_change_type=change_type,
+        )
+
+
+def _translate(
+    entity: str, change_type: str, payload: dict[str, Any]
+) -> tuple[str, dict[str, Any]]:
+    """
+    Translate a Salesforce CDC entity + change_type into a chain event
+    name + attribute dict. The mapping is documented in
+    docs/sf-cdc-to-chain-event-mapping.md and reviewed quarterly.
+    """
+    if entity == "Case":
+        if change_type == "CREATE":
+            return "case.opened", {
+                "case_id": payload["ChangeEventHeader"]["recordIds"][0],
+                "subject": payload.get("Subject", ""),
+                "origin": payload.get("Origin", ""),
+                "priority": payload.get("Priority", ""),
+            }
+        if change_type == "UPDATE":
+            changed = payload["ChangeEventHeader"].get("changedFields", [])
+            if "OwnerId" in changed:
+                return "case.assigned", {
+                    "case_id": payload["ChangeEventHeader"]["recordIds"][0],
+                    "assignee_id": payload["OwnerId"],
+                    "queue": _resolve_queue(payload["OwnerId"]),
+                    "assigned_at_utc": payload["LastModifiedDate"],
+                }
+            if "Status" in changed and payload.get("Status") == "Closed":
+                return "case.closed", {
+                    "case_id": payload["ChangeEventHeader"]["recordIds"][0],
+                    "closure_reason": payload.get("Reason", ""),
+                    "resolution": payload.get("Resolution__c", ""),
+                    "closed_at_utc": payload["LastModifiedDate"],
+                }
+        # ... other Case change types
+    if entity == "EmailMessage":
+        return _translate_email(change_type, payload)
+    if entity == "Account":
+        return _translate_account(change_type, payload)
+    raise ValueError(f"unmapped: entity={entity} change_type={change_type}")
+
+
+def _resolve_queue(owner_id: str) -> str:
+    # Resolves a Salesforce Group ID to its DeveloperName, cached.
+    # Implementation in queue_resolver.py.
+    ...
+
+
+def _translate_email(change_type: str, payload: dict[str, Any]) -> tuple[str, dict[str, Any]]:
+    ...
+
+
+def _translate_account(change_type: str, payload: dict[str, Any]) -> tuple[str, dict[str, Any]]:
+    ...
+```
+
+Luis read it twice. He stopped at the `with herald.run(...)` block.
+
+"OK," he said. "This is the part I want to understand. `herald.run(run_id=record_id)` — when this connector restarts mid-stream, how does the SDK know what `prev_hash` to use for the next event? You can't just pick up at seq=N if you don't remember N. And if the connector is wrong about N, the chain breaks."
+
+Marcus nodded. He had been waiting for this question, too.
+
+"Layered answer. The `with herald.run(...)` block, on entry, asks the SDK for the chain tail for `(tenant_id, run_id)`. The SDK checks three places in order."
+
+He held up one finger.
+
+"One. In-memory state. If the run is already open in this process, the tail is in memory — `(latest_seq, latest_payload_hash, key_version)`. The block reuses it. Cheap."
+
+Two fingers.
+
+"Two. Local persistence sidecar. A tiny SQLite file at `<state-dir>/<tenant_id>/<run_id>.state` carrying `(latest_seq, latest_payload_hash, key_version, last_commit_utc)`. Updated after every successful commit. File-locked for single-writer. If the process crashed mid-stream and restarted, the SDK reads the sidecar and resumes."
+
+Three fingers.
+
+"Three. Ledger query — the rejoin path. When local persistence is missing or corrupted — fresh container, lost disk, full DR scenario — the SDK calls Herald Core's ingestion API. `GET /chains/{tenant_id}/{run_id}/tail` returns the latest seq, payload_hash, key_version. Network access is required for this path; it's the fallback."
+
+He paused.
+
+"If none of the three find a tail, the run is genuinely new. Genesis: `seq=1`, `prev_hash=32 zero bytes`. The spec calls this the genesis-block anti-spoof — only a fresh run gets zero bytes."
+
+Luis was writing.
+
+Marcus continued.
+
+"On flush — when the SDK ships a batch to the ledger — the ledger does a cross-check. The SDK declares its claimed `prev_hash` for the batch's first entry. The ledger compares against its own last-known `payload_hash` for `(tenant_id, run_id)`. Mismatch, ledger refuses with a named reason. Per §7 step 9 — the spec calls it `expected_prev_hash` discipline. The SDK can't unilaterally claim continuity; the ledger has to agree."
+
+Karen looked up. "What if two connector processes try to write to the same run at once?"
+
+"The SDK's file lock on the persistence sidecar fails the second one immediately. The application layer is responsible for one-process-per-run. The SDK enforces it locally so the second process can't even open the run, and the ledger enforces it remotely because the prev_hash disagreement at flush would surface."
+
+Marcus pulled up the runtime configuration on the screen.
+
+```python
+herald.configure(
+    tenant_id="northbridge-bank-prod",
+    ikm_provider=herald.kms.AwsCloudHsmProvider(
+        cluster="cluster-7y8a",
+        key_id="k-northbridge-prod-2026q2",
+    ),
+    state_dir="/var/lib/herald/state",   # local persistence
+    ledger_url="https://herald-core.northbridge-internal.com",
+    rejoin_on_cold_start=True,           # fall back to ledger query if state_dir is empty
+)
+```
+
+"That's the production config. `state_dir` is the sidecar location. `rejoin_on_cold_start=True` enables the third path — without it, a cold start with empty sidecar would refuse to write. We want rejoin in production because we run on ECS and tasks rotate; we leave it off in some test environments to make sure local persistence is exercised."
+
+Luis asked the next question.
+
+"What stops someone from silently restarting the chain at seq=1 to hide entries? If I'm a rogue actor and I want to disappear yesterday's bad assignment, can I just `rm -rf` the sidecar and let the SDK think it's a fresh run?"
+
+"The genesis-block anti-spoof. A genuine new run has `prev_hash=zeros`. If you wipe the sidecar and try to silently restart an existing `run_id` from seq=1, the SDK on the rejoin path queries the ledger — and the ledger sees an existing tail for that `run_id`. The SDK's claimed `prev_hash=zeros` doesn't match the ledger's last-known `payload_hash`. Ledger refuses. Named reason."
+
+"What if the rogue actor disables the rejoin path and just writes locally?"
+
+"Then they have a chain on local disk that says seq=1, prev_hash=zeros. They flush to the ledger. The ledger's cross-check fires — the ledger has a real tail for that `run_id`, the SDK is claiming zero — refuse. The 'restart' shows up in the ledger's refusal log as a fork attempt. The verifier reports it as anomaly. The forensic trail is in two places: the ledger's refusal log and the gap in the legitimate chain where the rogue's entries should have continued."
+
+Luis was nodding. He wrote: *genesis-block anti-spoof — fork shows up in two places.*
+
+Karen asked: "Is the SDK source open?"
+
+Marcus said, "Herald.Py is Apache 2.0 open source. The state-management code is in `herald/_buffer.py` and `herald/_runtime.py`. Anyone — your team included — can audit the resume logic. The repo is on GitHub."
+
+Karen wrote that down. *SDK is OSS. Resume logic is auditable.*
+
+She stared at the line for a moment.
+
+*It never is*, she thought. *Except today, apparently, the SDK is also open source and the resume logic is in two named files.*
+
 Chen took over.
 
 "Multi-region setup?"
@@ -443,7 +952,7 @@ Chen pulled up the most recent reconciliation event. Sealed. Verified. The recon
 
 The February delta showed up: 3 events, all from a region failover during a maintenance window, all eventually replicated, all reconciled. The reconciliation event chained to the original entries.
 
-> ### ✓ Confirmation #7 — Cross-region reconciliation is itself a sealed event
+> ### ✓ Confirmation #8 — Cross-region reconciliation is itself a sealed event
 >
 > The bank runs Pattern A multi-region active-active. ETL reconciliation events are sealed. Historical reconciliation deltas (including non-zero deltas) are themselves chained and reviewable. Chen verified the February event end-to-end.
 
@@ -514,7 +1023,7 @@ She looked up at Marcus.
 
 Karen wrote: *FDIC saw the lag window during MRA close. Closed anyway. The Nit I'm about to write is not new information to the regulator.*
 
-> ### ✓ Confirmation #8 — Operational and chain views reconcile to zero
+> ### ✓ Confirmation #9 — Operational and chain views reconcile to zero
 >
 > Three independent samples (1,000 events, 5,000 events, and a known-noisy-day sample) reconciled byte-for-byte between the operational system view and the Herald Core chain. Latency offsets were within the documented capture window. Dedup events were visible and traceable.
 
@@ -583,7 +1092,7 @@ Greg stood up.
 
 He walked out.
 
-> ### ✓ Confirmation #9 — Live seal demonstrated end-to-end in under 4 seconds
+> ### ✓ Confirmation #10 — Live seal demonstrated end-to-end in under 4 seconds
 >
 > Manual seal job kicked off, completed, and verified during the engagement window. The SRE on-call demonstrated the workflow without ceremony. CloudHSM signature acquired, Merkle root sealed, verifier returned PASS in under one second after seal completion.
 
@@ -649,7 +1158,7 @@ She picked a twelfth. A signing-key-rotation boundary. Q1 to Q2 of last year, on
 
 PASS. PASS. The verifier handled the key rotation transparently — both entries verified against their respective signing-key fingerprints, with the rotation event itself being a sealed chain entry that linked the two key periods.
 
-> ### ✓ Confirmation #10 — Verifier handles signing-key rotations transparently
+> ### ✓ Confirmation #11 — Verifier handles signing-key rotations transparently
 >
 > Quarterly key rotation events are themselves sealed chain entries. The verifier resolves the correct signing-key fingerprint per entry based on seal-date metadata. Cross-rotation verification works without any operator intervention. Karen sampled both sides of a Q1→Q2 rotation boundary; both passed.
 
@@ -689,7 +1198,7 @@ Reason: chain anomaly detected. prev_hash mismatch
         at entry_id=ce_test_corrupt_002.
 ```
 
-> ### ✓ Confirmation #11 — Verifier exit codes are meaningfully distinct
+> ### ✓ Confirmation #12 — Verifier exit codes are meaningfully distinct
 >
 > Exit 0 (PASS), exit 1 (procedure-could-not-begin), exit 2 (procedure-began-and-failed), exit 3 (chain-anomaly) are all reachable and meaningfully distinct. Karen exercised exit 0, exit 1 against a deprecated-tenant entry, and exit 3 against the spec test vector.
 
@@ -721,9 +1230,53 @@ She closed her personal laptop.
 
 "That's the property I needed to see. The chain verifies without us trusting Northbridge at all. We trust the public key on the Compliance page, and we trust the open-source verifier we ran. Everything else is mathematics."
 
-> ### ✓ Confirmation #12 — Seal verification works with zero Northbridge-side trust
+> ### ✓ Confirmation #13 — Seal verification works with zero Northbridge-side trust
 >
 > Karen ran the standalone verifier on her personal laptop using only the published Ed25519 public-key fingerprint and a seal record pulled from the public Herald.Compliance surface. Verification passed in 2.4 seconds. No Northbridge credentials were used at any layer of the verification path. This is the assurance property that makes the system useful to a regulator who has not personally inspected the bank's infrastructure.
+
+Tom had been watching the standalone-verifier run from the next chair. He had a question.
+
+"How is `herald-verify` distributed?" he said. "Where did Karen pull that binary from? If a future examiner is going to download it cold, what does that path look like?"
+
+Marcus said, "Separate repo from the spec. `github.com/<vendor>/herald-verify`. Go binary, Apache 2.0, reproducible builds. Each release ships Linux, macOS, and Windows binaries plus a manifest of SHA-256 and SHA-512 hashes, Cosign signatures tied to a published public key — sigstore.dev — a CycloneDX-format SBOM, and a source tarball. An examiner downloads from GitHub Releases, verifies the Cosign signature against the published key, runs the binary. No connection to Northbridge required at any stage."
+
+"Where's the spec repo, then?"
+
+"`github.com/ffiec-chain-spec/spec`. That repo references `herald-verify` as the reference implementation in the §11 References section. It pins a specific verifier version per spec version — v1.0b pins to herald-verify v2.x. Anyone else can write a competing verifier in any language; the spec is what they conform to. The test-vector corpus in the spec repo is the conformance harness."
+
+Tom was writing. He underlined something.
+
+*Verifier is OSS, separate repo, Cosign-signed releases.*
+
+Karen asked the question Tom had been about to ask.
+
+"Why isn't the verifier in the spec repo? Wouldn't that be simpler — one place, one download?"
+
+Marcus had four reasons. He gave them in order.
+
+"One. Spec is locked. Verifiers need bug fixes, performance improvements, new platform builds. Putting the verifier in the spec repo means every verifier patch becomes a spec-repo commit, and that pollutes the change history of a regulatory artifact."
+
+"Two. Spec is a regulatory artifact — it's licensed CC-BY or public domain depending on the jurisdiction. The verifier is engineering software, Apache 2.0. Different licenses, different review processes, different communities. Mixing them confuses the contribution model."
+
+"Three. When the spec eventually transfers to FFIEC's actual repo — and that transfer is the explicit goal — the federal regulator should not inherit a Go-binary maintenance burden. They get a spec. The reference implementation continues to live with the engineering community."
+
+"Four. An examiner downloading from a GitHub Releases page with Cosign signatures tied to a published key is a stronger trust statement than downloading from a spec repo. The release-signing path is purpose-built for binary trust. The spec repo's signing path isn't. We picked the right channel for each artifact."
+
+Karen nodded slowly. *That's the right separation.*
+
+She thought about it for another beat.
+
+"You're saying the verifier and the spec are co-developed by the same community but distributed through different trust channels because the trust models for 'specification' and 'binary you'll run on your audit laptop' are not the same."
+
+"Correct."
+
+"That's the right answer."
+
+Tom finished writing.
+
+> ### ✓ Confirmation #14 — Verifier is OSS, distributed separately, signed at release
+>
+> `herald-verify` lives in its own GitHub repo, Apache 2.0 licensed, reproducible builds, Cosign-signed releases tied to a published public key. The examiner's trust path is download → cosign-verify → run. No Northbridge-side credential, no spec-repo dependency. The spec at `github.com/ffiec-chain-spec/spec` references the verifier as the reference implementation but does not bundle it. Karen and Tom independently agreed on the rationale for the separation — different licenses, different change cadences, different trust channels, and a clean handover path when the spec transfers to FFIEC's repo.
 
 "Tom," she said. "Are we done?"
 
