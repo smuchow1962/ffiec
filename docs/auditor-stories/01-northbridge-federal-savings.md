@@ -58,49 +58,15 @@ He paused.
 
 "That's the elevator. I know it's a lot to take in cold."
 
-Tom was writing the names down in his notebook, slowly, in block letters. *TesseraSeal. Vidimus. Herald Core.* He looked up.
-
-"Help me with the names. I want to make sure I'm spelling them right and I want to know what they mean. The spec text is going to land in workpapers."
-
-Marcus nodded.
-
-"TesseraSeal. One word, capital T, capital S. Vidimus. One word, capital V. Herald Core, two words."
-
-Raj had been typing the spec URL. He stopped. He looked up at the slide for a moment, then at Marcus.
-
-"Tessera," he said quietly. "Roman token of admission. A soldier carried a tessera frumentaria to claim grain rations — a tally-stick, signed, proof of identity. The word also covers the small tiles in mosaic work. Token, tile, tally. Plus 'seal' — the cryptographic signature. Token-and-seal evidence system."
-
-Marcus didn't smile. He nodded once.
-
-"That's the read."
-
-Tom wrote it down. Then he looked back at Marcus.
-
-"Vidimus?"
-
-"Latin," Marcus said. "*We have seen.* It's a notary's term. A vidimus is an officially attested copy of a document — the notary inspected the original and certifies the copy. Goes back to medieval chancery practice. The SDK captures and chains evidence. The name fits."
-
-Raj was nodding slowly. He'd already gotten there.
-
-"*Vidimus*," Raj said. "The notary writes that on the attested copy. 'We have seen.'"
-
-Tom wrote *Latin: vidimus = "we have seen" (notarial)* in his notebook, then *Latin/Greek: tessera = token, tile, tally* underneath. He underlined *notarial*.
-
-Marcus said, calmly: "Marketing chose the names. But they fit what the product does. Vidimus captures — *we have seen*. TesseraSeal binds the captures into a token-and-seal evidence system. Herald Core is the underlying logging engine — that name is engineering, not marketing. The marketing line is 'TesseraSeal — Powered By Vidimus.' I won't ask you to repeat it."
+Tom was writing the names down in his notebook, slowly, in block letters. *TesseraSeal. Vidimus. Herald Core.*
 
 Karen wrote on her notepad: **TesseraSeal — verify claims.**
 
-Underneath, a second line: *Vidimus = "we have seen"? notary's term, or marketing?*
+Underneath: *spec public; verifier OSS; key on TesseraSeal page; ledger append-only.* She underlined "verify."
 
-Underneath that: *spec public; verifier OSS; key on TesseraSeal page; ledger append-only.* She underlined "verify."
+Raj had been typing the spec URL. He stopped.
 
-*Names that mean something are easy to ship,* she thought. *Names that live up to themselves are harder. We'll see which one this is.*
-
-*It never is*, she thought again. *Except sometimes the marketing department gets a Latin dictionary and picks the right word. We'll see.*
-
-Raj resumed typing — the spec name into his laptop search bar.
-
-"Can I see the spec?" he said. "URL."
+"Can I see the spec? URL."
 
 Marcus read it off. Raj wrote it down.
 
@@ -1794,6 +1760,46 @@ Tom wrote.
 "Yes. Specifically yes. That is the part of the assurance posture I want a future examiner to understand without having to ask. The bank could be hostile or compromised at the operational layer and the chain would still verify. The reviewer should know we tested that property by exercising it."
 
 Tom nodded.
+
+Karen capped her marker again, then opened her notepad. She flipped back to the first page.
+
+"One more thing while we're still in the room."
+
+Her morning note read: **TesseraSeal — verify claims.** Underneath, the spec/verifier/key/append-only line. Nothing else.
+
+She tapped the page.
+
+"This morning Marcus walked us through the names. TesseraSeal. Vidimus. Herald Core. I wrote down 'verify claims' and didn't say anything else about them. Tom wrote them down in block letters. Nobody asked what they meant. We had eight hours of work to do." She looked at Tom. "Did you ever go back and check?"
+
+Tom flipped through his notebook. He stopped on a page he'd written at lunch.
+
+"Vidimus — Latin, *we have seen*. It's a notary's term. A vidimus is an officially attested copy of a document — the notary inspected the original and certifies the copy. Medieval chancery practice. The SDK captures and chains evidence." He looked up. "The name fits."
+
+Raj said, quietly, "Tessera."
+
+Karen looked over.
+
+"Roman token of admission," Raj said. "A soldier carried a *tessera frumentaria* to claim grain rations. Tally-stick, signed, proof of identity. The word also covers the small tiles in mosaic work. Token, tile, tally. Plus 'seal' — the cryptographic signature. Token-and-seal evidence system."
+
+Marcus had stepped back into the room a few minutes earlier with coffee for the team. He hadn't said anything. He stood by the door now, listening.
+
+He said, calmly, "Marketing chose them. They fit what the product does. Vidimus captures — *we have seen*. TesseraSeal binds the captures into a token-and-seal evidence system. Herald Core is the underlying logging engine — that name is engineering, not marketing. The marketing line is 'TesseraSeal — Powered By Vidimus.' I'm not going to make you repeat it."
+
+Karen looked at the whiteboard. Zero Gaps. Zero Partials. One non-conformance, classified per §10.16. The verifier output Marcus had pulled at 11 AM — exit code 0, 1.2 seconds, 47-line trace. The seal she'd verified on her personal laptop at 4:30 PM — `Status: PASS`, 2.4 seconds, no Northbridge credentials at any layer.
+
+"And we have," she said. "Byte-for-byte. Eight hours of it. The chain captured what the AI said. What the agent did. What IAM granted. What the connector mirrored. *Vidimus* — we have seen — and we did. The seal we recomputed off the public page matched what was published. Tessera plus seal — token-and-seal — and we exercised both halves of it."
+
+She wrote one more line on her notepad, under the morning's *TesseraSeal — verify claims*: **the names check.**
+
+Tom said, "First time I've heard you say that."
+
+"It never is," Karen said. *Except sometimes the marketing department gets a Latin dictionary and picks the right word.*
+
+Mike said, "He didn't oversell them. He said marketing chose the names but they fit. He was right."
+
+Luis said, "Marketing got a Latin dictionary and picked the right word. Get to write that down once a decade."
+
+Marcus didn't quite smile. He set the coffee down on the table and stepped back out.
 
 The team packed up.
 
