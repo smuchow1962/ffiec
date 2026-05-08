@@ -34,7 +34,21 @@ She turned to Raj.
 
 "Last week was a graveyard," she said. "This week, I want to find at least one thing."
 
-Raj nodded without looking up from his laptop. "Bet you a coffee you find a Gap by lunch."
+Tom looked up. First engagement with Karen.
+
+"Graveyard?"
+
+Raj answered without looking up from his laptop. "Last week we wrote twelve Gaps and four Material Findings. The bank had been running deferred patches for two years. Every control we touched had been dead for a year. The CAE started crying in the closing meeting. Karen wrote the report from the airport on Friday night."
+
+Tom: "And 'I want to find at least one thing' means?"
+
+Raj said, "She doesn't mean she hopes to find issues. She means she'd like to find one clean thing this week, write a tight report, and walk out. Last week was a graveyard — she was drowning. This week she'd like one finding, recorded clean, and a closing meeting that doesn't end in tears."
+
+He paused.
+
+"Doesn't usually go that way."
+
+Then, still without looking up: "Bet you a coffee you find a Gap by lunch."
 
 "Bet you two coffees I find a Gap by 10 AM."
 
