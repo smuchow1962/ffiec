@@ -1,0 +1,16 @@
+{
+  "_about": "Input fixture for case 025-attestation-android-keystore — the §10.35 attestation envelope byte-form pin for the Android Keystore platform. The attestation document body is a synthetic placeholder; case 025 exercises the envelope byte form, not Android Keystore CBOR/X.509 parsing (that's the platform validator's job).",
+  "envelope": {
+    "platform": "android_keystore",
+    "attestation_document_b64": "uTCQ1yWZltQdWnz7c8BLG8/lkYGwh0uauONP5Ha11P03fqW70fQ44GLExII6O8kGq99asdO/izBhLy7Oy22o+8UOHHv+t4ahr5FZNXKxnC9MuVRrUjAd6VhR+IqUj+nCoQrWj0v0aDgrzTB03e2dvXTLTPWE0jiAKpVuXbpjYfayrwGLPGUJ6ygrAJLZMqhicHsLY2/BFZM0oXW9UZS7ndO5v+Zh5RR9mga5tjBpL4idbj8SWAjBKrafwjz8bwp6Q4etm61xbk6mtaIoEBwp23aXpMd7Hdoq+JrRGmM5I6rpSXhyHAuCX5/VxmSS/l5BEt8lJF7HSzRc3Il9zL3YhQ==",
+    "root_certificate_id": "google.hardware-backed-keys.root.2023",
+    "public_key_fingerprint": "9655322e5e56d1164bbd235c939c16cdfc95bddb1e471ae175030f9d3d6cd86c"
+  },
+  "synthetic_document": {
+    "label": "025-android-keystore-synthetic-document-v1",
+    "byte_length": 256,
+    "recipe": "seed = SHA-256(utf8(label)); body = seed || SHA-256(seed) || SHA-256(SHA-256(seed)) || ... truncated to byte_length",
+    "first_32_bytes_hex": "b93090d7259996d41d5a7cfb73c04b1bcfe59181b0874b9ab8e34fe476b5d4fd"
+  },
+  "synthetic_device_pubkey_sha256_hex": "9655322e5e56d1164bbd235c939c16cdfc95bddb1e471ae175030f9d3d6cd86c"
+}

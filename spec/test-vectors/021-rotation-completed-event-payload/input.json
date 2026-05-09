@@ -1,0 +1,10 @@
+{
+  "_about": "Input fixture for case 021-rotation-completed-event-payload — the §10.28 master.rotation.completed event payload byte-form pin. The `rotation_at_utc` value uses 6-digit microsecond precision and a trailing 'Z' per §10.28 normative; whole-second-resolution timestamps would erase the crossing-interval signal at sub-second cadence.",
+  "event_payload": {
+    "event": "master.rotation.completed",
+    "cadence": "per_second",
+    "prior_key_version": 1,
+    "new_key_version": 2,
+    "rotation_at_utc": "2026-05-07T12:34:56.789012Z"
+  }
+}

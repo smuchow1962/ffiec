@@ -110,6 +110,16 @@ Cases:
 | `010-tenant-ikm-rotation-mid-day/` | Rotation: events 1-3 under `key_version=1` with `ikm_v1`, events 4-5 under `key_version=2` with `ikm_v2`. Same tenant. Verifier walks both halves. |
 | `015-dual-algorithm-cosigned-seal/` | Dual-algorithm cosigned seal record. |
 | `016-non-power-of-2-merkle/` | RFC 6962 §2.1 odd-leaf right-promote balancing. Three sub-fixtures: 3-leaf, 5-leaf, 7-leaf trees with pinned roots. |
+| `017-merkle-inclusion-partial-disclosure/` | Per design 07 §10 — single-leaf audit-path shape with placeholder hashes. Structural fixture. |
+| `018-sign-payload-v1.0b/` | v1.0b 12-line sign_payload — mixed key_versions, mixed kms_handle_uris (Round-17 NIST-G1 + NIST-G2 closure). |
+| `019-sign-payload-v1.0b-empty-day/` | v1.0b 12-line sign_payload — empty-day variant (key_versions=[], kms_handle_uris=[]). |
+| `020-streaming-seal-cadence-1s/` | §10.27 streaming-mode `cadence = "per_second"` bound into v1.0b sign_payload. Byte form pinned + cross-validated against Herald.Py. |
+| `021-rotation-completed-event-payload/` | §10.28 `master.rotation.completed` event payload — JCS-canonical bytes pin including the 6-digit-microsecond `rotation_at_utc` rule. |
+| `022-streaming-verifier-incremental/` | §10.29 streaming-mode verifier state machine — six pinned scenarios walking the §10.29 transition table and finalize collapse. |
+| `023-merkle-inclusion-proof-rfc6962/` | §10.31 per-leaf audit paths for a 5-leaf RFC 6962 tree with real SHA-256 bytes. Every leaf round-trips to the root. |
+| `024-per-device-derivation/` | §10.32 per-device HKDF derivation — info bytes + session keys for two devices, byte-distinct from §4.1 baseline. |
+| `025-attestation-android-keystore/` | §10.35 attestation envelope — Android Keystore platform JCS-canonical bytes pin (envelope shape; document body is synthetic). |
+| `026-hierarchical-merkle-aggregation/` | §10.37 two-level Merkle tree — 4 subtrees × varying leaf counts. Per-leaf concatenated audit paths round-trip to the top root. |
 | `negative/` | Tampering cases the verifier MUST report as failure with a specific named reason. See `negative/README.md`. |
 
 Future cases (per `docs/design/08-test-vectors.md` §5):

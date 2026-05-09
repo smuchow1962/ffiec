@@ -1,0 +1,46 @@
+{
+  "_about": "Per-device HKDF derivation byte pin per spec §10.32. The extended `info` adds a third `|`-separated segment binding a device identity. A §4.1-only verifier walking a §10.32 chain fails its MAC checks because the device-bound info produces a different session key. This fixture pins the info bytes + session keys for two devices under the same tenant + IKM, plus the §4.1-only baseline for byte-distinctness comparison.",
+  "constants": {
+    "hkdf_salt_utf8": "ffiec.chain-of-custody.v1.salt",
+    "hkdf_salt_hex": "66666965632e636861696e2d6f662d637573746f64792e76312e73616c74",
+    "hkdf_info_base_utf8": "ffiec.chain-of-custody.v1.info",
+    "hkdf_info_base_hex": "66666965632e636861696e2d6f662d637573746f64792e76312e696e666f",
+    "hkdf_length": 32,
+    "separator_byte": "0x7c (the ASCII pipe character)"
+  },
+  "inputs": {
+    "tenant_id": "tenant-ffiec-test-1",
+    "ikm_label": "ffiec-cross-language-test-vector-ikm-v1-32bytes!",
+    "ikm_hex": "66666965632d63726f73732d6c616e67756167652d746573742d766563746f722d696b6d2d76312d3332627974657321",
+    "ikm_byte_length": 48,
+    "device_a": "tablet-A1B2-C3D4",
+    "device_b": "tpm-7eb3-c000-0001-aabb"
+  },
+  "computed_info_bytes": {
+    "section_4_1_baseline": {
+      "info_recipe": "HKDF_INFO_BASE || '|' || utf8(tenant_id)",
+      "info_utf8": "ffiec.chain-of-custody.v1.info|tenant-ffiec-test-1",
+      "info_hex": "66666965632e636861696e2d6f662d637573746f64792e76312e696e666f7c74656e616e742d66666965632d746573742d31",
+      "info_byte_length": 50
+    },
+    "section_10_32_device_a": {
+      "info_recipe": "HKDF_INFO_BASE || '|' || utf8(tenant_id) || '|' || utf8(device_a)",
+      "info_utf8": "ffiec.chain-of-custody.v1.info|tenant-ffiec-test-1|tablet-A1B2-C3D4",
+      "info_hex": "66666965632e636861696e2d6f662d637573746f64792e76312e696e666f7c74656e616e742d66666965632d746573742d317c7461626c65742d413142322d43334434",
+      "info_byte_length": 67
+    },
+    "section_10_32_device_b": {
+      "info_recipe": "HKDF_INFO_BASE || '|' || utf8(tenant_id) || '|' || utf8(device_b)",
+      "info_utf8": "ffiec.chain-of-custody.v1.info|tenant-ffiec-test-1|tpm-7eb3-c000-0001-aabb",
+      "info_hex": "66666965632e636861696e2d6f662d637573746f64792e76312e696e666f7c74656e616e742d66666965632d746573742d317c74706d2d376562332d633030302d303030312d61616262",
+      "info_byte_length": 74
+    }
+  },
+  "expected": {
+    "section_4_1_baseline_session_key_hex": "f061210167d307cffe4b91c2eaad9d386a8831c04957b458088e5bafd1f63ee9",
+    "section_10_32_device_a_session_key_hex": "ae4bdffcf7917ea216370f82ae7d41fb16eccb622d3ee571467ed242e65af5fd",
+    "section_10_32_device_b_session_key_hex": "2b7f7cc14cd3f02300647fcaaceb465915f99f0a4948a38b95ffe4746f0ca869",
+    "key_fingerprint_hex": "54c245a894b81d788d372badc563531f",
+    "_byte_distinctness_note": "All three session keys are pairwise distinct. The device_id segment in the §10.32 info changes the HKDF expand input, so the same (ikm, tenant_id) pair produces a different 32-byte session key for each device_id value AND for the §4.1 baseline (no device segment)."
+  }
+}

@@ -1,0 +1,131 @@
+{
+  "_about": "Per-leaf audit-path pin for a 5-leaf RFC 6962 tree per §10.31. The 5-leaf shape exercises the split-at-largest-power-of-2-strictly-less-than-n recursion (n=5, k=4) — leaf indices 0..3 sit in the 4-leaf left subtree, leaf index 4 sits in the 1-leaf right subtree. A clean-room verifier MUST reproduce each `audit_path` byte-for-byte and round-trip every leaf to the same root. The Python `verify_audit_path` in `_compute.py` is the reference fold.",
+  "tree": {
+    "n_leaves": 5,
+    "leaves_preimages_hex": [
+      "1f433ea751ce258e2901e40c6380c87f182ea02637d70879d60e4ad14d7dfcc7",
+      "fa85169ece997418b1e607455b2aa284d49a7b14d82c17bc4b9875865d9a3b34",
+      "11ca210f55df914c85191d32e1f7042bb7da3daba606ca840a685aef22300638",
+      "fe46a704aa8854b90531de8e855cfa2c631f5beef9482ecf006578cb2c7dcf7b",
+      "8eaaf2411e12a050778bc3facf80cf99e1d13532bcd107c5bf41214a084540c3"
+    ],
+    "leaves_hashed_hex": [
+      "51e216412f613ba7855183d09da1c153a8b1da2a64afa963989bbe1f89e2563e",
+      "f173c6da9148d721b0adbecbe5753e082ad856a5c386153a8b85ed4d20f3f0e4",
+      "3d42d436b88b67fcf2c431e0033d6361dbfc754441b3b9d1fbb3e2e3ad84c526",
+      "f3c6238e0ab75caff0179a63a3a9a7b10f9d31321f7c52dc2b21427ee7240991",
+      "999c377d3b9e9ad37a989e351e0269676eac2bb76a7ee0e26196500094c7658a"
+    ],
+    "merkle_root_hex": "12182c226015d4b8e19ac69184bf8563c21b5413fd3b2553c37b5b5a7a04cbe0",
+    "split_discipline": "k = largest_power_of_2_less_than(n). For n=5: k=4. Left subtree = leaves 0..3 (4-leaf, perfect binary). Right subtree = leaves 4..4 (1-leaf, root IS leaf hash)."
+  },
+  "constants": {
+    "leaf_hash_recipe": "SHA-256(0x00 || leaf_preimage)",
+    "internal_hash_recipe": "SHA-256(0x01 || left_hash || right_hash)",
+    "is_left_semantics": "is_left=true means the sibling is on the LEFT of the current node; combine via INTERNAL_HASH(sibling, current). is_left=false means the sibling is on the RIGHT; combine via INTERNAL_HASH(current, sibling)."
+  },
+  "disclosures": [
+    {
+      "leaf_index": 0,
+      "leaf_label": "leaf-0-tenant-day-2026-05-07-event-1",
+      "leaf_preimage_hex": "1f433ea751ce258e2901e40c6380c87f182ea02637d70879d60e4ad14d7dfcc7",
+      "leaf_hash_hex": "51e216412f613ba7855183d09da1c153a8b1da2a64afa963989bbe1f89e2563e",
+      "audit_path": [
+        {
+          "sibling_hex": "f173c6da9148d721b0adbecbe5753e082ad856a5c386153a8b85ed4d20f3f0e4",
+          "is_left": false
+        },
+        {
+          "sibling_hex": "051db98292681c93c011eebe90be9f15fe1071a6b7d6b77640ee69b51eeebbb3",
+          "is_left": false
+        },
+        {
+          "sibling_hex": "999c377d3b9e9ad37a989e351e0269676eac2bb76a7ee0e26196500094c7658a",
+          "is_left": false
+        }
+      ],
+      "audit_path_length": 3,
+      "verifies_to_root": true
+    },
+    {
+      "leaf_index": 1,
+      "leaf_label": "leaf-1-tenant-day-2026-05-07-event-2",
+      "leaf_preimage_hex": "fa85169ece997418b1e607455b2aa284d49a7b14d82c17bc4b9875865d9a3b34",
+      "leaf_hash_hex": "f173c6da9148d721b0adbecbe5753e082ad856a5c386153a8b85ed4d20f3f0e4",
+      "audit_path": [
+        {
+          "sibling_hex": "51e216412f613ba7855183d09da1c153a8b1da2a64afa963989bbe1f89e2563e",
+          "is_left": true
+        },
+        {
+          "sibling_hex": "051db98292681c93c011eebe90be9f15fe1071a6b7d6b77640ee69b51eeebbb3",
+          "is_left": false
+        },
+        {
+          "sibling_hex": "999c377d3b9e9ad37a989e351e0269676eac2bb76a7ee0e26196500094c7658a",
+          "is_left": false
+        }
+      ],
+      "audit_path_length": 3,
+      "verifies_to_root": true
+    },
+    {
+      "leaf_index": 2,
+      "leaf_label": "leaf-2-tenant-day-2026-05-07-event-3",
+      "leaf_preimage_hex": "11ca210f55df914c85191d32e1f7042bb7da3daba606ca840a685aef22300638",
+      "leaf_hash_hex": "3d42d436b88b67fcf2c431e0033d6361dbfc754441b3b9d1fbb3e2e3ad84c526",
+      "audit_path": [
+        {
+          "sibling_hex": "f3c6238e0ab75caff0179a63a3a9a7b10f9d31321f7c52dc2b21427ee7240991",
+          "is_left": false
+        },
+        {
+          "sibling_hex": "e76244718af10e6e726317c17b97b08f06046a8612c545ec7dd407a18ba7b6fd",
+          "is_left": true
+        },
+        {
+          "sibling_hex": "999c377d3b9e9ad37a989e351e0269676eac2bb76a7ee0e26196500094c7658a",
+          "is_left": false
+        }
+      ],
+      "audit_path_length": 3,
+      "verifies_to_root": true
+    },
+    {
+      "leaf_index": 3,
+      "leaf_label": "leaf-3-tenant-day-2026-05-07-event-4",
+      "leaf_preimage_hex": "fe46a704aa8854b90531de8e855cfa2c631f5beef9482ecf006578cb2c7dcf7b",
+      "leaf_hash_hex": "f3c6238e0ab75caff0179a63a3a9a7b10f9d31321f7c52dc2b21427ee7240991",
+      "audit_path": [
+        {
+          "sibling_hex": "3d42d436b88b67fcf2c431e0033d6361dbfc754441b3b9d1fbb3e2e3ad84c526",
+          "is_left": true
+        },
+        {
+          "sibling_hex": "e76244718af10e6e726317c17b97b08f06046a8612c545ec7dd407a18ba7b6fd",
+          "is_left": true
+        },
+        {
+          "sibling_hex": "999c377d3b9e9ad37a989e351e0269676eac2bb76a7ee0e26196500094c7658a",
+          "is_left": false
+        }
+      ],
+      "audit_path_length": 3,
+      "verifies_to_root": true
+    },
+    {
+      "leaf_index": 4,
+      "leaf_label": "leaf-4-tenant-day-2026-05-07-event-5",
+      "leaf_preimage_hex": "8eaaf2411e12a050778bc3facf80cf99e1d13532bcd107c5bf41214a084540c3",
+      "leaf_hash_hex": "999c377d3b9e9ad37a989e351e0269676eac2bb76a7ee0e26196500094c7658a",
+      "audit_path": [
+        {
+          "sibling_hex": "539fcb6ef3d7df93496e6fde4d54b106ecbf6366650575714bd33b3fc3e0cb9f",
+          "is_left": true
+        }
+      ],
+      "audit_path_length": 1,
+      "verifies_to_root": true
+    }
+  ]
+}

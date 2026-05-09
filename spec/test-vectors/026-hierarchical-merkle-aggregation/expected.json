@@ -1,0 +1,507 @@
+{
+  "_about": "Hierarchical Merkle aggregation pin per spec §10.37. A 4-subtree top tree with subtree leaf counts (2, 3, 1, 4) exercises multiple inner-tree shapes and the outer split-at-largest-power-of-2 recursion. Per-leaf hierarchical audit paths are the CONCATENATION of (a) the §10.31 inner path within the leaf's subtree and (b) the §10.37 outer path among subtree roots — both using the same (sibling_hex, is_left) step shape, so a §10.31 verifier verifies the concatenated path unchanged.",
+  "constants": {
+    "leaf_hash_recipe": "SHA-256(0x00 || leaf_preimage)  (inner level only)",
+    "internal_hash_recipe": "SHA-256(0x01 || left || right)  (both levels)",
+    "top_level_no_leaf_hash_note": "The outer (top-level) tree combines subtree roots DIRECTLY via INTERNAL_HASH — no LEAF_HASH wrap. Subtree roots are already SHA-256 outputs; treating them as raw leaves and applying LEAF_HASH would add an unnecessary domain-separation layer.",
+    "split_discipline": "k = largest_power_of_2_less_than(n). For n=4 (top-level subtree count): k=2 (balanced split). For n=3 (subtree 1's leaf count): k=2."
+  },
+  "subtrees": [
+    {
+      "subtree_index": 0,
+      "n_leaves": 2,
+      "leaf_labels": [
+        "subtree-0-leaf-0-event-A",
+        "subtree-0-leaf-1-event-B"
+      ],
+      "leaves_preimages_hex": [
+        "51485dd2303f7395584c75d93df6a0cc3c1d2ec82ae3d5c437918807086622f3",
+        "83feccfd2bb928142a8ee0abe41d0152830e7e95210ae6bcafe44bb823469b56"
+      ],
+      "leaves_hashed_hex": [
+        "9e9791b03020142fab3c8b91cd6ad6555cc531b3f043f3ca3c2ca410ed46e52f",
+        "ce72ba35080c4de132d2218125830bdfaa2e023d61f4187fa15163318dca2317"
+      ],
+      "subtree_root_hex": "e6042e6e409d23d355791c5b710db51a610a1185aec4071639fc8f138c5027da"
+    },
+    {
+      "subtree_index": 1,
+      "n_leaves": 3,
+      "leaf_labels": [
+        "subtree-1-leaf-0-event-C",
+        "subtree-1-leaf-1-event-D",
+        "subtree-1-leaf-2-event-E"
+      ],
+      "leaves_preimages_hex": [
+        "79a9371389cf122b97b01ba16d2c834cfb38282d99b44226c0818117b2367a54",
+        "a5c9ecfb484fef3ce135c69a0cda228ff41bb4283c20a03f8a0b2bd1243f8774",
+        "4421f45027ff0d4a758929e9aee837f44ca39c2203cf22e4cb8a96b0dccd226a"
+      ],
+      "leaves_hashed_hex": [
+        "74828eaf683ab53dd272c11650cbb33c392c749ea614ef53e2a8feccff11f620",
+        "56c38936296abdfe9d9267fef18efb3cbbadc5d841510dae08f995e0f97eafec",
+        "fdb24dfc3aaa2baa24735b6b80699b49d0dc1af7247b853edb61b3b184361c32"
+      ],
+      "subtree_root_hex": "fa0e648386c9fdb72972b97950a20bbd830ceb458fa69bcc4c3254ff80a45e2a"
+    },
+    {
+      "subtree_index": 2,
+      "n_leaves": 1,
+      "leaf_labels": [
+        "subtree-2-leaf-0-event-F"
+      ],
+      "leaves_preimages_hex": [
+        "49f8fdcead15bcb7d971a3d554347c44ad763fd390d01410d258cf5bb67cd1a4"
+      ],
+      "leaves_hashed_hex": [
+        "2c680f50f0e1ea06eb2b99882454beaaa5b7728f507d279d3b849f2afc3f8ff2"
+      ],
+      "subtree_root_hex": "2c680f50f0e1ea06eb2b99882454beaaa5b7728f507d279d3b849f2afc3f8ff2"
+    },
+    {
+      "subtree_index": 3,
+      "n_leaves": 4,
+      "leaf_labels": [
+        "subtree-3-leaf-0-event-G",
+        "subtree-3-leaf-1-event-H",
+        "subtree-3-leaf-2-event-I",
+        "subtree-3-leaf-3-event-J"
+      ],
+      "leaves_preimages_hex": [
+        "d3d38e7c51397387ce36520cd2a04c988a641278561d548a853a8fde053b34b5",
+        "6ae0139563678460977be6eb052933667262268c73dc0ce87d2c88682e7ff25d",
+        "b443ec6aea6116fce8660b5d8be74835dd3dc687fbc9428a6fceb644edec739b",
+        "2b18338f671898e79bc3747140645e3541eeb408f41d88225cec8a2244ab7abb"
+      ],
+      "leaves_hashed_hex": [
+        "4ab0ec77bc297ebdd061178efc1fd7c184118a3e544ff7bda19e3a8c89ca59f4",
+        "6b1c844987c79766a041faf32cbc480ecf70722952115ec8da36d61e7e33f4a9",
+        "b5fcc3d86ddde683ae545111fc31999cb50f8fa9198271ddf214d19581b82f30",
+        "e71685b72cf5d268c06c929a9bbc82153b7e27d90286822b91b1da296df4a5df"
+      ],
+      "subtree_root_hex": "83a56494859c3b8ca63da91233e9b3be3b3f04a80e32fa084c9a73480cd7ca50"
+    }
+  ],
+  "top_root_hex": "53451e5eff8083bc58fe0975d3582af3e64c4c9a3a445a181dee122e8c262156",
+  "disclosures": [
+    {
+      "subtree_index": 0,
+      "leaf_index": 0,
+      "leaf_label": "subtree-0-leaf-0-event-A",
+      "leaf_hash_hex": "9e9791b03020142fab3c8b91cd6ad6555cc531b3f043f3ca3c2ca410ed46e52f",
+      "inner_path": [
+        {
+          "sibling_hex": "ce72ba35080c4de132d2218125830bdfaa2e023d61f4187fa15163318dca2317",
+          "is_left": false
+        }
+      ],
+      "outer_path": [
+        {
+          "sibling_hex": "fa0e648386c9fdb72972b97950a20bbd830ceb458fa69bcc4c3254ff80a45e2a",
+          "is_left": false
+        },
+        {
+          "sibling_hex": "3d25dd03476e1242608da79587b5ddb682096b66403b1591b202041364a80583",
+          "is_left": false
+        }
+      ],
+      "concatenated_path": [
+        {
+          "sibling_hex": "ce72ba35080c4de132d2218125830bdfaa2e023d61f4187fa15163318dca2317",
+          "is_left": false
+        },
+        {
+          "sibling_hex": "fa0e648386c9fdb72972b97950a20bbd830ceb458fa69bcc4c3254ff80a45e2a",
+          "is_left": false
+        },
+        {
+          "sibling_hex": "3d25dd03476e1242608da79587b5ddb682096b66403b1591b202041364a80583",
+          "is_left": false
+        }
+      ],
+      "concatenated_path_length": 3,
+      "verifies_to_top_root": true
+    },
+    {
+      "subtree_index": 0,
+      "leaf_index": 1,
+      "leaf_label": "subtree-0-leaf-1-event-B",
+      "leaf_hash_hex": "ce72ba35080c4de132d2218125830bdfaa2e023d61f4187fa15163318dca2317",
+      "inner_path": [
+        {
+          "sibling_hex": "9e9791b03020142fab3c8b91cd6ad6555cc531b3f043f3ca3c2ca410ed46e52f",
+          "is_left": true
+        }
+      ],
+      "outer_path": [
+        {
+          "sibling_hex": "fa0e648386c9fdb72972b97950a20bbd830ceb458fa69bcc4c3254ff80a45e2a",
+          "is_left": false
+        },
+        {
+          "sibling_hex": "3d25dd03476e1242608da79587b5ddb682096b66403b1591b202041364a80583",
+          "is_left": false
+        }
+      ],
+      "concatenated_path": [
+        {
+          "sibling_hex": "9e9791b03020142fab3c8b91cd6ad6555cc531b3f043f3ca3c2ca410ed46e52f",
+          "is_left": true
+        },
+        {
+          "sibling_hex": "fa0e648386c9fdb72972b97950a20bbd830ceb458fa69bcc4c3254ff80a45e2a",
+          "is_left": false
+        },
+        {
+          "sibling_hex": "3d25dd03476e1242608da79587b5ddb682096b66403b1591b202041364a80583",
+          "is_left": false
+        }
+      ],
+      "concatenated_path_length": 3,
+      "verifies_to_top_root": true
+    },
+    {
+      "subtree_index": 1,
+      "leaf_index": 0,
+      "leaf_label": "subtree-1-leaf-0-event-C",
+      "leaf_hash_hex": "74828eaf683ab53dd272c11650cbb33c392c749ea614ef53e2a8feccff11f620",
+      "inner_path": [
+        {
+          "sibling_hex": "56c38936296abdfe9d9267fef18efb3cbbadc5d841510dae08f995e0f97eafec",
+          "is_left": false
+        },
+        {
+          "sibling_hex": "fdb24dfc3aaa2baa24735b6b80699b49d0dc1af7247b853edb61b3b184361c32",
+          "is_left": false
+        }
+      ],
+      "outer_path": [
+        {
+          "sibling_hex": "e6042e6e409d23d355791c5b710db51a610a1185aec4071639fc8f138c5027da",
+          "is_left": true
+        },
+        {
+          "sibling_hex": "3d25dd03476e1242608da79587b5ddb682096b66403b1591b202041364a80583",
+          "is_left": false
+        }
+      ],
+      "concatenated_path": [
+        {
+          "sibling_hex": "56c38936296abdfe9d9267fef18efb3cbbadc5d841510dae08f995e0f97eafec",
+          "is_left": false
+        },
+        {
+          "sibling_hex": "fdb24dfc3aaa2baa24735b6b80699b49d0dc1af7247b853edb61b3b184361c32",
+          "is_left": false
+        },
+        {
+          "sibling_hex": "e6042e6e409d23d355791c5b710db51a610a1185aec4071639fc8f138c5027da",
+          "is_left": true
+        },
+        {
+          "sibling_hex": "3d25dd03476e1242608da79587b5ddb682096b66403b1591b202041364a80583",
+          "is_left": false
+        }
+      ],
+      "concatenated_path_length": 4,
+      "verifies_to_top_root": true
+    },
+    {
+      "subtree_index": 1,
+      "leaf_index": 1,
+      "leaf_label": "subtree-1-leaf-1-event-D",
+      "leaf_hash_hex": "56c38936296abdfe9d9267fef18efb3cbbadc5d841510dae08f995e0f97eafec",
+      "inner_path": [
+        {
+          "sibling_hex": "74828eaf683ab53dd272c11650cbb33c392c749ea614ef53e2a8feccff11f620",
+          "is_left": true
+        },
+        {
+          "sibling_hex": "fdb24dfc3aaa2baa24735b6b80699b49d0dc1af7247b853edb61b3b184361c32",
+          "is_left": false
+        }
+      ],
+      "outer_path": [
+        {
+          "sibling_hex": "e6042e6e409d23d355791c5b710db51a610a1185aec4071639fc8f138c5027da",
+          "is_left": true
+        },
+        {
+          "sibling_hex": "3d25dd03476e1242608da79587b5ddb682096b66403b1591b202041364a80583",
+          "is_left": false
+        }
+      ],
+      "concatenated_path": [
+        {
+          "sibling_hex": "74828eaf683ab53dd272c11650cbb33c392c749ea614ef53e2a8feccff11f620",
+          "is_left": true
+        },
+        {
+          "sibling_hex": "fdb24dfc3aaa2baa24735b6b80699b49d0dc1af7247b853edb61b3b184361c32",
+          "is_left": false
+        },
+        {
+          "sibling_hex": "e6042e6e409d23d355791c5b710db51a610a1185aec4071639fc8f138c5027da",
+          "is_left": true
+        },
+        {
+          "sibling_hex": "3d25dd03476e1242608da79587b5ddb682096b66403b1591b202041364a80583",
+          "is_left": false
+        }
+      ],
+      "concatenated_path_length": 4,
+      "verifies_to_top_root": true
+    },
+    {
+      "subtree_index": 1,
+      "leaf_index": 2,
+      "leaf_label": "subtree-1-leaf-2-event-E",
+      "leaf_hash_hex": "fdb24dfc3aaa2baa24735b6b80699b49d0dc1af7247b853edb61b3b184361c32",
+      "inner_path": [
+        {
+          "sibling_hex": "894daca595406b8b02ff2098a60df474cbe0e8c4d93481bc47e2f3a73a905a36",
+          "is_left": true
+        }
+      ],
+      "outer_path": [
+        {
+          "sibling_hex": "e6042e6e409d23d355791c5b710db51a610a1185aec4071639fc8f138c5027da",
+          "is_left": true
+        },
+        {
+          "sibling_hex": "3d25dd03476e1242608da79587b5ddb682096b66403b1591b202041364a80583",
+          "is_left": false
+        }
+      ],
+      "concatenated_path": [
+        {
+          "sibling_hex": "894daca595406b8b02ff2098a60df474cbe0e8c4d93481bc47e2f3a73a905a36",
+          "is_left": true
+        },
+        {
+          "sibling_hex": "e6042e6e409d23d355791c5b710db51a610a1185aec4071639fc8f138c5027da",
+          "is_left": true
+        },
+        {
+          "sibling_hex": "3d25dd03476e1242608da79587b5ddb682096b66403b1591b202041364a80583",
+          "is_left": false
+        }
+      ],
+      "concatenated_path_length": 3,
+      "verifies_to_top_root": true
+    },
+    {
+      "subtree_index": 2,
+      "leaf_index": 0,
+      "leaf_label": "subtree-2-leaf-0-event-F",
+      "leaf_hash_hex": "2c680f50f0e1ea06eb2b99882454beaaa5b7728f507d279d3b849f2afc3f8ff2",
+      "inner_path": [],
+      "outer_path": [
+        {
+          "sibling_hex": "83a56494859c3b8ca63da91233e9b3be3b3f04a80e32fa084c9a73480cd7ca50",
+          "is_left": false
+        },
+        {
+          "sibling_hex": "098a0b908b6d71543054b8edf8a711ad4b5f397a6fba8678fd29230dcf12ae3b",
+          "is_left": true
+        }
+      ],
+      "concatenated_path": [
+        {
+          "sibling_hex": "83a56494859c3b8ca63da91233e9b3be3b3f04a80e32fa084c9a73480cd7ca50",
+          "is_left": false
+        },
+        {
+          "sibling_hex": "098a0b908b6d71543054b8edf8a711ad4b5f397a6fba8678fd29230dcf12ae3b",
+          "is_left": true
+        }
+      ],
+      "concatenated_path_length": 2,
+      "verifies_to_top_root": true
+    },
+    {
+      "subtree_index": 3,
+      "leaf_index": 0,
+      "leaf_label": "subtree-3-leaf-0-event-G",
+      "leaf_hash_hex": "4ab0ec77bc297ebdd061178efc1fd7c184118a3e544ff7bda19e3a8c89ca59f4",
+      "inner_path": [
+        {
+          "sibling_hex": "6b1c844987c79766a041faf32cbc480ecf70722952115ec8da36d61e7e33f4a9",
+          "is_left": false
+        },
+        {
+          "sibling_hex": "cf8f877e0acdaeadee6ae1f8d6a7ead43326f3d8d74591b78a442e0c7f2fd506",
+          "is_left": false
+        }
+      ],
+      "outer_path": [
+        {
+          "sibling_hex": "2c680f50f0e1ea06eb2b99882454beaaa5b7728f507d279d3b849f2afc3f8ff2",
+          "is_left": true
+        },
+        {
+          "sibling_hex": "098a0b908b6d71543054b8edf8a711ad4b5f397a6fba8678fd29230dcf12ae3b",
+          "is_left": true
+        }
+      ],
+      "concatenated_path": [
+        {
+          "sibling_hex": "6b1c844987c79766a041faf32cbc480ecf70722952115ec8da36d61e7e33f4a9",
+          "is_left": false
+        },
+        {
+          "sibling_hex": "cf8f877e0acdaeadee6ae1f8d6a7ead43326f3d8d74591b78a442e0c7f2fd506",
+          "is_left": false
+        },
+        {
+          "sibling_hex": "2c680f50f0e1ea06eb2b99882454beaaa5b7728f507d279d3b849f2afc3f8ff2",
+          "is_left": true
+        },
+        {
+          "sibling_hex": "098a0b908b6d71543054b8edf8a711ad4b5f397a6fba8678fd29230dcf12ae3b",
+          "is_left": true
+        }
+      ],
+      "concatenated_path_length": 4,
+      "verifies_to_top_root": true
+    },
+    {
+      "subtree_index": 3,
+      "leaf_index": 1,
+      "leaf_label": "subtree-3-leaf-1-event-H",
+      "leaf_hash_hex": "6b1c844987c79766a041faf32cbc480ecf70722952115ec8da36d61e7e33f4a9",
+      "inner_path": [
+        {
+          "sibling_hex": "4ab0ec77bc297ebdd061178efc1fd7c184118a3e544ff7bda19e3a8c89ca59f4",
+          "is_left": true
+        },
+        {
+          "sibling_hex": "cf8f877e0acdaeadee6ae1f8d6a7ead43326f3d8d74591b78a442e0c7f2fd506",
+          "is_left": false
+        }
+      ],
+      "outer_path": [
+        {
+          "sibling_hex": "2c680f50f0e1ea06eb2b99882454beaaa5b7728f507d279d3b849f2afc3f8ff2",
+          "is_left": true
+        },
+        {
+          "sibling_hex": "098a0b908b6d71543054b8edf8a711ad4b5f397a6fba8678fd29230dcf12ae3b",
+          "is_left": true
+        }
+      ],
+      "concatenated_path": [
+        {
+          "sibling_hex": "4ab0ec77bc297ebdd061178efc1fd7c184118a3e544ff7bda19e3a8c89ca59f4",
+          "is_left": true
+        },
+        {
+          "sibling_hex": "cf8f877e0acdaeadee6ae1f8d6a7ead43326f3d8d74591b78a442e0c7f2fd506",
+          "is_left": false
+        },
+        {
+          "sibling_hex": "2c680f50f0e1ea06eb2b99882454beaaa5b7728f507d279d3b849f2afc3f8ff2",
+          "is_left": true
+        },
+        {
+          "sibling_hex": "098a0b908b6d71543054b8edf8a711ad4b5f397a6fba8678fd29230dcf12ae3b",
+          "is_left": true
+        }
+      ],
+      "concatenated_path_length": 4,
+      "verifies_to_top_root": true
+    },
+    {
+      "subtree_index": 3,
+      "leaf_index": 2,
+      "leaf_label": "subtree-3-leaf-2-event-I",
+      "leaf_hash_hex": "b5fcc3d86ddde683ae545111fc31999cb50f8fa9198271ddf214d19581b82f30",
+      "inner_path": [
+        {
+          "sibling_hex": "e71685b72cf5d268c06c929a9bbc82153b7e27d90286822b91b1da296df4a5df",
+          "is_left": false
+        },
+        {
+          "sibling_hex": "fc28fbd74112fd589103e7a5a11593bf057cf7a4f415211fc95387d4d897f875",
+          "is_left": true
+        }
+      ],
+      "outer_path": [
+        {
+          "sibling_hex": "2c680f50f0e1ea06eb2b99882454beaaa5b7728f507d279d3b849f2afc3f8ff2",
+          "is_left": true
+        },
+        {
+          "sibling_hex": "098a0b908b6d71543054b8edf8a711ad4b5f397a6fba8678fd29230dcf12ae3b",
+          "is_left": true
+        }
+      ],
+      "concatenated_path": [
+        {
+          "sibling_hex": "e71685b72cf5d268c06c929a9bbc82153b7e27d90286822b91b1da296df4a5df",
+          "is_left": false
+        },
+        {
+          "sibling_hex": "fc28fbd74112fd589103e7a5a11593bf057cf7a4f415211fc95387d4d897f875",
+          "is_left": true
+        },
+        {
+          "sibling_hex": "2c680f50f0e1ea06eb2b99882454beaaa5b7728f507d279d3b849f2afc3f8ff2",
+          "is_left": true
+        },
+        {
+          "sibling_hex": "098a0b908b6d71543054b8edf8a711ad4b5f397a6fba8678fd29230dcf12ae3b",
+          "is_left": true
+        }
+      ],
+      "concatenated_path_length": 4,
+      "verifies_to_top_root": true
+    },
+    {
+      "subtree_index": 3,
+      "leaf_index": 3,
+      "leaf_label": "subtree-3-leaf-3-event-J",
+      "leaf_hash_hex": "e71685b72cf5d268c06c929a9bbc82153b7e27d90286822b91b1da296df4a5df",
+      "inner_path": [
+        {
+          "sibling_hex": "b5fcc3d86ddde683ae545111fc31999cb50f8fa9198271ddf214d19581b82f30",
+          "is_left": true
+        },
+        {
+          "sibling_hex": "fc28fbd74112fd589103e7a5a11593bf057cf7a4f415211fc95387d4d897f875",
+          "is_left": true
+        }
+      ],
+      "outer_path": [
+        {
+          "sibling_hex": "2c680f50f0e1ea06eb2b99882454beaaa5b7728f507d279d3b849f2afc3f8ff2",
+          "is_left": true
+        },
+        {
+          "sibling_hex": "098a0b908b6d71543054b8edf8a711ad4b5f397a6fba8678fd29230dcf12ae3b",
+          "is_left": true
+        }
+      ],
+      "concatenated_path": [
+        {
+          "sibling_hex": "b5fcc3d86ddde683ae545111fc31999cb50f8fa9198271ddf214d19581b82f30",
+          "is_left": true
+        },
+        {
+          "sibling_hex": "fc28fbd74112fd589103e7a5a11593bf057cf7a4f415211fc95387d4d897f875",
+          "is_left": true
+        },
+        {
+          "sibling_hex": "2c680f50f0e1ea06eb2b99882454beaaa5b7728f507d279d3b849f2afc3f8ff2",
+          "is_left": true
+        },
+        {
+          "sibling_hex": "098a0b908b6d71543054b8edf8a711ad4b5f397a6fba8678fd29230dcf12ae3b",
+          "is_left": true
+        }
+      ],
+      "concatenated_path_length": 4,
+      "verifies_to_top_root": true
+    }
+  ]
+}
