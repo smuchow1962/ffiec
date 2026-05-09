@@ -22,7 +22,7 @@ The Seoul team works with **Park Hye-jin**, Sun-Won's Chief Compliance Officer. 
 
 The Taipei team works with **Lin Jia-hua**, Director of Legal & Compliance at Sun-Won Taiwan. Lin is a KPMG Taiwan alumna, native Mandarin, fluent English, legal-trained rather than compliance-trained — she asks clarifying questions about what FSC will read into a finding before agreeing to its phrasing.
 
-Karen has done eight of these now. She knows the cadence. The cross-border boundary is the part she has not seen tested under three regulators at once. The good news is the spec moved underneath her between the last engagement and this one — the v1.0b amendment locked the routing-classifier event type and the cross-border-transfer attribute family that Sun-Won's posture asked for almost word-for-word. Two of the three Partials she would have written eight months ago are now framed as "this is the work item the spec already named — here is the deadline."
+Dawn has done eight of these now. She knows the cadence. The cross-border boundary is the part she has not seen tested under three regulators at once. The good news is the spec moved underneath her between the last engagement and this one — the v1.0b amendment locked the routing-classifier event type and the cross-border-transfer attribute family that Sun-Won's posture asked for almost word-for-word. Two of the three Partials she would have written eight months ago are now framed as "this is the work item the spec already named — here is the deadline."
 
 ---
 
@@ -30,7 +30,7 @@ Karen has done eight of these now. She knows the cadence. The cross-border bound
 
 ### Seoul (Sun-Won HQ — Sangam-dong)
 
-- **Karen** — Lead Auditor. Anchors the engagement from Seoul. Final sign-off on all four regulator-partitioned findings.
+- **Dawn** — Lead Auditor. Anchors the engagement from Seoul. Final sign-off on all four regulator-partitioned findings.
 - **Raj** — Database specialist. BNPL credit-scoring chain walk and the per-applicant entry structure.
 - **Diana** — IAM and access control. PASS-IT integration, per-tenant scoping, key custody on the Seoul HSM.
 - **Tom** — Internal-audit liaison specialist. Bridge to Park-CCO's binder of prior FSS supervisory letters.
@@ -48,23 +48,23 @@ The two halves work in parallel across the morning. They join on a video bridge 
 
 ## 🌅 8:30 AM — Seoul, Sun-Won HQ Lobby
 
-The Sangam-dong tower has a glass atrium that catches the morning light off the Han River. Karen, Raj, Diana, and Tom badge in at the security desk. The receptionist switches to English the moment Karen says her name and hands them four visitor lanyards in Sun-Won's house pink.
+The Sangam-dong tower has a glass atrium that catches the morning light off the Han River. Dawn, Raj, Diana, and Tom badge in at the security desk. The receptionist switches to English the moment Dawn says her name and hands them four visitor lanyards in Sun-Won's house pink.
 
-Park Hye-jin meets them at the elevator bank. She is in a charcoal suit, no jewelry, carrying a leather portfolio that Karen recognizes as the FSS examiner-issue from about 2011.
+Park Hye-jin meets them at the elevator bank. She is in a charcoal suit, no jewelry, carrying a leather portfolio that Dawn recognizes as the FSS examiner-issue from about 2011.
 
 "Welcome back," Park says. "Lin-Director's team should already be with your Taipei four. We have the bridge open in the executive conference room on twenty-eight."
 
-"Thank you for the early start," Karen says. "How is the binder?"
+"Thank you for the early start," Dawn says. "How is the binder?"
 
 "Six weeks of preparation. The FSS supervisory letters from the last cycle are tabbed. The PIPC quarterly attestations are tabbed. The Taiwan FSC corresponding letters Lin's team holds — those are duplicated on her side. I have one set here as well."
 
-*She is being thorough on purpose,* Karen thinks. *She knows the difference between a routine year and a coordinated three-regulator review. She is not going to make us ask twice.*
+*She is being thorough on purpose,* Dawn thinks. *She knows the difference between a routine year and a coordinated three-regulator review. She is not going to make us ask twice.*
 
-They ride up. Park hands Karen a printed agenda in Korean and English, side-by-side columns. The eight tenants are listed with their tenant_ids and their primary regulator mapping. The ninth — `sunwon-cross-inventory` — is at the bottom, in italics. Karen notes that each tenant_id matches the §3 character class `^[A-Za-z0-9_.\-]{1,255}$` cleanly — Sun-Won's IAM provisioning enforces the class at registration so the SDK-side and verifier-side tenant_id checks (§3 enforcement and §7 step 3a) never have anything to reject. Sun-Won had three legacy CRM identifiers in the original tenant set; Park-CCO's team used §3.1 Pattern 1 (opaque hash-of-legacy with `tnt_` prefix) for two of them and §3.1 Pattern 2 (controlled aliasing) for the third. The legacy-mapping registry is institution-internal per §3.1's operational requirements; SOC 2 testing confirms append-only enforcement on the registry.
+They ride up. Park hands Dawn a printed agenda in Korean and English, side-by-side columns. The eight tenants are listed with their tenant_ids and their primary regulator mapping. The ninth — `sunwon-cross-inventory` — is at the bottom, in italics. Dawn notes that each tenant_id matches the §3 character class `^[A-Za-z0-9_.\-]{1,255}$` cleanly — Sun-Won's IAM provisioning enforces the class at registration so the SDK-side and verifier-side tenant_id checks (§3 enforcement and §7 step 3a) never have anything to reject. Sun-Won had three legacy CRM identifiers in the original tenant set; Park-CCO's team used §3.1 Pattern 1 (opaque hash-of-legacy with `tnt_` prefix) for two of them and §3.1 Pattern 2 (controlled aliasing) for the third. The legacy-mapping registry is institution-internal per §3.1's operational requirements; SOC 2 testing confirms append-only enforcement on the registry.
 
 "That's the one we should talk about," Park says. "I marked it because you will see it before lunch."
 
-"Thank you," Karen says. "We will."
+"Thank you," Dawn says. "We will."
 
 Park turns to Raj. "We pre-staged the BNPL chain on a read-only mirror. Your verifier credentials are in your packet — PASS-IT-bound, scoped to read-only, expire at six tonight. Diana, your IAM packet is the same shape, scoped to the IdP audit role. Tom, the compliance binder is on the second cart in the room. Photocopying is fine. Photography is not."
 
@@ -74,19 +74,19 @@ Park turns to Raj. "We pre-staged the BNPL chain on a read-only mirror. Your ver
 
 ---
 
-In the elevator, Karen does her opening monologue for the Seoul four — quietly, the way she always does, while they ride up.
+In the elevator, Dawn does her opening monologue for the Seoul four — quietly, the way she always does, while they ride up.
 
 > "Two countries, four use cases, three regulators, eight tenants, one chain. Park-CCO has been preparing for this for six weeks. We have done eight of these now — Northbridge, Mercator, Stelvio, Atrio, Helmstad, Pacific Crescent, Olmstead, and we just came from a 23-tenant Israeli AI shop where the test was nation-state segregation. Today's test is the cross-border data-flow basis. The chain is the same chain. The questions are not."
 
-Northbridge sat eight engagements back. One §10.16 non-conformance, the chain otherwise byte-for-byte clean — Karen had not seen another engagement come within reach of it since. Sun-Won was the first East-Asian engagement of the cycle, PIPA + PDPA cross-border was new, the chain primitive was familiar; the question on the drive in was whether the gap between Northbridge and the rest was the product or the institution.
+Northbridge sat eight engagements back. One §10.16 non-conformance, the chain otherwise byte-for-byte clean — Dawn had not seen another engagement come within reach of it since. Sun-Won was the first East-Asian engagement of the cycle, PIPA + PDPA cross-border was new, the chain primitive was familiar; the question on the drive in was whether the gap between Northbridge and the rest was the product or the institution.
 
 By the time the team rolled into Sun-Won, TesseraSeal had been audited at multiple US institutions plus a multi-tenant SaaS vendor in Tel Aviv. Korea + Taiwan was the first East-Asian engagement — PIPA + PDPA cross-border composition was new — but the chain primitive was familiar.
 
 Raj nods. Diana is already pulling up the PASS-IT documentation on her tablet. Tom is making sure his recorder is on.
 
-"The chain holds within a jurisdiction," Karen says. "The cross-border evidence has to hold to two different regulators reading the same chain. Spec §1.4 calls that compositional security — three independent layers, per-event MAC plus daily Merkle seal plus HSM-rooted signature. None of those layers cares about jurisdiction. The institution's posture has to do the jurisdictional work, and §10.18 says that posture has to be testable."
+"The chain holds within a jurisdiction," Dawn says. "The cross-border evidence has to hold to two different regulators reading the same chain. Spec §1.4 calls that compositional security — three independent layers, per-event MAC plus daily Merkle seal plus HSM-rooted signature. None of those layers cares about jurisdiction. The institution's posture has to do the jurisdictional work, and §10.18 says that posture has to be testable."
 
-"It never is," Tom says, half a second before Karen can.
+"It never is," Tom says, half a second before Dawn can.
 
 She lets him have it.
 
@@ -114,7 +114,7 @@ Lin sits down. "FSC will read this differently than FSS does. FSC reads cross-bo
 
 Lin pours the second round of tea. "One more piece of context. Sun-Won Taiwan is not a passive subsidiary in this engagement. The Taipei Exchange listing puts independent disclosure obligations on us. FSC will read the cross-border findings as listing material — not because the inventory data itself is material, but because the *evidence framework* for handling it is material to a reasonable investor. That is the FSC reading. PDPC reads the same finding under Article 8. We have to be precise about which sentence belongs in which letter."
 
-Elena writes that down. *Lin is going to want to see every sentence before it goes anywhere.* "We will phrase findings neutrally. You and Karen take the partitioning."
+Elena writes that down. *Lin is going to want to see every sentence before it goes anywhere.* "We will phrase findings neutrally. You and Dawn take the partitioning."
 
 "Thank you," Lin says.
 
@@ -199,7 +199,7 @@ seal_signature:         ed25519:7a2f...4b8c
 
 Park exhales just slightly. *That was the question she was holding.*
 
-"Run the verifier," Karen says from across the table.
+"Run the verifier," Dawn says from across the table.
 
 Raj types.
 
@@ -225,7 +225,7 @@ Status: PASS
 
 "That's the one the FSS letter asked about," Park says. "We can put that in front of an examiner without commentary."
 
-"Yes," Karen says. "That entry stands on its own."
+"Yes," Dawn says. "That entry stands on its own."
 
 Raj has one more probe. He runs the verifier in `--diff-features` mode against an entry from January, when the model_version was 3.3.x — checking that an upgrade between versions does not silently drop a feature.
 
@@ -506,25 +506,25 @@ Luis: "I confirmed three ceremonies in the last year for each HSM — initial pa
 
 The two halves of the team join the video bridge for the first time. Park and Lin are visible side-by-side on each other's screens, in their own conference rooms.
 
-Karen opens. "Before lunch I want to surface one item, so we can talk about it over food. The inventory-forecasting tenant. Park, Lin — you both know the shape. Can someone walk us through it?"
+Dawn opens. "Before lunch I want to surface one item, so we can talk about it over food. The inventory-forecasting tenant. Park, Lin — you both know the shape. Can someone walk us through it?"
 
 Park nods to Lin. Lin nods back.
 
 "It is the only tenant that crosses the strait," Lin says. "Single tenant: `sunwon-cross-inventory`. Inventory data from Korean stores and Taiwanese stores both feed in. The model forecasts SKU-level demand at the regional warehouse layer. The model has to see both jurisdictions because the inventory rebalances between them — particularly at quarter-end and around lunar holidays. We operate it under §10.15 Pattern A — single seal region (Seoul), per-region event-count reconciliation, run-locality enforced via SDK per-process region binding per §4.4. Storage is append-only per §10.3 — UPDATE and DELETE operations on stored events are non-conformant under §6, and the institution's WORM-compatible storage layer enforces this at the storage tier. Per §10.1, daily key-fingerprint reconciliation runs against the IKM registry — a fingerprint mismatch surfaces at §7 step 8 before any MAC compute."
 
-"Cross-border transfer basis?" Karen asks.
+"Cross-border transfer basis?" Dawn asks.
 
 "Contract," Park says. "There is a documented intra-group data transfer agreement between Sun-Won Holdings and Sun-Won Taiwan, registered with PIPC and acknowledged by PDPC. The contract identifies inventory data as a category, identifies the model as a recipient, and identifies the lawful basis as legitimate business interest with appropriate safeguards."
 
-"And the chain entries?" Karen asks.
+"And the chain entries?" Dawn asks.
 
 Pause.
 
 "The chain entries do not currently carry the cross-border transfer basis as an attribute," Park says. "The contract carries it. The compliance binder carries it. The chain entry shows that an inventory data point from store KR-Seoul-014 was used in a forecast — and that the forecast was generated on the cross-tenant. The cross-border basis is not stamped into the entry."
 
-Karen pauses. *That is the thing — and the spec moved on this. §4.4 added the `audit.cross_border_transfer.*` attribute family in the Wave-6 fourth erratum specifically because Sun-Won's posture surfaced the gap.*
+Dawn pauses. *That is the thing — and the spec moved on this. §4.4 added the `audit.cross_border_transfer.*` attribute family in the Wave-6 fourth erratum specifically because Sun-Won's posture surfaced the gap.*
 
-"That is what I thought," Karen says. "Lin, Park — that finding drove a spec amendment. The Round-17 Wave-6 fourth erratum (§12 change log) lifted the cross-border-transfer attribute family to the spec body. §4.4 normates it now. The attribute set is `audit.cross_border_transfer.contract_id`, `contract_version`, `contract_hash_sha256`, `source_jurisdiction`, `destination_jurisdiction`, `lawful_basis_type`. It is REQUIRED on entries subject to a regulator-named privacy regime that the institution's CC8.1 names — and PIPA Section 28 plus PDPA Article 8 are precisely those regimes. The advisory posture from the v1.0a draft is gone. The institution's CC8.1 names the trigger; the attribute set is REQUIRED whenever the trigger holds."
+"That is what I thought," Dawn says. "Lin, Park — that finding drove a spec amendment. The Round-17 Wave-6 fourth erratum (§12 change log) lifted the cross-border-transfer attribute family to the spec body. §4.4 normates it now. The attribute set is `audit.cross_border_transfer.contract_id`, `contract_version`, `contract_hash_sha256`, `source_jurisdiction`, `destination_jurisdiction`, `lawful_basis_type`. It is REQUIRED on entries subject to a regulator-named privacy regime that the institution's CC8.1 names — and PIPA Section 28 plus PDPA Article 8 are precisely those regimes. The advisory posture from the v1.0a draft is gone. The institution's CC8.1 names the trigger; the attribute set is REQUIRED whenever the trigger holds."
 
 Park looks up. "REQUIRED, not advisory?"
 
@@ -540,7 +540,7 @@ Park looks up. "REQUIRED, not advisory?"
 
 Korean lunch in Seoul: bibimbap, mandu, pickled radish. Taiwanese lunch in Taipei: lu rou fan and pickled mustard greens. Both teams eat with their cameras on. Park and Lin are on the call together for the first time today.
 
-Karen does not let the lunch slide into chitchat. She takes the inventory tenant head-on.
+Dawn does not let the lunch slide into chitchat. She takes the inventory tenant head-on.
 
 "Park, Lin. The inventory tenant is the one that needs the conversation. The chain works. The contract works. The two pieces of evidence sit in different binders. If FSS, PIPC, FSC, and PDPC all asked the same question on the same day — show me the cross-border basis for this one inventory data point — could you give all four the same answer?"
 
@@ -550,13 +550,13 @@ Park considers. "Today, the answer is: the chain entry plus the contract referen
 
 "FSC and PDPC will accept that," Lin says, "but they will note in their letter that the link between the two is procedural rather than cryptographic. PDPC has been asking for cryptographic linkage in cross-border-flow attestations since 2024."
 
-Karen takes a breath. "Right — and that is now the spec's normative answer. §4.4 binds it. The attribute set lives on the chain entry. The contract is institution-published; the contract's `contract_hash_sha256` anchors it to the entry. A post-hoc edit of the contract is detectable. The link is no longer procedural. It is cryptographic. Per §12 (Wave-6 fourth erratum), this story drove that amendment — Sun-Won's exact posture, surfaced as a Partial in the v1.0a draft, was the worked example the spec used to lock the family. So the recommendation is not 'consider adding a future capability' — it is 'remediate to the v1.0b spec text by emitting the attribute set the spec already names.' The CC8.1 update declares which privacy regimes are triggers; the SDK update emits the attribute set on cross-jurisdiction entries; the contract repository publishes the contract as a versioned, hash-anchored document so the `contract_version` and `contract_hash_sha256` resolve."
+Dawn takes a breath. "Right — and that is now the spec's normative answer. §4.4 binds it. The attribute set lives on the chain entry. The contract is institution-published; the contract's `contract_hash_sha256` anchors it to the entry. A post-hoc edit of the contract is detectable. The link is no longer procedural. It is cryptographic. Per §12 (Wave-6 fourth erratum), this story drove that amendment — Sun-Won's exact posture, surfaced as a Partial in the v1.0a draft, was the worked example the spec used to lock the family. So the recommendation is not 'consider adding a future capability' — it is 'remediate to the v1.0b spec text by emitting the attribute set the spec already names.' The CC8.1 update declares which privacy regimes are triggers; the SDK update emits the attribute set on cross-jurisdiction entries; the contract repository publishes the contract as a versioned, hash-anchored document so the `contract_version` and `contract_hash_sha256` resolve."
 
 Mike, on the Taipei side, leans into his camera. "Mechanical work. Six attributes per cross-border entry. The inventory tenant's attribute set is six fields today; adding the cross-border-transfer six is a config change at the SDK boundary, not a code change. The contract-versioning side is the work — Sun-Won's compliance team has to publish the contract as a versioned, hash-anchored document the SDK can resolve at MAC time. The attribute set is part of the canonical bytes per §5, so a tampered `contract_hash_sha256` would surface as a MAC mismatch at §7 step 9."
 
 "Six weeks of work on the legal side," Lin says. "Two weeks on the chain side. Maybe."
 
-"This is no longer 'advisory recommendation,'" Karen says. "It is 'remediation to the v1.0b spec.' The current setup answered the regulators in 2025 under the v1.0a posture; under the v1.0b posture (active since the February SDK upgrade Sun-Won is on), the attribute set is REQUIRED whenever the institution's CC8.1 names a privacy-regime trigger. Sun-Won's CC8.1 names the triggers. The remediation closes the gap to v1.0b conformance."
+"This is no longer 'advisory recommendation,'" Dawn says. "It is 'remediation to the v1.0b spec.' The current setup answered the regulators in 2025 under the v1.0a posture; under the v1.0b posture (active since the February SDK upgrade Sun-Won is on), the attribute set is REQUIRED whenever the institution's CC8.1 names a privacy-regime trigger. Sun-Won's CC8.1 names the triggers. The remediation closes the gap to v1.0b conformance."
 
 > ⚠️ **Finding-001 — Cross-border transfer basis not stamped into inventory chain entries (non-conformance against v1.0b §4.4).**
 > The `sunwon-cross-inventory` tenant aggregates inventory data from both Korea (source) and Taiwan (destination, and vice versa for KR-bound forecasts). The lawful basis for cross-border transfer is documented in an intra-group data transfer agreement registered with PIPC and acknowledged by PDPC. The contract is sound. However, the chain entries do not carry the `audit.cross_border_transfer.*` attribute set per §4.4. **Severity: non-conformance against §4.4.** Sun-Won's CC8.1 names PIPA §28 and PDPA Art 8 as privacy-regime triggers; the v1.0b §4.4 elevation makes the attribute set REQUIRED on chain entries subject to those regimes, not advisory. **This story drove the Wave-6 fourth erratum (§12 change log)** that lifted the attribute family to the spec body. The institution's posture is the worked example the spec used to lock the family. Remediation: publish the intra-group data transfer agreement as a versioned, hash-anchored document; emit `contract_id`, `contract_version`, `contract_hash_sha256`, `source_jurisdiction`, `destination_jurisdiction`, `lawful_basis_type` (= `intra_group_agreement`) on every `sunwon-cross-inventory` entry. Six attributes; bound under the per-event MAC per §5; cryptographic linkage between chain and contract closes the procedural-vs-cryptographic gap the v1.0a posture left. Target: Q3 2026.
@@ -635,7 +635,7 @@ Status: PASS
 > ✅ **Confirmation #6 — Chatbot per-language tenant separation.**
 > Three chatbot tenants — Korean, Mandarin, English — each with its own model, model_version, IKM, and seal stream. Per-language separation is structural at the tenant layer. PIPA and PDPA both want the model populations separated; both are satisfied. §4.1 HKDF binding plus §10.15 Pattern B per-region tenant isolation jointly honored. `gen_ai.request.model` and `gen_ai.response.model` present on every entry per the §4.4 SDK-side enforcement rule (the SDK refuses to emit a chain entry whose attribute set includes any `gen_ai.*` namespace prefix attribute AND lacks either model identifier).
 
-Karen, on the Seoul bridge, leans in. "Mike — the routing decision. That's the §4.4.1 question."
+Dawn, on the Seoul bridge, leans in. "Mike — the routing decision. That's the §4.4.1 question."
 
 Mike nods. "Right. §4.4.1 is the routing-classifier event family. And per the Wave-6 fourth erratum (§12), this story drove the spec's sixth event type — `audit.routing.classifier_output`. The v1.0a §4.4.1 had five event types: `attempt`, `success`, `failover`, `circuit_state_change`, `refused`. None of those covers a pre-routing classifier. The v1.0b amendment added `classifier_output` precisely for this case."
 
@@ -643,7 +643,7 @@ Lin looks up. "Read me the schema."
 
 Mike reads from the spec on his second screen. "§4.4.1 sixth event type, emitted BEFORE the `audit.routing.attempt` it informs, linked via `parent_run_id` / `parent_seq` per §4.4 — classifier_output is the parent of the attempt. Six new attributes, all REQUIRED on the classifier_output event: `audit.routing.classifier_name` — the classifier service or model identifier; `audit.routing.classifier_version` — version identifier for the classifier; `audit.routing.classifier_input_hash` — SHA-256 lowercase hex of the canonicalized classifier input; `audit.routing.classifier_scores` — JCS-canonical object mapping class identifier to score; `audit.routing.classifier_decision` — the class identifier the classifier selected, MUST be a key in `classifier_scores`; `audit.routing.classifier_confidence` — confidence in [0.0, 1.0] for the chosen class. Per the §4.4.1 normative text: 'Without the pre-routing entry, reconstructing why a user was routed to a specific provider depends on the classifier service's logs, which typically retain shorter than the chain itself; pre-chaining the classifier output makes the rationale recoverable from the chain alone for the chain's full retention period.' That is verbatim what the chatbot is missing. Institutions whose routing policy is purely rule-based MAY omit; institutions with classifier-driven routing — like Sun-Won's chatbot — MUST emit it."
 
-Karen: "Park, Lin — same posture as the cross-border attribute. This is no longer 'advisory.' The spec body normates it now under §4.4.1. Sun-Won's chatbot operates classifier-driven routing; the spec MUST applies. Sun-Won is non-conformant against v1.0b until the classifier_output event is emitted."
+Dawn: "Park, Lin — same posture as the cross-border attribute. This is no longer 'advisory.' The spec body normates it now under §4.4.1. Sun-Won's chatbot operates classifier-driven routing; the spec MUST applies. Sun-Won is non-conformant against v1.0b until the classifier_output event is emitted."
 
 Lin reads through her screen. "And — the spec text says the entry is BEFORE the attempt event it informs. The classifier_output is the parent. So we have to chain the detector before the model selection, not as a side annotation."
 
@@ -656,13 +656,13 @@ Lin looks at the recommendation. "I prefer the chained approach over a log-reten
 
 Mike nods. "Same. And the spec made the choice for us — §4.4.1 normates the chained event type; log-retention extension is not a §4.4.1-conformant alternative. It is the spec answering the question."
 
-Karen: "Required-pairing rule per §4.4.1 — for a classifier-driven routing decision, the chain MUST carry classifier_output → attempt → success/failover. Audit-procedures.md P-33 samples for the pairing. Sun-Won's audit cycle has to add the P-33 procedure once the remediation lands."
+Dawn: "Required-pairing rule per §4.4.1 — for a classifier-driven routing decision, the chain MUST carry classifier_output → attempt → success/failover. Audit-procedures.md P-33 samples for the pairing. Sun-Won's audit cycle has to add the P-33 procedure once the remediation lands."
 
 Lin asks one more thing. "What about the BNPL declination path? When the BNPL model declines an applicant, does the §10.11 adverse-action translation apply?"
 
 Park nods. "FSS does not enforce ECOA — that is US-jurisdictional. But §10.11's last paragraph applies the adverse-action translation discipline by analogy to state-insurance-law adverse-action notices, and the Round-17 NAIC-N2 close renamed §10.11 to 'Adverse-action notice translation (ECOA and state-insurance analog)' specifically so a non-US regulator citing the section reaches the analogous discipline. We apply the §10.11 attribute schema to BNPL declinations sent to Korean-language consumers — `audit.ecoa.translation.target_language = "ko-KR"`, `translator_kind = "human"` (Sun-Won uses human translators for legal-impact letters), `output_hash` over the customer-facing translated declination text, `delivery_method = "mail"`, `delivery_timestamp` per the Round-17 CFPB-N1 close requiring `delivery_timestamp` whenever `delivery_method` is recorded. The translation entry's `chain_kind = "translation"` per §3 enumeration. Parent-linkage to the underlying decline entry via `parent_run_id` / `parent_seq` per §4.4."
 
-Karen: "And the underlying decline entry carries the §10.11.1 adverse-action reasons schema — `audit.ecoa.adverse_action.reasons` (the structured-reasons code), `audit.ecoa.adverse_action.feature_attributions` when the model exposes attribution at decision time, `audit.ecoa.adverse_action.model_explanation_method`. The chain proves what reasons the model produced and what text the consumer received. Two integrity-bound records, one chain. FSS-grade."
+Dawn: "And the underlying decline entry carries the §10.11.1 adverse-action reasons schema — `audit.ecoa.adverse_action.reasons` (the structured-reasons code), `audit.ecoa.adverse_action.feature_attributions` when the model exposes attribution at decision time, `audit.ecoa.adverse_action.model_explanation_method`. The chain proves what reasons the model produced and what text the consumer received. Two integrity-bound records, one chain. FSS-grade."
 
 > ✅ **Confirmation #6b — BNPL adverse-action discipline under §10.11 + §10.11.1 (analog application).**
 > §10.11 normates ECOA adverse-action notice translation; per the section's last paragraph (Round-17 NAIC-N2), the discipline applies by analogy to state-insurance-law adverse-action notices and equivalent regimes — including FSS-supervised BNPL declination notices. Sun-Won emits the §10.11 `audit.ecoa.translation.*` attribute set on each declination translation entry, and the §10.11.1 `audit.ecoa.adverse_action.*` family on the underlying decline entry per Round-17 CFPB-P1. `delivery_timestamp` is REQUIRED whenever `delivery_method` is recorded, per Round-17 CFPB-N1. Composition with §1.2 epistemic scope: the chain proves what reasons the model produced and what text the consumer received; it does not prove either reason was the *actual* policy-compliant reason — that proof lives in Sun-Won's policy-as-code system per §1.2's separate-evidence-regime framing.
@@ -749,7 +749,7 @@ The cross-border-transfer-basis attribute remains the gap — already noted at l
 
 ## 📊 3:00 PM — Seoul, Conference Room 28-A
 
-Reconciliation test, Seoul side. Karen has Raj pull five BNPL credit decisions from yesterday and trace each one end-to-end.
+Reconciliation test, Seoul side. Dawn has Raj pull five BNPL credit decisions from yesterday and trace each one end-to-end.
 
 ```
 Sample 1: applicant_id_hash:e7c2...9f1a, decision:conditional → traced
@@ -816,19 +816,19 @@ Lin: "Acceptable for these two? Yes — they are old. The point is the structura
 
 ## 😬 3:45 PM — Seoul + Taipei, Bridge Open
 
-Park and Lin both join the bridge. Karen opens.
+Park and Lin both join the bridge. Dawn opens.
 
 "We have two Findings against v1.0b spec — the cross-border attribute (Finding-001) and the language-detection-routing chained event (Finding-002). Both drove the Wave-6 fourth erratum that landed the §4.4 cross-border-transfer family and the §4.4.1 classifier_output event. The chatbot reconciliation 3-of-5 result (Finding-003) is the worked example for Finding-002 rather than an independent non-conformance — same remediation closes both. The pre-chain era retention question is a separate discussion — let's discuss it last."
 
 Park nods.
 
-"On the cross-border attribute," Karen says, "Park and Lin both heard my recommendation at lunch. The spec already lifted the family to §4.4 normative text under the Wave-6 fourth erratum. Hash-anchor the contract version. Six weeks of legal work to publish the contract as a versioned hash-anchored document, two weeks of chain config work to add the attribute set. Park, Lin — disagreement on the framing as 'remediation to spec' rather than 'advisory upgrade'?"
+"On the cross-border attribute," Dawn says, "Park and Lin both heard my recommendation at lunch. The spec already lifted the family to §4.4 normative text under the Wave-6 fourth erratum. Hash-anchor the contract version. Six weeks of legal work to publish the contract as a versioned hash-anchored document, two weeks of chain config work to add the attribute set. Park, Lin — disagreement on the framing as 'remediation to spec' rather than 'advisory upgrade'?"
 
 Park: "No disagreement. The spec moved. The remediation is to v1.0b conformance."
 
 Lin: "Agreed. I want to add — FSC will appreciate this in the next supervisory letter. They have asked for cryptographic linkage in cross-border evidence since 2024; the spec amendment delivers it; Sun-Won remediating to spec is the cleanest framing for that letter."
 
-"Good. On the language-detection-routing," Karen says, "the Wave-6 fourth erratum normates the chained classifier_output event under §4.4.1. Mike — your reading?"
+"Good. On the language-detection-routing," Dawn says, "the Wave-6 fourth erratum normates the chained classifier_output event under §4.4.1. Mike — your reading?"
 
 "Spec answers the question," Mike says. "§4.4.1 sixth event type, six new attributes, parent-linkage to the attempt. The previous v1.0a posture left log-retention extension as a possible alternative; v1.0b's §4.4.1 normative text closed that — institutions with classifier-driven routing MUST emit the chained event. Sun-Won's chatbot operates classifier-driven routing. The spec applies. Remediation is to v1.0b conformance."
 
@@ -838,15 +838,15 @@ Lin: "Agreed. Both are essentially the same shape of work — one new attribute 
 
 "Done."
 
-Karen pauses. *This is where the question Park has been waiting to ask is going to come.*
+Dawn pauses. *This is where the question Park has been waiting to ask is going to come.*
 
 It does.
 
-"Karen," Park says. "If FSS, PIPC, and FSC ask the same question — 'demonstrate consent for cross-border transfer of an inventory data point' — can we give all three the same answer today?"
+"Dawn," Park says. "If FSS, PIPC, and FSC ask the same question — 'demonstrate consent for cross-border transfer of an inventory data point' — can we give all three the same answer today?"
 
 The room goes a little quieter.
 
-Karen takes a beat.
+Dawn takes a beat.
 
 "Today, the answer is the chain plus the contract. The chain proves what the inventory model saw under §1.2's epistemic scope — the captured event is integrity-bound under §1.4's compositional security (per-event MAC + daily Merkle seal + HSM-rooted signature). The contract proves the consent basis, currently as institution-side parallel evidence. You have to hand over both — and both have to be read together to construct the full answer. That is procedurally sound but evidentially compound.
 
@@ -864,15 +864,15 @@ Lin: "Two binders today, link procedural; one verifier output after Q3, link cry
 
 The pre-chain era — the celebrity controversy lookback.
 
-Karen takes it directly. "The chain was deployed sixteen months ago. The celebrity controversy was eighteen months ago. There are about four months of recommendation-engine activity from before the chain that fall inside the lookback window. We cannot verify those four months through the chain because the chain did not exist for them. Per §1.2 epistemic scope, the chain proves what the AI said and that the record was not tampered with — for the pre-chain window, neither claim is available because no chain entries exist."
+Dawn takes it directly. "The chain was deployed sixteen months ago. The celebrity controversy was eighteen months ago. There are about four months of recommendation-engine activity from before the chain that fall inside the lookback window. We cannot verify those four months through the chain because the chain did not exist for them. Per §1.2 epistemic scope, the chain proves what the AI said and that the record was not tampered with — for the pre-chain window, neither claim is available because no chain entries exist."
 
 Park nods. "We acknowledge that. The legacy recommendation-engine logs cover those four months. They are append-only on a write-once-read-many storage tier — that was already best practice before the chain was deployed. They are admissible. They are not chain-grade."
 
-"Sun-Won is being honest about that," Karen says. "I appreciate it. The audit deliverable will document the chain's effective-start date and note that pre-chain activity is verifiable through the legacy logs only. Per the Wave-6 fourth erratum (§12 change log), the spec explicitly names this as an institution-side legacy-log dependency rather than a spec concern — §1.2 epistemic scope plus the institution's CC8.1 chain-coverage map per §10.19 jointly carry the framing."
+"Sun-Won is being honest about that," Dawn says. "I appreciate it. The audit deliverable will document the chain's effective-start date and note that pre-chain activity is verifiable through the legacy logs only. Per the Wave-6 fourth erratum (§12 change log), the spec explicitly names this as an institution-side legacy-log dependency rather than a spec concern — §1.2 epistemic scope plus the institution's CC8.1 chain-coverage map per §10.19 jointly carry the framing."
 
 She pulls up §10.19. "And the §10.19 chain-coverage map is the right place for this. The map enumerates 'institutional systems not yet chain-instrumented' — the pre-chain era recommendation engine fits that category exactly. Sun-Won's CC8.1 names the rollout posture as 'deferred (effective end-of-period 2024-Q4)' and the evidentiary substitute as 'legacy WORM-storage logs'. That is the §10.19 map's exact shape. Per Round-17 M&A-P3, the chain-coverage map itself is version-stamped and chain-anchored — every publication or update emits the `chain.coverage_map_published` operational event under §10.2 carrying `coverage_map_version`, `effective_utc`, and `coverage_map_sha256`. Sun-Won's current map version is `v3.2.0`, effective 2026-01-15 after the chatbot-tenant addition."
 
-Karen turns to Tom. "Tom — for the litigation framing, what does §1.1 give us if Sun-Won ever ends up in court over the celebrity-controversy lookback?"
+Dawn turns to Tom. "Tom — for the litigation framing, what does §1.1 give us if Sun-Won ever ends up in court over the celebrity-controversy lookback?"
 
 Tom: "Daubert four-factor grounding. Per §1.1's four-factor analysis: testability is the §7 verifier procedure with normative reason strings; peer review is the OpenTelemetry ecosystem plus the FFIEC reference verifier; known error rate is bounded by the three-layer compromise model in §1.1 plus the §1.2 fourth class (SDK-process compromise). General acceptance is RFC 8785 + RFC 6962 + FIPS 198-1 + FIPS 186-5 — all published Internet Standards or FIPS. An expert witness laying foundation under FRE 702 has the full residual-risk picture. For the pre-chain era, §1.1 doesn't help — there's no chain to ground in Daubert — but the legacy WORM-storage logs admissibility under FRE 803(6) (records of regularly conducted activity) plus §10.13 evidentiary artifacts retention plus §10.14 trusted-time integration (RFC 3161 RECOMMENDED for v1.0; Sun-Won has not adopted yet but is on the v1.x roadmap) gives Sun-Won an admissible-but-not-chain-grade record for that window."
 
@@ -885,7 +885,7 @@ Lin: "PDPC will accept that. They have asked equivalent questions in past letter
 
 Park: "FSS will accept that too. They know when we deployed."
 
-Karen: "Good."
+Dawn: "Good."
 
 She moves to the close.
 
@@ -895,19 +895,19 @@ She moves to the close.
 
 Two more confirmations to land before the debrief.
 
-The seventh Confirmation — Karen pulls it from her notes.
+The seventh Confirmation — Dawn pulls it from her notes.
 
 > ✅ **Confirmation #9 — K-ISMS and CNS 27001 alignment across the two HSMs under §10.5.**
 > The Seoul HSM is hosted in a KISA-certified data center in Sangam-dong, in compliance with Korea's K-ISMS (Korea Information Security Management System) certification. The Taipei HSM is hosted in a Chunghwa Telecom data center in compliance with Taiwan's CNS 27001 (Taiwanese localization of ISO 27001). Both certifications were re-validated in the past twelve months. Both certifications were inspected by their respective regulators in the past twenty-four months. Per §10.5 HSM custody, both HSMs operate under FIPS 140-2 Level 3 or higher with separation-of-duties controls; per §10.17, partition ceremonies are chain-coupled with dual-control attestation; per §10.18, both jurisdictions' operational runbooks cross-reference §10.5 + §10.17 in their procedural sections.
 
-Karen also calls out the verifier discipline. "Per §10.26, Sun-Won runs the reference verifier under the pinned `v1.0b-verifier` release. CC8.1 names the implementation, the version, and the verification key per §10.26's three-name citation discipline. Reproducible-build evidence is in the binder; Cosign signature is in the binder; SBOM is in the binder. Examiners across both jurisdictions can rebuild the binary from source and confirm against the published artifact. That is the §10.26 conformance bar."
+Dawn also calls out the verifier discipline. "Per §10.26, Sun-Won runs the reference verifier under the pinned `v1.0b-verifier` release. CC8.1 names the implementation, the version, and the verification key per §10.26's three-name citation discipline. Reproducible-build evidence is in the binder; Cosign signature is in the binder; SBOM is in the binder. Examiners across both jurisdictions can rebuild the binary from source and confirm against the published artifact. That is the §10.26 conformance bar."
 
-Karen adds one more for the record. "And the entity-succession discipline per §10.24 — Sun-Won Holdings has no acquisition or divestiture activity in scope this period, but the CC8.1 control description names §10.24's procedure for any future legal-entity transition. The `chain.entity_succession` operational event is wired in the SDK; the dual-signature requirement per §10.17 schema with `entity_affiliation` per Round-17 M&A-P1 is documented; the from-tenant-id / to-tenant-id discipline is named for the rename case. Acquirer-side IT due-diligence per §13's stakeholder-navigation entry has a binding spec section to cite if Sun-Won is ever acquired or itself acquires another entity. And §10.25 run-resume discipline — the SDK uses local-persistence sidecar (SQLite) with file-locked writer-per-run as the steady-state path; the ledger chain-tail endpoint is the rejoin path for DR. The single-writer-per-run rule under §10.25 prevents any two SDK processes from racing for the same `(tenant_id, run_id)`."
+Dawn adds one more for the record. "And the entity-succession discipline per §10.24 — Sun-Won Holdings has no acquisition or divestiture activity in scope this period, but the CC8.1 control description names §10.24's procedure for any future legal-entity transition. The `chain.entity_succession` operational event is wired in the SDK; the dual-signature requirement per §10.17 schema with `entity_affiliation` per Round-17 M&A-P1 is documented; the from-tenant-id / to-tenant-id discipline is named for the rename case. Acquirer-side IT due-diligence per §13's stakeholder-navigation entry has a binding spec section to cite if Sun-Won is ever acquired or itself acquires another entity. And §10.25 run-resume discipline — the SDK uses local-persistence sidecar (SQLite) with file-locked writer-per-run as the steady-state path; the ledger chain-tail endpoint is the rejoin path for DR. The single-writer-per-run rule under §10.25 prevents any two SDK processes from racing for the same `(tenant_id, run_id)`."
 
 > ✅ **Confirmation #10 — Reference verifier distribution and citation per §10.26.**
 > Sun-Won's CC8.1 cites the reference verifier with three names per §10.26: the implementation (the spec's reference verifier), the version (`v1.0b-verifier`, the spec-pinned version per §11), and the verification key (the institution's accepted Cosign key fingerprint). Reproducible-build evidence, Cosign signature, SHA-256/SHA-512 manifest, and CycloneDX SBOM are retained in the institution's binder per §10.13 evidentiary artifacts list.
 
-The team is in a good place. Karen looks at her notes and counts: ten Confirmations plus the pre-chain era confirmation-by-spec, two Findings against v1.0b spec (cross-border attribute and chained classifier_output) and one tracking finding (Finding-003 — chatbot reconciliation, closure path tied to Finding-002). The chain holds within both jurisdictions. The cross-border boundary holds procedurally today and will hold cryptographically after Q3 once the spec-mandated remediations land.
+The team is in a good place. Dawn looks at her notes and counts: ten Confirmations plus the pre-chain era confirmation-by-spec, two Findings against v1.0b spec (cross-border attribute and chained classifier_output) and one tracking finding (Finding-003 — chatbot reconciliation, closure path tied to Finding-002). The chain holds within both jurisdictions. The cross-border boundary holds procedurally today and will hold cryptographically after Q3 once the spec-mandated remediations land.
 
 She closes her notebook.
 
@@ -915,7 +915,7 @@ She closes her notebook.
 
 ## 🌆 5:30 PM — Seoul + Taipei, Joint Debrief on Video Bridge
 
-Full team on. Park-CCO and Lin-Director both present. Karen runs the per-regulator finding table.
+Full team on. Park-CCO and Lin-Director both present. Dawn runs the per-regulator finding table.
 
 ### PIPA (Korea Personal Information Protection Commission)
 
@@ -964,7 +964,7 @@ Full team on. Park-CCO and Lin-Director both present. Karen runs the per-regulat
 
 ---
 
-Karen closes.
+Dawn closes.
 
 "Three regulators, one chain. Today, the chain answers each regulator inside its jurisdictional lens cleanly within the v1.0a posture you operated through 2025. Two findings against the v1.0b spec text — the cross-border attribute family per §4.4 (Finding-001) and the chained classifier_output event per §4.4.1 (Finding-002) — both of which were lifted to the spec body in the Wave-6 fourth erratum precisely because Sun-Won's posture surfaced them. That last point matters for the regulator letters: the spec moved because of work like this. Sun-Won's remediation is to a normative posture the institution helped shape. Park, Lin — Sun-Won has done this well. The discipline shows. The HSM streams have not skipped a day in sixteen months. The PASS-IT integration is clean. The post-controversy redesign — moving feature exclusion to ingest — is structurally provable per §4.1 + §5 + §10.22, not just policy-provable.
 
@@ -976,7 +976,7 @@ Park: "Thank you. Six weeks of preparation. Worth it."
 
 Lin: "Thank you. We will see you in Q3 for the follow-up — we will bring the v1.0b §4.4 + §4.4.1 remediation evidence."
 
-Karen looks at her team — four faces in Seoul, four faces in Taipei, eight people who have spent a long day inside two binders and one chain. "We will draft the letters this week. Park, Lin — you will see the partitioned drafts before they go to any regulator. Standard process. Comments back inside ten business days."
+Dawn looks at her team — four faces in Seoul, four faces in Taipei, eight people who have spent a long day inside two binders and one chain. "We will draft the letters this week. Park, Lin — you will see the partitioned drafts before they go to any regulator. Standard process. Comments back inside ten business days."
 
 Park: "Standard. Thank you."
 
@@ -984,11 +984,11 @@ Lin: "Standard. Thank you."
 
 Tom adds — quietly, half to the room and half to himself — "Eight engagements in. The shape of this one is going to stay with me. Three regulators, one chain, two HSMs, one strait, two §4.4 amendments that this story drove. The cross-border boundary held procedurally today and will hold cryptographically after Q3 once the §4.4 + §4.4.1 remediation lands. That is a clean answer to a hard question — and the spec section numbers anchor the answer."
 
-Karen nods. *That is the right summary line. Tom heard it the way I heard it.*
+Dawn nods. *That is the right summary line. Tom heard it the way I heard it.*
 
 The bridge stays open another few minutes for handshakes — Korean bows on Park's side, slight Taiwanese inclines on Lin's, easy nods from the team. The recordings stop. The cameras stay on for one more minute. Then off.
 
-The Seoul team gathers their notebooks. Karen looks out the conference-room window — the Han River is dark blue under the late-afternoon sun, and the Sangam-dong towers are catching gold off their west faces. She thinks about the Israeli engagement last week, where the test was nation-state segregation. She thinks about Atrio, where the test was multi-tenant key isolation across a banking platform. Today the test was the cross-border data-flow basis under three regulators.
+The Seoul team gathers their notebooks. Dawn looks out the conference-room window — the Han River is dark blue under the late-afternoon sun, and the Sangam-dong towers are catching gold off their west faces. She thinks about the Israeli engagement last week, where the test was nation-state segregation. She thinks about Atrio, where the test was multi-tenant key isolation across a banking platform. Today the test was the cross-border data-flow basis under three regulators.
 
 *Different test,* she thinks. *Same chain. The chain held. It always does, when the operator has done the work and the spec answers the question. Sun-Won did the work. The spec answered the question — twice, in the Wave-6 fourth erratum, with the §4.4 cross-border-transfer family and the §4.4.1 classifier_output event. That is what a maturing spec looks like.*
 
@@ -998,7 +998,7 @@ The Seoul team gathers their notebooks. Karen looks out the conference-room wind
 
 ## 📝 Spec-Citation Index (lead-auditor working paper)
 
-Karen's working paper for this engagement carries a per-section spec-citation index — the spec sections each finding or confirmation lands against. The index is part of the deliverable so every regulator receiving a partition of the report can walk from a finding to the spec text by section number without inferring the mapping.
+Dawn's working paper for this engagement carries a per-section spec-citation index — the spec sections each finding or confirmation lands against. The index is part of the deliverable so every regulator receiving a partition of the report can walk from a finding to the spec text by section number without inferring the mapping.
 
 | Spec § | Use in Sun-Won Engagement |
 |---|---|
@@ -1056,7 +1056,7 @@ Karen's working paper for this engagement carries a per-section spec-citation in
 
 > **"Three regulators reading the same chain through three different lenses. Today, the chain plus the contract answers each lens within v1.0a posture. After Q3, the verifier output answers all three on its own under v1.0b §4.4 + §4.4.1 — the contract is referenced inside the chain entry by hash, the routing rationale is integrity-bound through the chained classifier_output event, and the spec's normative text matches the work item. That is the upgrade Sun-Won is paying for — and it is the cleanest cross-border story we have audited yet, because the spec moved to meet the posture rather than the posture having to bend to a fixed spec."**
 >
-> — Karen, lead auditor, Sun-Won Cosmetics Group, April 9, 2026
+> — Dawn, lead auditor, Sun-Won Cosmetics Group, April 9, 2026
 
 ---
 

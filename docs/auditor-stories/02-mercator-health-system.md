@@ -3,7 +3,7 @@
 **Engagement:** HITRUST CSF v11 + HIPAA Security Rule + FDA SaMD Post-Market Combined Assessment
 **Client:** Mercator Health System (top-20 US integrated health system — academic medical center, regional health-insurance carrier, multi-state physician group)
 **Status:** AI tracing live for 90 days. Everything else is legacy.
-**Audit team lead:** Karen
+**Audit team lead:** Dawn
 **Client liaison:** Dr. Patricia Okonkwo, system-wide CISO
 
 **Posture going in:** same product the team saw at Northbridge Bank two weeks ago, but applied to a healthcare setting. The crypto substrate is familiar; the question now is whether the operational controls translate to HIPAA + FDA-regulated workflows. Mercator turned on TesseraSeal 90 days ago, independent of any prior conversation with this audit team. The institution's claim, going into the room, is that every prediction the FDA-cleared sepsis CDS model makes lands in a sealed chain-of-custody ledger built on Herald Core, that the daily seals are rooted in AWS CloudHSM, that the verifier CLI is `herald-verify`, and that the whole stack conforms to a public spec called FFIEC chain-of-custody v1.0b. The team is confident in the product; the open question is whether Mercator's deployment lives up to it.
@@ -16,9 +16,9 @@ Mercator turned on TesseraSeal 90 days ago. Not across the enterprise — just o
 
 Everything else — the EHR (Epic), the billing platform, the claims-processing engine for the insurance arm, the Salesforce-based CRM for member services, the lab results pipeline, the imaging archive — runs on the same plumbing every other healthcare system in the country runs on. Logs in CloudWatch. Notes overwritten in place. Backups on tape. "We trust the engineers." None of those systems has a chain-coverage map of the kind §10.19 requires; the AI-side has one and Patricia wants the audit to confirm the boundary the map draws.
 
-Patricia knows the difference. She picked the AI side first because the FDA SaMD post-market surveillance rule does not give her a choice, the plaintiff bar is paying attention to model-driven clinical errors, and the blast radius was small enough to land in 90 days. She wants Karen's team to write a real assessment so she can take it to the board and ask for the budget to extend the chain.
+Patricia knows the difference. She picked the AI side first because the FDA SaMD post-market surveillance rule does not give her a choice, the plaintiff bar is paying attention to model-driven clinical errors, and the blast radius was small enough to land in 90 days. She wants Dawn's team to write a real assessment so she can take it to the board and ask for the budget to extend the chain.
 
-This is the second audit Karen's team has done in three weeks. Last week was a graveyard. The week before that was a different kind of graveyard.
+This is the second audit Dawn's team has done in three weeks. Last week was a graveyard. The week before that was a different kind of graveyard.
 
 ---
 
@@ -26,7 +26,7 @@ This is the second audit Karen's team has done in three weeks. Last week was a g
 
 | Name | Role |
 |---|---|
-| Karen | Lead Auditor — governance and narrative |
+| Dawn | Lead Auditor — governance and narrative |
 | Raj | Database specialist |
 | Elena | CRM systems |
 | Mike | Application / API layer |
@@ -39,15 +39,15 @@ This is the second audit Karen's team has done in three weeks. Last week was a g
 
 ### 🌅 8:30 AM — Kickoff
 
-The drive in was forty minutes through hospital-district traffic. Karen had her coffee in the cup holder and the engagement brief on her tablet.
+The drive in was forty minutes through hospital-district traffic. Dawn had her coffee in the cup holder and the engagement brief on her tablet.
 
 *Last week was a graveyard*, she thought. *The week before that was a different kind of graveyard.*
 
-The week before last had been Northbridge Bank. TesseraSeal everywhere. Every credit decision, every wire transfer, every IAM change, every ETL job — sealed. Karen's team had spent four days trying to find a gap and the worst thing they had found was a Salesforce-mirror runbook that described connector lag with the phrase "near real-time" instead of the four quantified bounds spec §10.16 requires. That had been a non-conformance the spec explicitly forbids downgrading to a Nit, and Karen had written it up as Finding-001 against an otherwise spotless engagement. Northbridge had been the cleanest engagement Karen had run in nine years. The CAE there had asked her, on the last day, whether she had any "wishes" for what they should do next, and the only wish she could think of was that they should write up their internal playbook so other banks could follow it. He had said they were considering exactly that.
+The week before last had been Northbridge Bank. TesseraSeal everywhere. Every credit decision, every wire transfer, every IAM change, every ETL job — sealed. Dawn's team had spent four days trying to find a gap and the worst thing they had found was a Salesforce-mirror runbook that described connector lag with the phrase "near real-time" instead of the four quantified bounds spec §10.16 requires. That had been a non-conformance the spec explicitly forbids downgrading to a Nit, and Dawn had written it up as Finding-001 against an otherwise spotless engagement. Northbridge had been the cleanest engagement Dawn had run in nine years. The CAE there had asked her, on the last day, whether she had any "wishes" for what they should do next, and the only wish she could think of was that they should write up their internal playbook so other banks could follow it. He had said they were considering exactly that.
 
-Last week had been Continental Mutual — a mid-size financial services firm in the suburbs of a city Karen tried not to think about on her own time. No chain anywhere. CRM notes overwritten, database backups deletable, CloudWatch logs purgeable by the same engineers who wrote the code. Twelve people with temporary admin that had no expiration date. Karen had walked out of that one with a forty-page report and a feeling she had not been able to shake on the drive home. The CFO at Continental had asked her, on the last day, whether the report was really going to say what the draft said, and she had told him yes, and he had asked whether they could "soften the language" and she had said no.
+Last week had been Continental Mutual — a mid-size financial services firm in the suburbs of a city Dawn tried not to think about on her own time. No chain anywhere. CRM notes overwritten, database backups deletable, CloudWatch logs purgeable by the same engineers who wrote the code. Twelve people with temporary admin that had no expiration date. Dawn had walked out of that one with a forty-page report and a feeling she had not been able to shake on the drive home. The CFO at Continental had asked her, on the last day, whether the report was really going to say what the draft said, and she had told him yes, and he had asked whether they could "soften the language" and she had said no.
 
-Northbridge was still sitting on her like an unanswered question. One §10.16 non-conformance and a clean chain — the cleanest engagement she had run in nine years. The week before Continental, twelve Gaps and four Material Findings on a different bank's report Karen had reviewed for a colleague. The open question on the drive in was whether Northbridge had been the product or the institution. Mercator was the test.
+Northbridge was still sitting on her like an unanswered question. One §10.16 non-conformance and a clean chain — the cleanest engagement she had run in nine years. The week before Continental, twelve Gaps and four Material Findings on a different bank's report Dawn had reviewed for a colleague. The open question on the drive in was whether Northbridge had been the product or the institution. Mercator was the test.
 
 Today was something else. Today was half-and-half.
 
@@ -55,15 +55,15 @@ Today was something else. Today was half-and-half.
 
 She elaborated to herself as she pulled into the visitor lot. The bifurcation was the whole story. The thing that made Mercator interesting was not that they had chained their AI side — plenty of vendors are starting to do that. It was that they had chained *only* their AI side, and they had been honest about it, and they wanted the audit to draw the line clearly so they could fund the rest. That was unusual. Most clients want the auditor to find no gaps. Patricia wanted them found and named so she could go ask for money.
 
-The auditor's instinct, Karen thought, is to grade. Pass, fail, partial. The Mercator engagement was going to need a different shape. Two grades, side by side. One AI side. One legacy side. Two entirely different posture assessments stapled together. She would need to be careful that the report did not let the AI-side grade dilute the legacy-side grade, or vice versa. Patricia had said "two reports stapled together" and Karen had agreed — but the stapling itself was going to take some thought. The spec's §10.19 chain-coverage map was the conceptual spine of the bifurcation: the chain reaches one set of systems and not another, and the map names which is which.
+The auditor's instinct, Dawn thought, is to grade. Pass, fail, partial. The Mercator engagement was going to need a different shape. Two grades, side by side. One AI side. One legacy side. Two entirely different posture assessments stapled together. She would need to be careful that the report did not let the AI-side grade dilute the legacy-side grade, or vice versa. Patricia had said "two reports stapled together" and Dawn had agreed — but the stapling itself was going to take some thought. The spec's §10.19 chain-coverage map was the conceptual spine of the bifurcation: the chain reaches one set of systems and not another, and the map names which is which.
 
-She wondered, briefly, what the budget number actually looked like. Patricia had not said. Karen had a guess based on the surface area — extending the chain to billing, EHR, and the lab pipeline at a system Mercator's size was not going to be cheap. She had seen vendors quote eight figures for engagements like this. Whether the board would approve it was Patricia's problem, not hers. Her problem was making sure the report would carry weight in front of a board that would be looking at the number and asking whether the spend was really necessary.
+She wondered, briefly, what the budget number actually looked like. Patricia had not said. Dawn had a guess based on the surface area — extending the chain to billing, EHR, and the lab pipeline at a system Mercator's size was not going to be cheap. She had seen vendors quote eight figures for engagements like this. Whether the board would approve it was Patricia's problem, not hers. Her problem was making sure the report would carry weight in front of a board that would be looking at the number and asking whether the spend was really necessary.
 
-The conference room was on the fourth floor of the administration tower. Patricia was already there with two of her direct reports and a printed deck. Coffee on the table. A single sheet of paper at each chair: a one-page system map with two colored zones. Green on the left labeled "TesseraSeal scope (sepsis-cds)." Red on the right labeled "Legacy scope (everything else)." No marketing language. Just a map. Karen recognized the shape immediately — the green zone was a §10.19 chain-coverage map; the red zone named the institutional systems not yet chain-instrumented and the evidentiary substitute (CloudWatch + tape backups + "we trust the engineers") that today substitutes for chain coverage.
+The conference room was on the fourth floor of the administration tower. Patricia was already there with two of her direct reports and a printed deck. Coffee on the table. A single sheet of paper at each chair: a one-page system map with two colored zones. Green on the left labeled "TesseraSeal scope (sepsis-cds)." Red on the right labeled "Legacy scope (everything else)." No marketing language. Just a map. Dawn recognized the shape immediately — the green zone was a §10.19 chain-coverage map; the red zone named the institutional systems not yet chain-instrumented and the evidentiary substitute (CloudWatch + tape backups + "we trust the engineers") that today substitutes for chain coverage.
 
 "Good morning," Patricia said. "Before we start. I want you to know what you're walking into. Ninety days ago we turned on TesseraSeal for our sepsis CDS model. Three ICUs. One model. One inference path. That is the only thing in this building that is sealed. Everything else looks like every other hospital you have ever audited. I picked the AI side first because the FDA gave me a deadline. I want your assessment to back the budget request to extend the rest. So please find the gaps. That is what I am paying you to do."
 
-Karen put her coffee down. "Thank you for saying that out loud. It saves us a day."
+Dawn put her coffee down. "Thank you for saying that out loud. It saves us a day."
 
 She had a follow-up.
 
@@ -71,13 +71,13 @@ She had a follow-up.
 
 Patricia did not pause. "§1.2 is on the wall above my desk. The chain proves what the model said at a specific time and that the record was not tampered after capture. Two things. The chain does NOT prove the model's clinical statement was accurate, that it complied with our internal AI Governance Committee policy, or that it was free of bias. The §1.1 Daubert grounding lives in the spec itself — testability via the §7 procedure and the test-vector corpus, peer review under the working-group process, known error rate per §1.3 security definitions, general acceptance of HMAC-SHA-256, RFC 6962 Merkle, and Ed25519. A false negative requires simultaneous compromise of the three independent custody layers §1.4 names — IKM, ledger storage, and HSM — plus the §1.2 SDK-process scenario for forward-only forgery. We name the line clearly so the plaintiff's expert cannot drag our witness onto the truth foundation under cross-examination."
 
-Karen wrote: *§1.1 / §1.2 / §1.3 / §1.4 — Daubert framing is in the spec text, not in vendor marketing.* Same line she had written at Northbridge. Same answer, almost word for word. Different building.
+Dawn wrote: *§1.1 / §1.2 / §1.3 / §1.4 — Daubert framing is in the spec text, not in vendor marketing.* Same line she had written at Northbridge. Same answer, almost word for word. Different building.
 
 Tom — the visiting team's internal-audit liaison — had already been on a call with Mercator's Chief Audit Executive the day before. He nodded. "We agreed yesterday on the bifurcation framing. The CAE is supportive. He wants the report to read as two reports stapled together."
 
 "Two reports stapled together," Patricia repeated. "Yes. That is exactly right."
 
-Karen looked around the table at her team. "Okay. Morning is the AI side. Mike and Chen, you're on point — Patricia's team will walk you through the inference chain. Diana, you'll do the IAM split — both sides of the line, because the line is exactly what we want to map. Afternoon is legacy. Raj on databases. Elena on the CRM. Luis on the pipelines. We reconvene at three for the reconciliation test. Five-thirty debrief."
+Dawn looked around the table at her team. "Okay. Morning is the AI side. Mike and Chen, you're on point — Patricia's team will walk you through the inference chain. Diana, you'll do the IAM split — both sides of the line, because the line is exactly what we want to map. Afternoon is legacy. Raj on databases. Elena on the CRM. Luis on the pipelines. We reconvene at three for the reconciliation test. Five-thirty debrief."
 
 Patricia nodded along. "The sepsis team is expecting Mike and Chen at nine. Dr. Wei — the lead clinical informaticist — will walk you through the inference chain. She built most of it herself, with the platform team. She is very direct."
 
@@ -382,7 +382,7 @@ Diana made a note that the AI-side IAM finding was clean *within its boundary*, 
 
 The team gathered in a side conference room with sandwiches from the cafeteria. Tom was on the phone with the CAE. Patricia had ducked out to a board prep call.
 
-Karen put her sandwich down before she'd taken a bite. "Let's talk about the morning."
+Dawn put her sandwich down before she'd taken a bite. "Let's talk about the morning."
 
 Mike: "AI side is real. I've audited four AI deployments this year that claimed sealed inference. Mercator's is the second one that actually does it. The §4.4 attribute table is populated correctly — both `gen_ai.request.model` and `gen_ai.response.model` on every model-call entry, `audit.deployment.intent` and `audit.deployment.policy_version` on every entry, `chain_kind` populated correctly per the §3 enumeration." (The first one Mike had seen was Northbridge's quant trading model the week before last.)
 
@@ -392,7 +392,7 @@ Diana: "Service IAM is sealed per §10.3 and the §3 operational `chain_kind`. C
 
 Raj: "I haven't done the full warehouse review yet — that's after lunch — but the inference-input schema is properly designed. Append-only with versioning."
 
-Karen: "Okay. Question. Is half-chained better than not chained at all?"
+Dawn: "Okay. Question. Is half-chained better than not chained at all?"
 
 The room got quiet for a beat.
 
@@ -404,35 +404,35 @@ Diana: "Better, yes. Sufficient, no. Half a chain creates a false sense of compl
 
 Chen: "And the lab pipeline that feeds the model is on the wrong side of the line. If a lab value is wrong before it gets to the warehouse, the chain seals the wrongness. The chain proves what the model received; it doesn't prove what the lab actually measured. §1.2 again."
 
-Karen tapped her pen. "Better, yes. Sufficient, no. That's my position. Tom?"
+Dawn tapped her pen. "Better, yes. Sufficient, no. That's my position. Tom?"
 
 "That's the position the CAE is bracing for. He told me so this morning."
 
 Elena: "I want to flag — I haven't been to the CRM yet, but if the morning is any indication, the CRM is going to be the diary all over again. Salesforce. Member services. Notes. Backups. No `audit.connector_source.*` family per §4.4.6 because there's no connector."
 
-Karen: "Yes. We'll see at one."
+Dawn: "Yes. We'll see at one."
 
 Luis had been quiet. He looked up from his laptop. "I was reading their internal runbook for the lab pipeline while you were all talking. The pipeline writes to S3. CloudTrail logs the writes. CloudTrail logging can be disabled per-bucket by anyone with `s3:PutBucketLogging` permission. Three engineers have that permission. None of them are on a watchlist. Compare that to the §10.5 HSM custody and §10.3 append-only enforcement on the AI side — the chain's storage tier on the sepsis side is in object lock with compliance-mode retention; the lab S3 bucket is just a bucket."
 
-Karen put her sandwich down again, after one bite.
+Dawn put her sandwich down again, after one bite.
 
 "Better, yes. Sufficient, no," she said again. To no one in particular.
 
 Tom, off the phone again: "The CAE asked me to put a question to the team. He wants to know how we frame this in the report so the AI-side findings don't look like a marketing piece for TesseraSeal."
 
-Karen thought about that for a moment. "Frame it as boundary-marking. The AI side is sealed because Mercator chose to seal it; the legacy side is not because Mercator hasn't gotten there yet. The report is not endorsing TesseraSeal. The report is documenting that on the surface area where Mercator has applied chain-grade controls, the controls hold; on the surface area where they haven't, they don't. The vendor is incidental to the finding. Spec §10.19 is the framework — a chain-coverage map, with categories, and an evidentiary substitute named for each unchained system."
+Dawn thought about that for a moment. "Frame it as boundary-marking. The AI side is sealed because Mercator chose to seal it; the legacy side is not because Mercator hasn't gotten there yet. The report is not endorsing TesseraSeal. The report is documenting that on the surface area where Mercator has applied chain-grade controls, the controls hold; on the surface area where they haven't, they don't. The vendor is incidental to the finding. Spec §10.19 is the framework — a chain-coverage map, with categories, and an evidentiary substitute named for each unchained system."
 
 Mike: "I'd add — the AI side is sealed *to the controls Mercator built*. The vendor product is the substrate. The sealing posture is Mercator's. The same product deployed without two-of-three approval, without append-only warehouse semantics, without the reconciliation events Chen showed us, would not have produced this audit posture. The product is a tool. The posture is the team. Same Vidimus SDK, same Herald Core ledger, same `herald-verify` CLI — the difference between Mercator's posture and a hypothetical sloppy deployment is the institutional discipline at the SDK and operational layer."
 
-"That's the framing," Karen said. "Tom, tell the CAE we'll make sure the report reads that way."
+"That's the framing," Dawn said. "Tom, tell the CAE we'll make sure the report reads that way."
 
 Tom relayed the message. He came off the call after another minute. "He's on board. He also asked — between us — whether he should brace the board for a number with a B in it."
 
-Karen looked at him.
+Dawn looked at him.
 
 "That's his question, not mine," Tom said.
 
-"That's a question for Patricia," Karen said. "Not for us. Our job is the assessment."
+"That's a question for Patricia," Dawn said. "Not for us. Our job is the assessment."
 
 The team finished lunch. Elena had already started on the CRM walkthrough — she'd wandered off at 12:25 with Jordan-the-CRM-admin's calendar invite on her laptop. The rest of them rinsed coffee cups and walked back out to the engineering floor.
 
@@ -490,7 +490,7 @@ Elena set her pen down. "PHI in a free-text field with no edit audit and a 30-da
 Elena wrote that down. Slowly.
 
 > **⚠️ Surprise #X (CRM-2) — Patient-outreach navigators store PHI in unaudited free-text Salesforce field**
-> The physician group's care-management navigators use Salesforce Cases for high-risk-patient outreach. Clinical context — including PHI — goes into the Description field. Field history is disabled. The HITRUST Partial finding has been renewed for three cycles. The remediation has not been funded. The CRM is functionally identical to the CRM at last week's financial-services audit, except that the data sitting in it is medical rather than financial. Under the §10.13 evidentiary-artifacts retention guidance applied with HIPAA 6-year-floor controls per 45 CFR 164.530(j)(2) and the state pediatric-records floors that often run to 7-10 years past age 18, the 30-day backup window is not even close to the operative retention floor. The §10.22 redaction discipline does not apply here because there is no chain to redact pre-MAC into; the PHI lives in the source field with no integrity binding at all. If Mercator extends the chain to the CRM via the §4.4.6 connector pattern, the institution's CC8.1 will need to name the lag bound under §10.16's four quantified numbers (median, 95th-percentile SLO, alerting threshold, RTO) — descriptive language like "near real-time" is non-conformant per §10.16's severity-classification clause and would land as a non-conformance Karen could not downgrade.
+> The physician group's care-management navigators use Salesforce Cases for high-risk-patient outreach. Clinical context — including PHI — goes into the Description field. Field history is disabled. The HITRUST Partial finding has been renewed for three cycles. The remediation has not been funded. The CRM is functionally identical to the CRM at last week's financial-services audit, except that the data sitting in it is medical rather than financial. Under the §10.13 evidentiary-artifacts retention guidance applied with HIPAA 6-year-floor controls per 45 CFR 164.530(j)(2) and the state pediatric-records floors that often run to 7-10 years past age 18, the 30-day backup window is not even close to the operative retention floor. The §10.22 redaction discipline does not apply here because there is no chain to redact pre-MAC into; the PHI lives in the source field with no integrity binding at all. If Mercator extends the chain to the CRM via the §4.4.6 connector pattern, the institution's CC8.1 will need to name the lag bound under §10.16's four quantified numbers (median, 95th-percentile SLO, alerting threshold, RTO) — descriptive language like "near real-time" is non-conformant per §10.16's severity-classification clause and would land as a non-conformance Dawn could not downgrade.
 
 She closed her notebook on the CRM. "Jordan. Thank you. I appreciate the directness."
 
@@ -603,9 +603,9 @@ She closed her notebook on the pipeline review. "The sepsis side has an integrit
 
 ### 📊 3:00 PM — Reconciliation Test
 
-The reconciliation test was Karen's design. She had sketched it the night before. The premise was simple: pick five sepsis alerts. Trace each one end-to-end — backward to the lab values that fed it, forward to the clinical action that followed. Score what reconciles and what does not.
+The reconciliation test was Dawn's design. She had sketched it the night before. The premise was simple: pick five sepsis alerts. Trace each one end-to-end — backward to the lab values that fed it, forward to the clinical action that followed. Score what reconciles and what does not.
 
-The team gathered in a small huddle room with a screen on the wall. Mike, Chen, Diana, Raj, Karen. Patricia was there. Dr. Wei was there. The CAE was on a Zoom.
+The team gathered in a small huddle room with a screen on the wall. Mike, Chen, Diana, Raj, Dawn. Patricia was there. Dr. Wei was there. The CAE was on a Zoom.
 
 Mike picked the alerts at random — five from a single week, spread across the three hospitals.
 
@@ -649,7 +649,7 @@ Diana: "And on Alert 5 — the rewritten note. The override entry is sealed. The
 
 Patricia: "That's the reality of clinical documentation. Note editing is medically appropriate. It is also an evidentiary problem and we know it."
 
-Karen tallied on the whiteboard.
+Dawn tallied on the whiteboard.
 
 | Alert | AI inference | Backward (lab inputs) | Forward (clinical action) |
 |---|---|---|---|
@@ -667,14 +667,14 @@ The room was quiet.
 
 Patricia broke the silence. "That is the budget request."
 
-Karen: "That is exactly the budget request."
+Dawn: "That is exactly the budget request."
 
 > **⚠️ Surprise #8 — The chain has a rooting failure at the EHR boundary**
 > The sepsis chain proves what the model saw and what it said. Backward from the chain — to the lab values that fed the model — the warehouse remains reconcilable for the 90-day window the inference pipeline has been live, but the upstream lab pipeline is mutable and one of five tested alerts had its source lab record deleted by a retention job. Forward from the chain — to the clinical action that followed — Epic notes can be edited indefinitely. Two of five tested alerts have post-hoc note edits. The chain is sealed in the middle. The two ends are not. The §10.19 chain-coverage map needs to be re-read against this finding: the boundary is not just "what is chain-instrumented vs not" but "what does the institution rely on the chain for, and at what end is the rooting weakest." Per §10.13 evidentiary-artifacts retention, the documentation that substantiates FRE 901(b)(9) authentication of the process is in the institution's hands; for the sepsis chain that documentation is the SDK manifest, source-code hash, HSM configuration, daily seal-job logs, change-management records, and verifier output for each tenant-day. For the EHR notes, the comparable evidentiary-artifacts package does not exist — the note version history is in Epic's hands and Epic's retention controls; an Epic-side retention or correction policy invalidates the institution's reconstruction at the edges of the chart's life. The remediation is to extend the chain to cover the EHR write-back path under the §10.21-style cross-vendor model-handover discipline (the chain entries reference the Epic-side write events with hash anchors); the operational details land under §10.16's connector-lag pattern and §4.4.6 connector-source attribution.
 
 Mike, quietly: "On the inference path you can prove what the model said. On every other path the integrity is still hope."
 
-Karen looked at him sharply. Then she wrote that sentence down in her notebook, word for word.
+Dawn looked at him sharply. Then she wrote that sentence down in her notebook, word for word.
 
 ---
 
@@ -686,7 +686,7 @@ Dr. Friedman went first. He was direct in a way only ICU attendings get to be.
 
 "The model fires too often. We override about thirty percent of the time. Mostly because the model doesn't know context. It sees a patient with elevated lactate and a fever and calls sepsis. It doesn't know the patient is two hours post-op and the lactate is from the surgical stress, not from sepsis."
 
-Karen: "When you override, what do you record?"
+Dawn: "When you override, what do you record?"
 
 "In the override UI we pick a reason from a list. There are about twelve options. Most of the time my reason is 'clinical context not captured by model.' Then I go write a real progress note in Epic explaining what's actually going on."
 
@@ -694,7 +694,7 @@ Diana: "The override entry is sealed. Your structured reason is sealed. Both are
 
 "Yes. The note in Epic is not."
 
-Karen: "And the note in Epic is where your actual clinical reasoning lives."
+Dawn: "And the note in Epic is where your actual clinical reasoning lives."
 
 "Yes."
 
@@ -722,7 +722,7 @@ Diana: "So an edit from a hundred days ago shows up as a different version of th
 
 Dr. Friedman: "Look. I'm an attending. I write notes. I update them as the patient evolves. That's medical practice. If you're going to chain my notes, that's a different conversation, and frankly I have concerns about it."
 
-Karen: "I am not going to chain your notes today. I am noting that the chain you have today does not extend to your notes, and that the clinical reasoning behind your overrides — the override decisions that the chain *does* capture — is in your notes, which are mutable. That is a finding. It is not a request."
+Dawn: "I am not going to chain your notes today. I am noting that the chain you have today does not extend to your notes, and that the clinical reasoning behind your overrides — the override decisions that the chain *does* capture — is in your notes, which are mutable. That is a finding. It is not a request."
 
 He thought about that. "Okay. That's fair."
 
@@ -731,7 +731,7 @@ He thought about that. "Okay. That's fair."
 
 Dr. Wei added, after the attendings had left: "We've talked about extending the chain to clinical notes. The clinicians don't want it. Not because they're hiding anything — because they are required to update notes as a matter of medical practice and they don't want every update to be a sealed event that a plaintiff lawyer can wave around in court."
 
-Karen: "That is a real concern. Worth discussing separately. It is also worth knowing what the gap is, even if we choose not to close it. The §10.22 redaction-discipline framework would let you redact pre-MAC at the SDK boundary so plaintiff's counsel cannot demand unredacted note content from the chain — but redaction does not solve the version-tracking problem. That's a deeper design question."
+Dawn: "That is a real concern. Worth discussing separately. It is also worth knowing what the gap is, even if we choose not to close it. The §10.22 redaction-discipline framework would let you redact pre-MAC at the SDK boundary so plaintiff's counsel cannot demand unredacted note content from the chain — but redaction does not solve the version-tracking problem. That's a deeper design question."
 
 "Agreed."
 
@@ -741,11 +741,11 @@ She wrote that down too.
 
 ### 🔍 4:30 PM — The Boundary Question
 
-Patricia came back into the small huddle room at 4:30. The CAE had dropped off the Zoom. It was just Karen, Tom, and Patricia.
+Patricia came back into the small huddle room at 4:30. The CAE had dropped off the Zoom. It was just Dawn, Tom, and Patricia.
 
 Patricia leaned forward. "I need to ask you something directly. Will FDA accept the AI-side chain even if the EHR-side isn't chained?"
 
-Karen had been waiting for this question all day. She'd thought about her answer on the drive in. She thought about it again now.
+Dawn had been waiting for this question all day. She'd thought about her answer on the drive in. She thought about it again now.
 
 "FDA SaMD post-market surveillance: yes. The AI side is what they review. They want to know that the model's behavior in the field matches the model's behavior in the clearance submission. They want predictive performance monitoring. They want adverse-event tracking. They want a credible record of what the model was asked and what it answered. You have that. The chain you have today satisfies the FDA SaMD post-market evidentiary burden as I understand it. The §1.1 Daubert grounding gives the FDA reviewer the four-factor answers from the spec text alone, the §10.26 reference-verifier distribution lets the reviewer run the verifier independently, the §10.18 CC8.1-and-runbook cross-referencing rule means your runbook points back at the spec section that governs each control, and the §10.13 evidentiary-artifacts retention package is what you'd produce under cross-examination. The NTP discipline behind the timestamps is per §10.4 (and §10.14 names the optional RFC 3161 trusted-time integration that you have not adopted yet — that's an open candidate for FDA-litigation-anticipated workloads). I am not your FDA counsel and you should confirm with them. But based on what I have seen today, yes."
 
@@ -759,7 +759,7 @@ Patricia exhaled. "Okay."
 
 Tom looked up.
 
-Karen continued. "If a plaintiff sues you for a clinical error and the case theory is *the model's output was wrong*, the chain saves you. You can produce a sealed record of exactly what the model was asked, exactly what it said, exactly which clinician saw it, exactly what they did. Plaintiff's expert cannot rewrite that record. The chain is your defense. The §1.2 epistemic-scope claim — what the AI said at time T, and that the record was not tampered after capture — is exactly what defends you in that case theory.
+Dawn continued. "If a plaintiff sues you for a clinical error and the case theory is *the model's output was wrong*, the chain saves you. You can produce a sealed record of exactly what the model was asked, exactly what it said, exactly which clinician saw it, exactly what they did. Plaintiff's expert cannot rewrite that record. The chain is your defense. The §1.2 epistemic-scope claim — what the AI said at time T, and that the record was not tampered after capture — is exactly what defends you in that case theory.
 
 If the case theory is *the clinical judgment that followed was wrong*, the chain doesn't help. The chain shows the clinician saw the alert. It doesn't show what the clinician was thinking. The clinical reasoning is in Epic notes. Plaintiff's expert will pull the note version history and argue about edits. Your defense in that case is the standard medical-malpractice defense — it doesn't get worse because of the chain, but it doesn't get better. §1.2 names this explicitly: the chain does not prove statement-level accuracy or compliance.
 
@@ -783,7 +783,7 @@ Patricia thought for a long beat. "Lab. Then EHR. Then billing. Okay."
 
 "And in parallel: clinician AD. The chain you have today rests on a legacy AD identity layer. If you extend the chain without firming up the identity root, you're building taller walls on the same foundation. The IAM-as-chain pattern your sepsis service runs on the service-account side is the model — every AD grant a chain entry, every revocation a chain entry, time-boxed expiration enforced by a chain-driven worker. That's not specific to any spec section; it's the §10.3 append-only enforcement plus the §3 `chain_kind = "operational"` discipline applied to identity events. And the §10.1 key-fingerprint reconciliation discipline — every `key_fingerprint` rotation auditable, no silent IKM swaps — is the kind of identity-root hygiene the AD modernization should adopt."
 
-Karen had one more.
+Dawn had one more.
 
 "And §10.25. When the chain extends to those new systems, the SDK on each system has to honor the run-resume contract. If the SDK loses local state, it queries the ledger's chain-tail endpoint before emitting the next entry. Three-place tail acquisition — in-memory, sidecar, ledger — and the SDK refuses to emit if it cannot find a tail and the ledger is unreachable. That closes the silent-restart attack class. The §10.17 HSM partition ceremony attestation is also worth knowing about — every CloudHSM partition ceremony you run for the new tenants emits a chain-coupled attestation event. And §10.24 entity succession governs whether the tenant_id stays stable across any future organizational change. We won't run into those today, but they're going to come up the moment Mercator extends the chain to the insurance arm — that subsidiary may need its own tenant_id under §10.15 multi-region resilience Pattern B if the regulatory regime treats it as a separate entity."
 
@@ -803,9 +803,9 @@ She stood up. "Five-thirty debrief?"
 
 ### 🌆 5:30 PM — Auditor Debrief
 
-The full team reconvened. Patricia, the CAE on Zoom, Patricia's two direct reports, Karen's eight-person team. The conference room was the same one from the morning.
+The full team reconvened. Patricia, the CAE on Zoom, Patricia's two direct reports, Dawn's eight-person team. The conference room was the same one from the morning.
 
-Karen ran the debrief.
+Dawn ran the debrief.
 
 "This is a bifurcated assessment. We are going to give you two findings sets. One for the AI side. One for the legacy side. Both are real. Neither cancels the other. The bifurcation tracks the §10.19 chain-coverage map you printed for us at kickoff."
 
@@ -861,7 +861,7 @@ She pulled up a single slide.
 | Plaintiff defense — input data | Sealed at model boundary (§5 canonical-bytes); mutable upstream | Mutable upstream |
 | Custody-layer count behind a verifying false negative | Three (§1.4: IKM, ledger storage, HSM) plus §1.2 SDK-process residual | One (the engineers who run each system) |
 
-Karen paused on the slide for a beat longer than the rest.
+Dawn paused on the slide for a beat longer than the rest.
 
 "Half the river is sealed. The half upstream is not. You can prove what your model said. You cannot prove what it was given."
 
@@ -869,13 +869,13 @@ The CAE, on Zoom: "That's the line for the board memo, right there."
 
 Patricia: "That's the line."
 
-She turned to the room. "Karen. Tom. Thank you. This is the assessment I asked for. The sequencing recommendation — lab first, EHR second, billing third — is going into the budget request next week. The AD modernization is moving from Q4 to Q3. The board meets June 14. I'd like permission to share the bifurcation framing in the board materials."
+She turned to the room. "Dawn. Tom. Thank you. This is the assessment I asked for. The sequencing recommendation — lab first, EHR second, billing third — is going into the budget request next week. The AD modernization is moving from Q4 to Q3. The board meets June 14. I'd like permission to share the bifurcation framing in the board materials."
 
-Karen: "Permission granted. We'll send the formal report by Friday. The bifurcation framing is the framing. Use it."
+Dawn: "Permission granted. We'll send the formal report by Friday. The bifurcation framing is the framing. Use it."
 
-The CAE on Zoom: "One more thing. I want it on record that this assessment found the AI-side controls to be at the top quartile for healthcare systems we benchmark against, and the legacy-side controls to be at or below the median. That is the comparative posture we are going to take to the board. Karen — you good with that characterization?"
+The CAE on Zoom: "One more thing. I want it on record that this assessment found the AI-side controls to be at the top quartile for healthcare systems we benchmark against, and the legacy-side controls to be at or below the median. That is the comparative posture we are going to take to the board. Dawn — you good with that characterization?"
 
-Karen took a beat. "I am, with one note. The 'top quartile' phrasing comes with a caveat — the population of healthcare systems running chain-grade AI controls in production is small. Mercator is in the top quartile of a fairly small group. I'd rather the report say 'meets or exceeds best-known practices observed in deployed healthcare AI systems audited in the last twelve months.' That phrasing is more defensible and it is more accurate."
+Dawn took a beat. "I am, with one note. The 'top quartile' phrasing comes with a caveat — the population of healthcare systems running chain-grade AI controls in production is small. Mercator is in the top quartile of a fairly small group. I'd rather the report say 'meets or exceeds best-known practices observed in deployed healthcare AI systems audited in the last twelve months.' That phrasing is more defensible and it is more accurate."
 
 The CAE nodded. "Better. Use that."
 
@@ -889,17 +889,17 @@ Patricia: "Noted. The CC8.1 will name the four numbers before any connector ship
 
 Elena: "Good."
 
-Patricia stood up, shook Karen's hand, then Tom's, then went around the room and shook each team member's hand individually. It took ninety seconds. She thanked each of them by name.
+Patricia stood up, shook Dawn's hand, then Tom's, then went around the room and shook each team member's hand individually. It took ninety seconds. She thanked each of them by name.
 
 "Drive safely."
 
 The team packed up. There was the usual quiet shuffle of laptops closing and notebooks going into bags. Diana paused on the way out and asked Patricia a private question about the AD modernization timeline. Patricia answered it. Mike traded business cards with Dr. Wei, who had come up for the debrief tail. Chen and Devansh exchanged GitHub handles. Luis caught Marcus from the lab pipeline team in the hallway and gave him an unsolicited recommendation about a CloudTrail-immutability tool that would not have prevented the disable risk but would have made the disable visible faster — closer to the spirit of §10.3 append-only enforcement applied at the lab S3 bucket. Marcus thanked him.
 
-Karen watched the room empty. She gathered her notes, clipped her pen back to the cover, and slung her bag over her shoulder.
+Dawn watched the room empty. She gathered her notes, clipped her pen back to the cover, and slung her bag over her shoulder.
 
 Tom held the door for her on the way out. "Round two is in the rear-view."
 
-"Round two is the new comparison point," Karen said. "Last week was the floor. Two weeks ago was the ceiling. Today is what real-world transition looks like."
+"Round two is the new comparison point," Dawn said. "Last week was the floor. Two weeks ago was the ceiling. Today is what real-world transition looks like."
 
 "Good story."
 
@@ -909,7 +909,7 @@ Tom held the door for her on the way out. "Round two is in the rear-view."
 
 ### 🧾 Final Assessment Theme
 
-The drive home was forty-five minutes. Karen had her coffee, refilled, in the cup holder. The sun was setting over the hospital district behind her.
+The drive home was forty-five minutes. Dawn had her coffee, refilled, in the cup holder. The sun was setting over the hospital district behind her.
 
 She thought about the day. About the bifurcation. About Dr. Wei's terminal showing a clean verifier resolution at 9:30 in the morning, exit code 0 against §7's twelve-step procedure. About Luis pointing at the S3 bucket policy at lunch and saying "This is the diary." About Patricia's question at 4:30 and the answer she had given. About Dr. Wei's offhand comment that they had hired the engineer who built Northbridge's chain — which explained why two sites separated by an industry boundary looked so similar at the chain-construction layer and so different everywhere else.
 

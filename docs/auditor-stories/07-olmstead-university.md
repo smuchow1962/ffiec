@@ -15,7 +15,7 @@ Olmstead is a private R1 with fourteen schools and colleges. Top-25 medical scho
 
 Olmstead Medical Center sits on the same campus, shares the board, and is a separate legal entity with a separate compliance office. The two organizations share data on the medical-school side — clinical and research data both — and that data-sharing seam is its own audit problem. The medical center carries its own `tenant_id` reservation in the IKM registry per §10.1, separate from the university's; the per-tenant HKDF binding under §4.1 keeps the two cryptographically isolated even when they share a cloud account.
 
-By the time the team arrived at Olmstead, TesseraSeal had been walked through banking, healthcare, BaaS, industrial, biopharma, and utility. Northbridge was now six engagements back — the cleanest one Karen had run in years, one §10.16 non-conformance and a chain that held byte-for-byte. Karen had stopped expecting Olmstead to be Northbridge. Higher-ed was a new regulatory composition — FERPA + GLBA + Title IV — but the chain primitive was familiar. The open question for the team was not whether the cryptographic substrate held up under audit pressure — it had, six engagements running — but whether the spec composes cleanly with the higher-ed regulatory stack: admissions AI post-SFFA, financial-aid adverse-action under the GLBA Safeguards Rule, AI-driven academic-integrity decisions, and the learning-management-system mirrors that overlap with student-record systems. Different regulators, different evidentiary standards, same chain shape.
+By the time the team arrived at Olmstead, TesseraSeal had been walked through banking, healthcare, BaaS, industrial, biopharma, and utility. Northbridge was now six engagements back — the cleanest one Dawn had run in years, one §10.16 non-conformance and a chain that held byte-for-byte. Dawn had stopped expecting Olmstead to be Northbridge. Higher-ed was a new regulatory composition — FERPA + GLBA + Title IV — but the chain primitive was familiar. The open question for the team was not whether the cryptographic substrate held up under audit pressure — it had, six engagements running — but whether the spec composes cleanly with the higher-ed regulatory stack: admissions AI post-SFFA, financial-aid adverse-action under the GLBA Safeguards Rule, AI-driven academic-integrity decisions, and the learning-management-system mirrors that overlap with student-record systems. Different regulators, different evidentiary standards, same chain shape.
 
 Eleven months ago, an applicant-class disparate-impact threat letter from a civil-rights firm landed on the General Counsel's desk. The letter named the undergraduate admissions AI screening system as the source of the alleged disparity. Olmstead's response — written into the consent-to-resolve framework with the firm — was to put the AI screening system under TesseraSeal: every model score, every reviewer override, every retraining event, every fairness-audit report linked by hash. The chain is the university's principal defense if the firm files suit. The defense rides on the §1.2 epistemic scope: the chain proves what the AI screening system said about an applicant at a specific time, and that the record was not tampered with after capture; it does not prove the admissions decision was right.
 
@@ -31,7 +31,7 @@ Advancement uses Salesforce for donor relationship management. Major-gift cultiv
 
 The IRB system is a homegrown SQL-backed app on the medical-school side. Protocol amendments are versioned. The audit trail for IRB approvals is in a database that admins can `UPDATE` directly.
 
-Karen's team was engaged by Dr. Ines Achterberg, Vice Provost for Research Integrity and Compliance. PhD in epidemiology. Sixteen years in higher-ed compliance after a stint at NIH's Office of Research Integrity. The deliverable will be read by the General Counsel, the medical-center compliance office, and the Faculty Senate's research-integrity committee.
+Dawn's team was engaged by Dr. Ines Achterberg, Vice Provost for Research Integrity and Compliance. PhD in epidemiology. Sixteen years in higher-ed compliance after a stint at NIH's Office of Research Integrity. The deliverable will be read by the General Counsel, the medical-center compliance office, and the Faculty Senate's research-integrity committee.
 
 Four regulators are watching at once: the Department of Education on the FERPA side (a current OCR complaint from an admitted student about how her data was used to score her), NIH on the research-integrity side, the FTC on the GLBA side, and HHS OCR on the medical-center HIPAA side. Each wants something different. The chain on the admissions side fits one of them.
 
@@ -41,7 +41,7 @@ This is the diary of that day.
 
 ## Audit Team
 
-- **Karen** — Lead Auditor (governance and narrative)
+- **Dawn** — Lead Auditor (governance and narrative)
 - **Raj** — Database specialist
 - **Elena** — CRM systems
 - **Mike** — Application and API layer
@@ -56,9 +56,9 @@ Client-side liaison: **Dr. Ines Achterberg**, Vice Provost for Research Integrit
 
 ## 🌅 8:30 AM — Kickoff and the Drive In
 
-Karen rode in with Tom from the hotel. Twenty minutes north along the lakeshore. The campus came into view through a screen of bare oaks — Romanesque limestone, modern glass on the engineering-quad side, the medical-center towers a half-mile off behind the law school.
+Dawn rode in with Tom from the hotel. Twenty minutes north along the lakeshore. The campus came into view through a screen of bare oaks — Romanesque limestone, modern glass on the engineering-quad side, the medical-center towers a half-mile off behind the law school.
 
-Tom had a thermos. Karen had her usual — black coffee in a travel cup, half gone before they pulled out of the hotel lot.
+Tom had a thermos. Dawn had her usual — black coffee in a travel cup, half gone before they pulled out of the hotel lot.
 
 "Recap me," Tom said. "Just the headline of each one."
 
@@ -84,7 +84,7 @@ Tom had a thermos. Karen had her usual — black coffee in a travel cup, half go
 
 "Utility. Yesterday. Public-safety stakes. AI on outage prediction chained, OT on the substations and the SCADA legacy. The seam mattered because the regulator there cares about what the AI told the operator and what the operator did with it."
 
-Tom waited. Karen looked at the limestone tower coming up on the left.
+Tom waited. Dawn looked at the limestone tower coming up on the left.
 
 "And today?"
 
@@ -100,7 +100,7 @@ Tom waited. Karen looked at the limestone tower coming up on the left.
 
 "What's the recurring line you keep saying?"
 
-Karen drained her cup. "It never is."
+Dawn drained her cup. "It never is."
 
 "That one."
 
@@ -112,7 +112,7 @@ Ines met them at the badge desk in the administration building. Sweater, slacks,
 
 "Welcome. Coffee is in the conference room. We have a tight day. I would like to start with the admissions AI dashboard, do the database work, IAM, lunch, then a research-computing tour with two lab visits, then reconciliation. The medical-center hallway tour is at four o'clock — I will walk you over personally for thirty minutes."
 
-Karen smiled. "That's a clean agenda."
+Dawn smiled. "That's a clean agenda."
 
 "It needs to be. The OCR complaint review is in three weeks. The General Counsel reads my Friday memo. The Faculty Senate research-integrity committee meets next Tuesday. I need to know what is defensible and where the exposure is."
 
@@ -124,7 +124,7 @@ Tom nodded. "Same kickoff Maria gave us at Stelvio."
 
 Ines did not smile. "Maria and I were on a panel together in October. We compared notes."
 
-> **🔍 Karen's note (internal):**
+> **🔍 Dawn's note (internal):**
 > *Two clients. Same disposition. They ran into each other on a compliance-conference panel and have been comparing notes for six months. The shape we keep finding has names attached to it now. That changes the politics of the report.*
 
 The team filed into the conference room. Ines flipped on the wall display.
@@ -159,9 +159,9 @@ Reason: chain integrity verified, HMAC recomputed,
         against public key admissions-2026-q1
 ```
 
-Mike turned the laptop. Karen read the output. Ines watched without comment. The format matched the §7 normative output contract — three lines, exact field labels, exit code 0 per §10.12.
+Mike turned the laptop. Dawn read the output. Ines watched without comment. The format matched the §7 normative output contract — three lines, exact field labels, exit code 0 per §10.12.
 
-"Good." Karen looked at the dashboard again. "Pick one from before the chain went live."
+"Good." Dawn looked at the dashboard again. "Pick one from before the chain went live."
 
 Ines paused. "Eleven months ago — March 2025."
 
@@ -183,7 +183,7 @@ Mike nodded. "Pre-deployment. Expected. Documented in the institution's CC8.1 as
 
 Ines: "May 12, 2025. The day the consent-to-resolve framework was finalized. The chain went live the same afternoon. The §10.19 map version-stamp is `coverage-map-v1` with `effective_utc=2025-05-12T16:30:00Z`. The `chain.coverage_map_published` operational event re-emits monthly per §10.19 so an 18-month-lookback auditor finds an anchor in any period."
 
-Karen wrote: *Chain effective date 2025-05-12. Pre-chain decisions are out of scope for chain-based defense per §10.19 chain-coverage map. The threat letter referenced the prior cycle's decisions — those defenses live in the consent-to-resolve framework directly, not in the chain. The §1.2 epistemic-scope line is intact: the chain proves the AI's recorded statements within its effective period, not the institution's pre-chain practice.*
+Dawn wrote: *Chain effective date 2025-05-12. Pre-chain decisions are out of scope for chain-based defense per §10.19 chain-coverage map. The threat letter referenced the prior cycle's decisions — those defenses live in the consent-to-resolve framework directly, not in the chain. The §1.2 epistemic-scope line is intact: the chain proves the AI's recorded statements within its effective period, not the institution's pre-chain practice.*
 
 > **✓ Confirmation #1**
 > The undergraduate admissions screening chain is live and producing verifiable entries within the current cycle. Mike re-verified a January decision in five seconds with the §7 twelve-step procedure, the §7 normative three-line output format, and the §10.12 exit-code-0 PASS contract. The chain effective date is documented as the day the consent-to-resolve framework was finalized; the §10.19 chain-coverage map names the pre-chain period as out of scope and emits a `chain.coverage_map_published` event monthly so a future auditor finds the boundary anchored on the chain itself rather than asserted in a separate document. The verifier rejects pre-effective entries by design rather than fabricating a result, consistent with the §10.12 exit-code-2 structural-input-error contract.
@@ -214,7 +214,7 @@ Mike's pen paused over his notebook. "And that field is overwriteable indefinite
 
 "Correct."
 
-Karen wrote: *Chain captures the structured override decision and the §10.11.1-shaped `audit.ecoa.adverse_action.reasons` analog (here under the institution's CC8.1-named admissions-decisions taxonomy). Free-text rationale lives in Slate. 30-day field history. Indefinitely overwriteable. Watch this — this will be the legally interesting gap when the team gets to reconciliation at three.*
+Dawn wrote: *Chain captures the structured override decision and the §10.11.1-shaped `audit.ecoa.adverse_action.reasons` analog (here under the institution's CC8.1-named admissions-decisions taxonomy). Free-text rationale lives in Slate. 30-day field history. Indefinitely overwriteable. Watch this — this will be the legally interesting gap when the team gets to reconciliation at three.*
 
 > **⚠️ Surprise #1**
 > The override-rationale free-text — the reviewer's actual reasoning for changing the AI score — lives in Slate, not in the chain. Slate retains 30 days of field history; past 30 days, prior versions are not preserved. The chain captures the structured override decision and the reason code; the structured shape mirrors the §10.11.1 `audit.ecoa.adverse_action.reasons` array discipline (controlled vocabulary, explanation-method named, integrity-bound). It does not capture what the reviewer wrote into the free-text field. Per §10.19, the chain-coverage map MUST name Slate explicitly as a SaaS-edge system whose free-text rationale field is OUTSIDE the chain-instrumented boundary; the map MUST also name the evidentiary substitute (Slate's 30-day field history) and the institution's posture at the boundary. The map is currently incomplete on this field — a §10.19 map-completeness gap, separate from the underlying capture gap.
@@ -229,7 +229,7 @@ Ines did not push back. "I have flagged this internally. The Slate integration w
 
 "Not yet."
 
-Karen wrote: *Same structure as Stelvio. Phase 2 unfunded. The thing that needs the chain is the thing that does not have it. The §10.19 map-completeness gap is closable with a one-line addition naming Slate's 30-day window as the substrate and the Phase-2 webhook as the planned remediation. The substrate gap (Slate retention) is not closable by documentation alone — it is the actual capture-coverage gap and tracks separately.*
+Dawn wrote: *Same structure as Stelvio. Phase 2 unfunded. The thing that needs the chain is the thing that does not have it. The §10.19 map-completeness gap is closable with a one-line addition naming Slate's 30-day window as the substrate and the Phase-2 webhook as the planned remediation. The substrate gap (Slate retention) is not closable by documentation alone — it is the actual capture-coverage gap and tracks separately.*
 
 The team split.
 
@@ -459,9 +459,9 @@ She wrote at the bottom of the page: *Same finding as Stelvio. Where the chain i
 
 The catering was in the small dining room across from the conference room. Soup and sandwiches. Coffee that was actually warm.
 
-Karen and Tom took a corner. The rest of the team ate at the long table.
+Dawn and Tom took a corner. The rest of the team ate at the long table.
 
-Karen unwrapped a turkey-and-swiss. "Tom. The reporting frame."
+Dawn unwrapped a turkey-and-swiss. "Tom. The reporting frame."
 
 Tom set his soup spoon down. "Each of these gaps is in a different regulator's house."
 
@@ -469,7 +469,7 @@ Tom set his soup spoon down. "Each of these gaps is in a different regulator's h
 
 "Which means we map findings per-regulator. FERPA gets the admissions-side report. GLBA gets the financial-aid report. NIH gets the research-integrity report. HHS OCR gets the medical-center hallway-tour informal advisory. Civil-rights litigation defense gets a separate addendum because it cuts across FERPA and across the override-rationale gap."
 
-Karen ate. Chewed. "Five reports out of one engagement."
+Dawn ate. Chewed. "Five reports out of one engagement."
 
 "Five sections of one report. One severity scale. Five regulator audiences. Each section ends with a per-regulator summary. The General Counsel reads the whole thing. Each compliance lead reads their section."
 
@@ -481,7 +481,7 @@ Karen ate. Chewed. "Five reports out of one engagement."
 
 "Three to five. NIH and DoD will force the research-computing piece in the next two cycles. HIPAA the medical center is on its own schedule. GLBA the financial aid is biennial — the next audit is the forcing function. Slate is twelve months."
 
-Karen took a bite. Looked out the dining-room window at the quad. Two students were arguing about something on the steps of the library, gesticulating, laughing.
+Dawn took a bite. Looked out the dining-room window at the quad. Two students were arguing about something on the steps of the library, gesticulating, laughing.
 
 "Tom."
 
@@ -731,7 +731,7 @@ They walked back across the quad to the conference room. The wind off the lake h
 
 ## 📊 3:00 PM — Reconciliation Test
 
-Tom set the test. Five admissions decisions from the past 60 days. Trace each one end to end. Ines picked them — five entry IDs sent to Karen by email at 2:55. The team did not know which five until 3:00.
+Tom set the test. Five admissions decisions from the past 60 days. Trace each one end to end. Ines picked them — five entry IDs sent to Dawn by email at 2:55. The team did not know which five until 3:00.
 
 ```
 2026-02-14-UA-08221
@@ -745,7 +745,7 @@ Mike, Chen, Raj, Diana, and Elena each took one. Twenty-five minutes.
 
 Each verifier invocation ran the §7 twelve-step procedure with `--posture=ffiec` and `--strict`. Per §7 step 3a, every entry's `tenant_id` was checked against the §3 character class. Per §7 step 4, every entry's `tenant_id` was bound to the file header. Per §7 step 6, the structural walk verified `seq` and `prev_hash` continuity. Per §7 step 8, the `key_fingerprint` was constant-time-compared against the looked-up IKM before any MAC compute. Per §7 step 9, the MAC recompute used `expected_prev_hash` (the structurally walked value) per §10.8 constant-time discipline. Per §7 step 12a, every entry representing a model call had both `gen_ai.request.model` and `gen_ai.response.model` populated. Per §10.12, exit code 0 = PASS; exit code 1 = FAIL.
 
-Karen also invoked the verifier in witness mode (no `--master-key`) on a separate sample. Per §7 the witness-mode output was `Status: PASS-STRUCTURALLY, key-bound verification skipped` for the structurally consistent entries; steps 7, 8, 9 (the IKM-dependent steps) were correctly skipped while steps 1-6, 10, 11, 12, and 12a executed. The reference verifier per §10.26 ships in a separate repository under Apache 2.0 with reproducible builds, Cosign-signed release artifacts, per-platform binaries (Linux/Windows/macOS, x86_64 and ARM64), SHA-256/SHA-512 manifests, and a CycloneDX SBOM. The institution's CC8.1 names the implementation, the version, and the verification key per §10.26's three-name citation discipline.
+Dawn also invoked the verifier in witness mode (no `--master-key`) on a separate sample. Per §7 the witness-mode output was `Status: PASS-STRUCTURALLY, key-bound verification skipped` for the structurally consistent entries; steps 7, 8, 9 (the IKM-dependent steps) were correctly skipped while steps 1-6, 10, 11, 12, and 12a executed. The reference verifier per §10.26 ships in a separate repository under Apache 2.0 with reproducible builds, Cosign-signed release artifacts, per-platform binaries (Linux/Windows/macOS, x86_64 and ARM64), SHA-256/SHA-512 manifests, and a CycloneDX SBOM. The institution's CC8.1 names the implementation, the version, and the verification key per §10.26's three-name citation discipline.
 
 ### 2026-02-14-UA-08221
 
@@ -757,7 +757,7 @@ He pulled Slate. "Rationale field present. Last modified February 14 at 3:48 PM.
 
 "Clean trace."
 
-Karen wrote: *Reconciliation 1 — full trace. AI clean. Reviewer rationale traceable. No override.*
+Dawn wrote: *Reconciliation 1 — full trace. AI clean. Reviewer rationale traceable. No override.*
 
 ### 2026-02-22-UA-09817
 
@@ -767,7 +767,7 @@ Chen: "Verifier — PASS. Score 64, confidence 0.71. Override decision: override
 
 "Slate field present. Last modified February 22. No subsequent edits. Field-history shows original. Two paragraphs explaining the recommendation letters from the applicant's research mentor weighted heavily. Original is the only version."
 
-Karen wrote: *Reconciliation 2 — full trace. AI clean. Override-up captured. Rationale original preserved.*
+Dawn wrote: *Reconciliation 2 — full trace. AI clean. Override-up captured. Rationale original preserved.*
 
 ### 2026-03-04-UA-12044
 
@@ -791,7 +791,7 @@ Mike: "Within the 30-day window. Original is recoverable."
 
 Diana: "Just barely. April 6 plus 30 days is May 6. Today is April 9. We're inside the window. If this same record had been examined in May, the original would be gone."
 
-Karen wrote: *Reconciliation 3 — AI clean. Override-down captured. Rationale edited April 6, original recoverable in field-history. Within window. The chain proves the structured override decision and reason code at the moment of decision per §1.2; the rationale's earlier text is recoverable from Slate not because the chain captured it but because Slate's 30-day field-history happened to span this window.*
+Dawn wrote: *Reconciliation 3 — AI clean. Override-down captured. Rationale edited April 6, original recoverable in field-history. Within window. The chain proves the structured override decision and reason code at the moment of decision per §1.2; the rationale's earlier text is recoverable from Slate not because the chain captured it but because Slate's 30-day field-history happened to span this window.*
 
 ### 2026-03-18-UA-15903
 
@@ -819,7 +819,7 @@ She re-pulled with the applicant_hash from the chain entry. The Slate record cam
 
 She read both. "Same gist. Trimmed. The original mentioned a specific course the applicant had not taken. The current is more general."
 
-Karen wrote: *Reconciliation 4 — AI clean. Override-down captured. Rationale edited March 19, original recoverable. Trimmed, not contradicted.*
+Dawn wrote: *Reconciliation 4 — AI clean. Override-down captured. Rationale edited March 19, original recoverable. Trimmed, not contradicted.*
 
 ### 2026-04-02-UA-18441
 
@@ -827,7 +827,7 @@ Elena: "Verifier — PASS. Score 79, confidence 0.88. Override decision: overrid
 
 The room got quiet.
 
-Karen: "Rationale?"
+Dawn: "Rationale?"
 
 Elena pulled Slate. The rationale field-history showed only the current value. Last modified April 2 at 10:14 AM. No field-history entries before that.
 
@@ -855,11 +855,11 @@ Tom: "Override-down with no recoverable original rationale."
 
 Elena: "Override-down with no recoverable original rationale. The April 2 record is what we have."
 
-Karen wrote: *Reconciliation 5 — AI clean. Override-down captured. Rationale edited within 32 minutes of being entered. Original gone. Audit log records the overwrite event but not the prior content. This is exactly the gap the §10.19 map needs to name and the Phase-2 webhook closes — if the rationale had been webhooked at the chain boundary on every edit, the 9:42 AM version would have its own chain entry under §4.4.6 + §4.1, integrity-bound, append-only, and the overwrite at 10:14 AM would land as a separate chain entry rather than as a Slate-side mutation we cannot reverse.*
+Dawn wrote: *Reconciliation 5 — AI clean. Override-down captured. Rationale edited within 32 minutes of being entered. Original gone. Audit log records the overwrite event but not the prior content. This is exactly the gap the §10.19 map needs to name and the Phase-2 webhook closes — if the rationale had been webhooked at the chain boundary on every edit, the 9:42 AM version would have its own chain entry under §4.4.6 + §4.1, integrity-bound, append-only, and the overwrite at 10:14 AM would land as a separate chain entry rather than as a Slate-side mutation we cannot reverse.*
 
 ### Tally
 
-Karen put it on the board.
+Dawn put it on the board.
 
 | Decision | AI side | Reviewer decision | Rationale traceable |
 |---|---|---|---|
@@ -878,7 +878,7 @@ Both of the gone-rationale cases were override-down decisions for applicants who
 
 The room was quiet. Ines was sitting with her hands folded on the table.
 
-Karen broke the silence. "Ines, the threat letter."
+Dawn broke the silence. "Ines, the threat letter."
 
 Ines did not look up. "The threat letter named override-down decisions for applicants whose AI score would have admitted them as the suspect class. Both of these would be in that class if the firm files."
 
@@ -892,7 +892,7 @@ Ines did not look up. "The threat letter named override-down decisions for appli
 > **⚠️ Surprise #9**
 > Two-of-five reviewer rationales are gone. Both are override-down decisions on applicants whose AI score would have admitted them. One has the original recoverable through Slate field-history because the edit was within the 30-day window. The other has no recoverable original because the rationale field was edited a second time within 32 minutes of being entered, and Slate's field-history did not capture the first content. This is the litigation exposure. Per §10.19 chain-coverage-map discipline: the field is OUTSIDE the chain-instrumented boundary today; per §1.2 epistemic scope: the chain cannot prove what was not captured. Phase-2 closes the field's capture-coverage gap by webhooking edits at the SDK boundary; the §10.22 redaction discipline already in force keeps the captured rationale integrity-bound under the per-event MAC even when the underlying content carries FERPA-sensitive PII.
 
-Karen looked at Tom. He looked back. Neither of them said anything about the bet.
+Dawn looked at Tom. He looked back. Neither of them said anything about the bet.
 
 ---
 
@@ -902,7 +902,7 @@ Ines had asked Lab B's PI to come over for a sit-down. He showed up two minutes 
 
 He sat down. He did not put his phone away.
 
-Karen introduced herself. "We visited your lab earlier this morning."
+Dawn introduced herself. "We visited your lab earlier this morning."
 
 "Right. Diana and Luis."
 
@@ -916,7 +916,7 @@ He set his phone face-down on the table. His eyes narrowed.
 
 "Look. We have other priorities. This is research. We publish. We get grants. We are not running a financial-services audit operation. The data we work with is publicly available — equity returns, options chains, macro indicators. There is no PII. There is no PHI. There is nothing that would survive a HIPAA audit because there is nothing here that HIPAA would care about. I appreciate that there are integrity questions, but the framing is mismatched."
 
-Karen heard him out. She did not interrupt.
+Dawn heard him out. She did not interrupt.
 
 "Professor, I am not here to argue your priorities. I am here to document what is and what is not. NIH and DoD have started asking questions about research-computing integrity at universities. That is the context. The framing is not 'we are auditing your lab.' The framing is 'when the funding agency asks, what do you say.' And the §1.2 epistemic-scope distinction matters here too — even a fully chain-instrumented Lab B would prove what the lab's instruments recorded, not whether the research conclusions are right. The integrity question NIH is asking is narrower than the research-quality question your committee asks."
 
@@ -934,9 +934,9 @@ The PI's posture shifted. He picked his phone back up but did not unlock it.
 
 "Working group it is."
 
-He stood up. He shook Karen's hand. He left.
+He stood up. He shook Dawn's hand. He left.
 
-Karen wrote in her notebook: *Lab B PI defused. Ines handled it. Faculty federalism is a political problem before it is a technical problem. The chain is not the answer to faculty federalism. The chain is the answer to a specific use case where the institution has decided enforcement is required. The decision precedes the chain. Without the decision, there is no chain. Per §10.19 the eventual roadmap names every lab in the chain-coverage map even when the substrate is the lab's own version-control discipline — the map's value is honest enumeration, not full chain coverage.*
+Dawn wrote in her notebook: *Lab B PI defused. Ines handled it. Faculty federalism is a political problem before it is a technical problem. The chain is not the answer to faculty federalism. The chain is the answer to a specific use case where the institution has decided enforcement is required. The decision precedes the chain. Without the decision, there is no chain. Per §10.19 the eventual roadmap names every lab in the chain-coverage map even when the substrate is the lab's own version-control discipline — the map's value is honest enumeration, not full chain coverage.*
 
 > **⚠️ Surprise #10**
 > Faculty governance is the political third rail. Central IT cannot enforce. The Faculty Senate will resist any chain mandate. NIH and DoD are increasingly asking. The remediation is a working-group-led twelve-to-eighteen-month design effort, not a top-down system rollout. The cost of getting this wrong is loss of faculty trust, which costs more than the audit finding. The §10.19 chain-coverage map is the document that lets the institution name what the chain does and does not reach honestly across that political seam — without it, the institution is forced to pretend either that all labs are chain-instrumented (which they are not) or that no labs have any substrate (which is also untrue).
@@ -953,11 +953,11 @@ The CISO met them in the corridor. Black turtleneck, badge on a lanyard, the loo
 
 "Thirty minutes. What do you need to see."
 
-Karen: "Epic clinical-notes mutability. MyChart audit posture. The medical school's research-database overlap with clinical systems. The lab's specimen-tracking pipeline."
+Dawn: "Epic clinical-notes mutability. MyChart audit posture. The medical school's research-database overlap with clinical systems. The lab's specimen-tracking pipeline."
 
 The CISO walked them through. Epic clinical notes — same as Mercator. Notes were mutable through addendum until co-signed; after co-sign they were locked but the original-vs-addendum diff was retained. MyChart audit logs were on, retention was 90 days for free-text fields and one year for structured fields. The medical school's research databases shared a data-warehouse layer with the hospital's clinical data warehouse — research could query clinical, with consent and IRB approval, and the queries were logged but the query-result snapshots were not always retained. The specimen-tracking pipeline through the pathology lab was instrumented at the LIMS layer; retention there was three years.
 
-Karen: "What about anything chain-coupled?"
+Dawn: "What about anything chain-coupled?"
 
 The CISO: "Nothing. We have a tenant ID reserved for medical-center deployment per §3 and §10.1 — uniqueness-enforced at the IKM-registry layer, separate from the university tenant — but we have not deployed."
 
@@ -972,19 +972,19 @@ Mike wrote: *Medical-center tenant reserved per §10.1 with the global IKM regis
 
 The CISO checked his watch. Twenty-eight minutes had passed.
 
-Karen wrapped up. "Thank you. We will write this up as informal advisory, not a finding. Ines will route it to your office formally."
+Dawn wrapped up. "Thank you. We will write this up as informal advisory, not a finding. Ines will route it to your office formally."
 
 The CISO nodded. "Appreciated."
 
 They walked back to the connector. Ines spoke for the first time since they had crossed.
 
-"Karen. The litigation question."
+"Dawn. The litigation question."
 
 "Go."
 
 "If the civil-rights firm files suit and asks for the rationale behind the override-down decisions, what can we produce?"
 
-Karen had been holding the answer since the reconciliation test.
+Dawn had been holding the answer since the reconciliation test.
 
 "For decisions in the chain era, you produce the override_reason code, which is in the chain and sealed under §4.1 + §4.2 + §4.3. You produce the underlying `audit.ecoa.adverse_action.reasons`-shaped array per §10.11.1 by analogy. For applicants who received the notification in a language other than English — international applicants whose admissions packet was translated — the §10.11 translation-entry schema applies by analogy too: the translation chain entry binds to the original adverse-action decision via `parent_run_id` / `parent_seq` per §4.4, the `audit.ecoa.translation.target_language` and `output_hash` are bound under the per-event MAC, and a regulator answering 'did this applicant receive the decision in their preferred language within the regulatory window?' answers from those attributes alone. Olmstead retains a §10.23 consumer-correlation index — `consumer_index.consumer_id_hash` derived from the institution-issued student ID per the §10.23 Shape 1 chain-anchored discipline, with each index entry under `chain_kind = "operational"` per §3 enumeration — so an OCR records request keyed to a specific applicant resolves to the applicable `(run_id, seq)` pairs from the chain alone, without depending on an institution-internal index the institution could rebuild. You produce the rationale field's current state. If the rationale has been edited within the past 30 days, you produce the field-history snapshot from Slate showing the prior version. If the rationale has been edited and the original is older than the 30-day window, you cannot prove what the original was. The audit log records that an edit happened; it does not record what was overwritten. For the two override-down records we found this afternoon, one is recoverable through field-history because it is within the window — the other is gone because the second edit happened the same day the first edit happened, and field-history did not snapshot the first content. The §1.2 epistemic-scope line is the framing here: the chain proves what the AI screening system said and what the structured override decision was; it does not prove what the free-text rationale said because the rationale was not chain-bound."
 
@@ -1008,7 +1008,7 @@ Mike: "Two parts. One — webhook the rationale field on edit, so every prior ve
 
 Ines did not answer immediately. Then: "After today, yes. I will take this to the General Counsel Friday."
 
-Karen wrote: *Phase 2 funding catalyzed by today's findings. The 30-second elevator pitch to GC: 'we cannot prove the original rationale on two-of-five override-down decisions in our sample, both for applicants whose AI score would have admitted them, both in the suspect class. Webhook the rationale field per §4.4.6. Close the gap.'*
+Dawn wrote: *Phase 2 funding catalyzed by today's findings. The 30-second elevator pitch to GC: 'we cannot prove the original rationale on two-of-five override-down decisions in our sample, both for applicants whose AI score would have admitted them, both in the suspect class. Webhook the rationale field per §4.4.6. Close the gap.'*
 
 > **✓ Confirmation #7**
 > The chain on the AI side supports the disparate-impact litigation defense for the structured artifacts — score, model version, override decision, override reason code, fairness audit by retraining — under §1.1 Daubert framing, §1.2 epistemic scope, §1.3 security definitions (EUF-CMA per-event, second-preimage Merkle, EUF-CMA HSM), §1.4 compositional security, §4.1/§4.2/§4.3 cryptographic primitives, §4.4 wire form, §5.2 best-evidence posture, §7 verification, §10.5 HSM custody, §10.13 evidentiary-artifacts retention. The remediation for the rationale gap is engineering effort at the Slate webhook boundary plus a Slate configuration change, plus §10.19 map update plus §10.18 CC8.1 cross-referencing — not architectural rework. Phase 2 is now funded.
@@ -1021,7 +1021,7 @@ They walked back to the conference room.
 
 The team reconvened. Coffee was cold. The afternoon light had turned that flat upper-Midwest gray. The library across the quad had its lamps on.
 
-Karen stood at the whiteboard. Five rows.
+Dawn stood at the whiteboard. Five rows.
 
 | Regulator | Status |
 |---|---|
@@ -1065,15 +1065,15 @@ Tom answered. "Three things. The five-row summary. The reconciliation test as a 
 
 Ines nodded. "That tracks."
 
-Karen closed her notebook. "We will have the report Thursday. Friday morning before your GC review."
+Dawn closed her notebook. "We will have the report Thursday. Friday morning before your GC review."
 
 Ines's shoulders dropped that quarter-inch. "Thank you."
 
 The team packed up. Raj and Luis loaded the boxes of evidence into the rental SUV. Diana and Elena said goodbye to Ines at the connector building. Mike and Chen took one last look across the quad at the library lamps.
 
-Karen walked out last. She turned at the doorway and looked back at the conference-room window — at the empty whiteboard, the coffee cups, the five rows that would become Friday's memo.
+Dawn walked out last. She turned at the doorway and looked back at the conference-room window — at the empty whiteboard, the coffee cups, the five rows that would become Friday's memo.
 
-> **🔍 Karen's note (internal):**
+> **🔍 Dawn's note (internal):**
 > *It never is. Sometimes the chain is on the part that's being sued, and that's the only part that needs to be.*
 >
 > *The chain works. The chain is not the gap. The gap is a free-text field one webhook away from being closed. Phase 2 is twelve months. The litigation question is going to be asked between now and Phase 2 deployment. That window is the report.*

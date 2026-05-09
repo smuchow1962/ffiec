@@ -9,7 +9,7 @@
 - Lumière: 4 months on the model-development pipeline (training data hashes, model artifact hashes, fairness-audit reports — sealed in Lumière's chain).
 - The handoff: when Lumière delivers a new model, Lumière's model-artifact-hash + model-card-hash + fairness-audit-report-hash are recorded into an Eberhardt chain entry of `service.name = "model-handover"` as cross-vendor anchors — the schema spec §10.21 normates as `audit.model_handover.*`. Two chains compose at the handover event.
 **Date:** Tuesday, the week after the engagement-before-this-one
-**Audit team lead:** Karen
+**Audit team lead:** Dawn
 **Stuttgart liaison:** Klaus Eberhardt, third-generation owner-CEO. 64. Engineering background — Maschinenbau from RWTH Aachen.
 **Paris liaison:** Hélène Lefebvre, COO. 47. Ex-INRIA researcher, PhD in computational learning theory.
 **Cities:** Stuttgart and Paris, both CET. About one hour apart by TGV-Eurostar. The team works in parallel and joins by video bridge midday and at debrief.
@@ -56,7 +56,7 @@ The same eight-person team that walked Northbridge a quarter ago and Olmstead an
 
 ### Stuttgart (Eberhardt HQ)
 
-- **Karen** — Lead Auditor (governance + narrative)
+- **Dawn** — Lead Auditor (governance + narrative)
 - **Mike** — Application / API layer
 - **Diana** — IAM and access control
 - **Luis** — DevOps / logs / pipelines
@@ -74,11 +74,11 @@ The split is deliberate. Eberhardt is the larger surface area and has the cross-
 
 ### 🌅 8:30 AM CET — Kickoff (Stuttgart)
 
-Karen had landed at Stuttgart Airport the night before and taken the S-Bahn into Mitte. The hotel was a small one near the Schlossplatz. The drive out to the Eberhardt office in the morning was twenty-five minutes through the Stuttgart hills. She had her coffee in the cup holder and the engagement brief on her tablet.
+Dawn had landed at Stuttgart Airport the night before and taken the S-Bahn into Mitte. The hotel was a small one near the Schlossplatz. The drive out to the Eberhardt office in the morning was twenty-five minutes through the Stuttgart hills. She had her coffee in the cup holder and the engagement brief on her tablet.
 
 *Two countries*, she thought as she came up the autobahn ramp. *Two companies. One chain that crosses the boundary. EU AI Act for both. BMW watching. 2024 model-drift in the rear view. We test whether the cross-vendor anchor actually composes — what one chain says, the other confirms.*
 
-She took stock of the prior engagements. Northbridge had been the gold standard — full single-tenant deployment, eighteen months mature, the team had spent four days trying to find a gap and found a stale comment in a YAML file. Ten engagements back now. One §10.16 non-conformance on the books, the chain otherwise byte-for-byte clean. Karen had not seen its match in the ten that followed. Mercator had been the bifurcation — sepsis CDS on the chain, the EHR off the chain, Patricia Okonkwo's funding-roadmap framing. Stelvio had been the three-zone version — AI side sealed, OT mutable, IT business legacy, Maria Costanza's triage. Atrio had been the multi-tenant test — forty-seven tenants under twelve sponsor-bank IKMs, fourteen hundred verifier runs, zero failures, Naomi Reisinger's coordinated examiner room.
+She took stock of the prior engagements. Northbridge had been the gold standard — full single-tenant deployment, eighteen months mature, the team had spent four days trying to find a gap and found a stale comment in a YAML file. Ten engagements back now. One §10.16 non-conformance on the books, the chain otherwise byte-for-byte clean. Dawn had not seen its match in the ten that followed. Mercator had been the bifurcation — sepsis CDS on the chain, the EHR off the chain, Patricia Okonkwo's funding-roadmap framing. Stelvio had been the three-zone version — AI side sealed, OT mutable, IT business legacy, Maria Costanza's triage. Atrio had been the multi-tenant test — forty-seven tenants under twelve sponsor-bank IKMs, fourteen hundred verifier runs, zero failures, Naomi Reisinger's coordinated examiner room.
 
 Then Helmstad. The biopharma. The CRO data feed where Quintessa had PGP-signed the SFTP delivery and Helmstad had recorded the SHA-256 at the boundary, and the source side beyond the boundary lived on Quintessa's SOC 2. Pacific Crescent — the utility, AI gas-pipeline leak detection on the chain, OT historian off the chain, the Brentwood alert that turned out to be a real small leak. Olmstead — the university, AI admissions screening on the chain, Slate free-text rationale-fields off the chain, two override-down decisions where the rationale was gone.
 
@@ -86,11 +86,11 @@ After Olmstead there had been two more. The Korean engagement at Sun-Won where t
 
 By the time the team rolled into Stuttgart, TesseraSeal had been audited across the previous nine engagements — banking, healthcare, BaaS, industrial, biopharma, utility, higher-ed, Tel Aviv vendor, K-beauty retail across Korea + Taiwan, toy supply chain across RI + Shenzhen + LA. Cross-vendor automotive AI under EU AI Act Article 12 was a new composition — but the chain primitive was familiar. The team's posture coming into Eberhardt-Lumière was confidence in the primitive and confidence in many of the regulatory compositions it had already absorbed. The new questions were specific: training-data retention floor against a long deployment window, a cross-vendor model-handover schema with a plural-array `audit_report_languages` shape, and the within-EU cross-border attribute composition for a German-French Article 28 channel.
 
-*It never is*, Karen thought. *Today the question is whether the joint chain holds at the handoff. Each side's chain looks fine alone. The question is the seam.*
+*It never is*, Dawn thought. *Today the question is whether the joint chain holds at the handoff. Each side's chain looks fine alone. The question is the seam.*
 
-The Eberhardt building was in a Stuttgart industrial park, glass front, the Eberhardt name in plain stainless steel on the wall. Klaus Eberhardt was waiting in the lobby in a navy jumper and grey trousers. He was 64, lean, with engineer's hands and a directness Karen recognized in the first thirty seconds.
+The Eberhardt building was in a Stuttgart industrial park, glass front, the Eberhardt name in plain stainless steel on the wall. Klaus Eberhardt was waiting in the lobby in a navy jumper and grey trousers. He was 64, lean, with engineer's hands and a directness Dawn recognized in the first thirty seconds.
 
-"Karen. Welcome to Stuttgart." His English was almost unaccented. "You came in last night?"
+"Dawn. Welcome to Stuttgart." His English was almost unaccented. "You came in last night?"
 
 "I did. Hotel near the Schlossplatz."
 
@@ -104,7 +104,7 @@ Klaus did not waste time.
 
 Hélène, on the screen: "I will say the same thing from Paris. Lumière has obligations as a provider under Article 16 of the EU AI Act — fairness audit, transparency to deployers. The chain entries support those obligations on our side. Klaus's chain on the deployer side covers Article 11 logging and Article 12 conformity assessment. The cross-vendor anchor is what makes the two halves a whole. I want it tested today."
 
-Karen put her coffee down on the table.
+Dawn put her coffee down on the table.
 
 "Thank you both. That is exactly the right framing." She looked around the Stuttgart side of the table, then at the screen for the Paris side. "Stuttgart morning is the inference side and the Eberhardt IAM. Paris morning is the model-development chain and the Lumière database. We meet by video bridge at noon to walk the cross-vendor anchor live. Afternoon is the API layer in Stuttgart, the training-data pipeline in Paris. Three o'clock is the joint reconciliation test by video bridge — pick a model deployment, trace it end to end through both chains. Five-thirty is the joint debrief."
 
@@ -485,7 +485,7 @@ She also pulled up the §10.1 key-fingerprint reconciliation evidence — Eberha
 
 The Stuttgart conference room had a small spread on a side table — Maultaschen, schnitzel, salad, a bowl of fruit. Klaus had insisted on Maultaschen, Swabian-style. The Paris side had a tartine with brie and a side of soup that Hélène had ordered up from the building's café. The video bridge stayed up. Both sides ate while talking.
 
-Karen put down her plate.
+Dawn put down her plate.
 
 "Let's talk about what we've seen so far. Mike — the inference path."
 
@@ -524,7 +524,7 @@ Hélène, on the screen: "That is what BMW asked for."
 > **✓ Confirmation #10 — Cross-vendor anchor matches live across the partnership boundary per §10.21 cross-anchor verification**
 > The `audit.model_handover.model_artifact_sha256`, `audit.model_handover.model_card_sha256`, and `audit.model_handover.fairness_audit_report_sha256` fields in Eberhardt's handover entry match the corresponding fields in Lumière's model-build entry bit-for-bit. The cross-vendor anchor composes per §10.21's bidirectional verification mechanism — independent verifier output on each side (§7), plus byte-equal hash join. RFC 8785 JCS canonicalization (§5) plus SHA-256 yields the byte-identical values for byte-identical inputs that the join depends on. This is the mechanism BMW's vendor-management team asked the joint engagement to demonstrate.
 
-Karen let the moment sit for a beat. Then she brought it back.
+Dawn let the moment sit for a beat. Then she brought it back.
 
 "Klaus — Hélène — for the deliverable, the language we'll use is that the cross-vendor anchor composes end-to-end without trust in either party's claim alone. Each side's chain is independently verifiable per §7. The match is what makes the joint claim. That language survives an examiner read on both sides."
 
@@ -532,13 +532,13 @@ Klaus nodded. Hélène nodded.
 
 Tom: "Stefan Kuhn at BMW asked us specifically whether the cross-vendor anchor composes without trust. The answer is yes, by independent verification plus byte-equal hash match. That is the right answer."
 
-Karen: "Good. Save the live demo as evidence. We'll attach the screen-share frames to the deliverable per §10.13 evidentiary-artifacts retention discipline."
+Dawn: "Good. Save the live demo as evidence. We'll attach the screen-share frames to the deliverable per §10.13 evidentiary-artifacts retention discipline."
 
-Klaus took the last bite of his Maultaschen. "Karen — there is a question I want to put to you now, before the afternoon. We have been talking about the seam working. Tell me what does *not* work yet. Lumière and I both know there is something. Hélène and I would rather hear it now than at five-thirty."
+Klaus took the last bite of his Maultaschen. "Dawn — there is a question I want to put to you now, before the afternoon. We have been talking about the seam working. Tell me what does *not* work yet. Lumière and I both know there is something. Hélène and I would rather hear it now than at five-thirty."
 
-Karen looked at Raj on the screen. Raj had been the one who had found the 90-day retention issue this morning.
+Dawn looked at Raj on the screen. Raj had been the one who had found the 90-day retention issue this morning.
 
-"Raj," Karen said.
+"Raj," Dawn said.
 
 Raj walked them through it. The Lumière training-data shards rotated out at 90 days post-delivery. The Eberhardt deployment window was typically 9 to 18 months. If a regression appeared six months in and someone wanted to retrace which shards produced it, the shards were gone. The manifest hash was retained, the manifest document was retained, the chain entry was retained — but the shards themselves were not. This was the §10.20 partial.
 
@@ -550,19 +550,19 @@ Klaus nodded. "We can give you that. The longest we have run a model is twenty-t
 
 "Twenty-four months it is."
 
-Karen: "Document the retention extension as a CAPA against this audit. The deliverable will name it as Finding #1 — Partial conformance against §10.20 — with the in-flight remediation. Tom — log it. The next handover entry should carry `audit.model_handover.training_data_retention_floor_days = 720` per §10.21 so the deployer's CC8.1 evidences the floor commitment from the chain."
+Dawn: "Document the retention extension as a CAPA against this audit. The deliverable will name it as Finding #1 — Partial conformance against §10.20 — with the in-flight remediation. Tom — log it. The next handover entry should carry `audit.model_handover.training_data_retention_floor_days = 720` per §10.21 so the deployer's CC8.1 evidences the floor commitment from the chain."
 
 Tom: "Logged."
 
-Hélène was quiet for a moment more, then spoke again. "Karen — let me say something for the record. The 90-day policy was not arbitrary. It was the answer we gave ourselves when we read GDPR Article 5(1)(c) the first time, four years ago, and decided we wanted to be conservative about training-data retention. It was a defensible position at the time. What I did not do was model the deployment-window asymmetry. The §10.20 retention floor mechanism — the longest active deployment window plus an investigation buffer, justified under Article 6(1)(f) legitimate interest tied to EU AI Act Article 12 — that is the right legal-basis architecture. We will adopt it. And the post-engagement spec section that names our case as the worked example is the durable answer to the question we should have asked four years ago. I would rather our policy be cited in spec text than rediscovered in a separate engagement."
+Hélène was quiet for a moment more, then spoke again. "Dawn — let me say something for the record. The 90-day policy was not arbitrary. It was the answer we gave ourselves when we read GDPR Article 5(1)(c) the first time, four years ago, and decided we wanted to be conservative about training-data retention. It was a defensible position at the time. What I did not do was model the deployment-window asymmetry. The §10.20 retention floor mechanism — the longest active deployment window plus an investigation buffer, justified under Article 6(1)(f) legitimate interest tied to EU AI Act Article 12 — that is the right legal-basis architecture. We will adopt it. And the post-engagement spec section that names our case as the worked example is the durable answer to the question we should have asked four years ago. I would rather our policy be cited in spec text than rediscovered in a separate engagement."
 
 Klaus, after a beat: "The chain that proves Lumière kept what they said they would keep is more useful than the contract that says they will."
 
-Karen: "That is the §10.21 `training_data_retention_floor_days` discipline exactly. The chain anchors the integer commitment on the handover entry; the deployer reads it from the chain, not from the contract binder; the post-close acquirer or post-incident regulator reads it from the chain alone. Round-17 M&A-G2 closed the contract-binding gap with the contract triple — `contract_id`, `contract_version`, `contract_hash_sha256` — and the §10.21 retention-floor field is the operational integer alongside it. The four attributes together are what make the §10.20 retention floor cryptographically auditable rather than procedurally trusted."
+Dawn: "That is the §10.21 `training_data_retention_floor_days` discipline exactly. The chain anchors the integer commitment on the handover entry; the deployer reads it from the chain, not from the contract binder; the post-close acquirer or post-incident regulator reads it from the chain alone. Round-17 M&A-G2 closed the contract-binding gap with the contract triple — `contract_id`, `contract_version`, `contract_hash_sha256` — and the §10.21 retention-floor field is the operational integer alongside it. The four attributes together are what make the §10.20 retention floor cryptographically auditable rather than procedurally trusted."
 
 The bridge stayed up while everyone finished lunch. The mood was something like the last twenty minutes of a long meeting where the work was done and the people had settled into their seats. The §10.20 conversation had gone exactly as the spec section anticipates — the institution surfaces the asymmetry, the legal basis adjusts, the chain anchors the commitment, the next handover carries the integer. The mechanism the spec normates is the mechanism the field engagement adopts.
 
-Karen made a note for the deliverable's executive summary: *The §10.20 retention floor mechanism is not a remediation imposed by an outside auditor. It is the institution's own legal-basis architecture, made cryptographically auditable through the §10.21 model-handover schema. The audit surfaced the asymmetry; the spec named the resolution; the field engagement adopted the resolution within ninety minutes.*
+Dawn made a note for the deliverable's executive summary: *The §10.20 retention floor mechanism is not a remediation imposed by an outside auditor. It is the institution's own legal-basis architecture, made cryptographically auditable through the §10.21 model-handover schema. The audit surfaced the asymmetry; the spec named the resolution; the field engagement adopted the resolution within ninety minutes.*
 
 ---
 
@@ -698,13 +698,13 @@ Luis pulled the seal record itself for April 8 — the day of the BMW iX inferen
 
 ### 📊 3:00 PM CET — Joint Reconciliation Test by Video Bridge
 
-The video bridge was back up at 3:00 PM. Karen had asked both sides to pick a single deployment and trace it end-to-end through both chains. She had asked Klaus and Hélène to be on the bridge for it. Tom had set up screen-recording per §10.13 evidentiary-artifacts retention discipline so the live trace would land in the deliverable as an integrity-bound artifact.
+The video bridge was back up at 3:00 PM. Dawn had asked both sides to pick a single deployment and trace it end-to-end through both chains. She had asked Klaus and Hélène to be on the bridge for it. Tom had set up screen-recording per §10.13 evidentiary-artifacts retention discipline so the live trace would land in the deliverable as an integrity-bound artifact.
 
-Karen framed it for the bridge. "Two chains. One BMW vehicle. Seven legs to traverse. We're testing whether the §10.21 cross-vendor anchor composes end-to-end without trust in either party's claim — independent verifier output on each side, plus byte-equal hash join at every boundary. If any leg fails, we surface it. If every leg passes, we have the joint claim."
+Dawn framed it for the bridge. "Two chains. One BMW vehicle. Seven legs to traverse. We're testing whether the §10.21 cross-vendor anchor composes end-to-end without trust in either party's claim — independent verifier output on each side, plus byte-equal hash join at every boundary. If any leg fails, we surface it. If every leg passes, we have the joint claim."
 
 Maximilian on the Stuttgart side picked a recent one: an `urgent-service-required` predictive-maintenance alert from April 8 for a BMW iX. Anonymized as `Customer-X` for the deliverable. The vehicle VIN was hashed in the chain entry (the chain captures the hash; the VIN itself is not in the chain — §1.2 epistemic-scope discipline plus §10.22 redaction discipline composed at the SDK boundary).
 
-Maximilian read out the trace. Karen watched it on the screen. Tom took notes.
+Maximilian read out the trace. Dawn watched it on the screen. Tom took notes.
 
 **Step 1.** The vehicle VIN-hash on the BMW iX. (BMW would have the unhashed VIN on their side. The hash matches.)
 
@@ -722,7 +722,7 @@ Maximilian read out the trace. Karen watched it on the screen. Tom took notes.
 
 The bridge sat in silence for a moment after Maximilian finished reading.
 
-Karen spoke first.
+Dawn spoke first.
 
 "Seven legs. Two chains. One BMW vehicle. End-to-end traversable with byte-equal hash matches at every cross-vendor anchor. That is the joint claim."
 
@@ -737,11 +737,11 @@ Mike, on the Stuttgart side, looked up from his terminal.
 
 "That trace took eleven minutes from kickoff to closing PASS. Including the Hélène-grants-credentials step."
 
-Karen: "Document the elapsed time. The deliverable will note that an end-to-end joint trace can be completed in under fifteen minutes once both sides cooperate. That is a number BMW will want to see."
+Dawn: "Document the elapsed time. The deliverable will note that an end-to-end joint trace can be completed in under fifteen minutes once both sides cooperate. That is a number BMW will want to see."
 
 Tom: "Logged."
 
-Karen turned the question back to the room. "What does the trace not cover, that BMW might ask about?"
+Dawn turned the question back to the room. "What does the trace not cover, that BMW might ask about?"
 
 Raj answered first. "BMW's vehicle-side data. Step 1 was the VIN-hash on the BMW iX, but the unhashed VIN, the raw sensor stream, the BMW-side ingestion logs — those are BMW's chain or BMW's equivalent of one. They are off our scope. The trace assumes BMW's side reconciles. If BMW's input does not match Eberhardt's `input_telemetry_hash`, the difference is in the BMW-to-Eberhardt transport. That is BMW's integration question, not Eberhardt's or Lumière's."
 
@@ -753,7 +753,7 @@ Klaus, after a beat: "So the trace today is fully traversable for v4.2.1 because
 
 Hélène: "Yes. The retention extension is what keeps the seven-leg trace alive across the deployment window. The §10.21 chain anchors prove what was deployed; the §10.20 retention floor keeps the training-data root-cause path retrievable. The two amendments compose."
 
-Karen: "And that is the language the deliverable will use. The chain at Eberhardt proves what was deployed for any inference at any time. The chain at Lumière proves what was built for any model handover at any time. The §10.20 retention floor keeps the training-data root-cause path retrievable through the deployment window. The §10.21 cross-anchor composes the two chains without trust. The trace is fully traversable while the retention floor holds."
+Dawn: "And that is the language the deliverable will use. The chain at Eberhardt proves what was deployed for any inference at any time. The chain at Lumière proves what was built for any model handover at any time. The §10.20 retention floor keeps the training-data root-cause path retrievable through the deployment window. The §10.21 cross-anchor composes the two chains without trust. The trace is fully traversable while the retention floor holds."
 
 Tom: "Logged for the executive summary."
 
@@ -773,13 +773,13 @@ Diana: "So a German examiner reading the joint deliverable would have the model 
 
 Klaus thought for a beat. "The BSI examiner reads English fluently. The LfDI Baden-Württemberg reads German. The CNIL reads French. The BMW vendor-management read is German-English. So the reader matrix is German, English, French — three languages. The model card is bilingual French-English. The fairness-audit body is French only with an English executive summary. The deployment-side documentation at Eberhardt is German with English appendices."
 
-Karen: "So an examiner reading across the seam — say BSI plus CNIL — has access to the artifacts in their preferred languages, but the *individual* fairness-audit body is French only."
+Dawn: "So an examiner reading across the seam — say BSI plus CNIL — has access to the artifacts in their preferred languages, but the *individual* fairness-audit body is French only."
 
 Hélène: "Yes. We can produce an English translation of the fairness-audit body for v4.2.1 within four weeks. For new models we can include English-French bilingual full-body audit reports as a standing practice. And as we add German-language translations for the BMW reader matrix, we'll populate `audit.model_handover.audit_report_languages = ["fr", "en", "de"]` per §10.21."
 
 Diana: "And the chain entry's `audit.model_handover.audit_report_languages` field is what flags this. It is captured. The reader knows from the chain what languages the report is in. The §10.21 plural-array discipline lets the chain entry surface available translations without a schema change. As more translations are produced, the array carries them."
 
-Karen: "Right. That is a procedural finding, not a chain-integrity finding. The chain captures the language array correctly per §10.21. The schema is already plural — Round-17 M&A-N2 closure. The procedural recommendation is to produce the English translation within four weeks and adopt bilingual-or-trilingual audit bodies as standing practice."
+Dawn: "Right. That is a procedural finding, not a chain-integrity finding. The chain captures the language array correctly per §10.21. The schema is already plural — Round-17 M&A-N2 closure. The procedural recommendation is to produce the English translation within four weeks and adopt bilingual-or-trilingual audit bodies as standing practice."
 
 Reading the field finding back through the post-amendment spec:
 
@@ -788,7 +788,7 @@ Reading the field finding back through the post-amendment spec:
 
 Hélène: "Agreed. We will produce the v4.2.1 English translation in the next four weeks and adopt bilingual-or-trilingual audit bodies as standing practice for new models. The Lumière-internal attribute alignment to the §10.21 plural form is a one-line schema-change."
 
-Karen: "Document it both ways. Procedural CAPA at Lumière for the standing practice. Schema alignment for the next normative revision on Lumière's side. The §10.21 plural form on Eberhardt's side is already correct."
+Dawn: "Document it both ways. Procedural CAPA at Lumière for the standing practice. Schema alignment for the next normative revision on Lumière's side. The §10.21 plural form on Eberhardt's side is already correct."
 
 Tom: "Logged."
 
@@ -798,7 +798,7 @@ Klaus: "And as the model evolves and the array grows — when v4.3 lands with Ge
 
 Hélène: "And the model card already does this — the model card is bilingual French-English. We will harmonize the fairness-audit-body language coverage with the model card going forward, with German added when the BMW reader matrix calls for it. The §10.21 plural-array form lets the chain reflect that growth without schema-change friction. That is the discipline I want for the team going forward — translations are a chain-anchor decision, not a procedural courtesy. The chain entry is the integrity-bound record that the translation exists."
 
-Karen: "And the per-language CC8.1 cross-referencing per §10.18 means that the institution's CC8.1 control description for the fairness-audit family — typically maintained in the institution's primary working language — cross-references the per-language audit-report bodies by file name, available languages, and §10.21 attribute mapping so a reviewer in any of the three languages can locate the right body without parsing the institution's free-form schema."
+Dawn: "And the per-language CC8.1 cross-referencing per §10.18 means that the institution's CC8.1 control description for the fairness-audit family — typically maintained in the institution's primary working language — cross-references the per-language audit-report bodies by file name, available languages, and §10.21 attribute mapping so a reviewer in any of the three languages can locate the right body without parsing the institution's free-form schema."
 
 Tom: "I will draft the CC8.1 cross-reference as part of the deliverable. The §10.18 runbook discipline applies."
 
@@ -814,23 +814,23 @@ Hélène took a beat before answering. The video screen caught the small motion 
 
 "Honestly. The 2024 incident was on us. We delivered a battery-health model that had silently regressed after a training-data update. The validation set had not caught the regression because the new training data shifted the distribution of the test set as well. The model passed our internal validation but was actually worse on the field distribution. We delivered it to Eberhardt. Eberhardt deployed it to the OEM fleet. About two weeks of degraded predictions before someone at BMW noticed and asked Eberhardt to investigate. Eberhardt asked us. We rolled back. Total degraded-prediction window was something like fifteen days. No safety incidents — the regressions were over-triggering of `service-recommended` alerts, not under-triggering of `urgent-service-required` — but the OEM customer-experience cost was real. We did not have the chain at the time. We could not retrace which deployments had received the regressed model versus the prior good model. We had to do it by reconstruction from delivery logs. It took three days. Three days that would have been three minutes with the chain."
 
-Klaus, very evenly: "Karen — does the chain prevent another 2024?"
+Klaus, very evenly: "Dawn — does the chain prevent another 2024?"
 
-Karen took a beat.
+Dawn took a beat.
 
 "It does not prevent. It detects. The chain proves which model produced which inference per the §10.21 cross-anchor. It does not prove the model is good — that is exactly the §1.2 epistemic-scope split: the chain proves what was deployed, not whether it was correct. The detection happens earlier because the chain gives BMW or Eberhardt an immediate way to ask 'which model produced this anomaly?' without three days of reconstruction. The chain shrinks the silent-regression window from two weeks to whatever the field-monitoring cadence is. If field monitoring is daily, the window is one day. If it is weekly, the window is one week. The chain does not change the field-monitoring cadence."
 
 Klaus: "So the answer is faster detection, not prevention."
 
-Karen: "Yes. Faster detection. The chain is the audit trail. It is not the validator. §1.2 makes that distinction normative."
+Dawn: "Yes. Faster detection. The chain is the audit trail. It is not the validator. §1.2 makes that distinction normative."
 
 Hélène: "And the §10.20 retention extension we agreed to this morning matters here. If a regression appears six months after deployment — which is the 2024 shape — the chain detects fast, but the *retraining* root-cause analysis needs the training shards. The 90-day window is too short. Twenty-four months — the maximum-deployment-window number plus investigation buffer — is the §10.20 retention floor. The forensic depth on the deployer side is governed by the provider-side retention floor per §10.20 — that's why the asymmetry mattered."
 
-Karen: "Right. The chain is the detection layer per §1.4 compositional security. The §10.20 retention extension is the root-cause-analysis layer. Both matter. Both are findings of this engagement."
+Dawn: "Right. The chain is the detection layer per §1.4 compositional security. The §10.20 retention extension is the root-cause-analysis layer. Both matter. Both are findings of this engagement."
 
 Klaus, after a pause: "Detection without prevention is still better than two-week silent regression."
 
-Karen: "Yes. Materially better. But the deliverable has to be honest about the §1.2 distinction."
+Dawn: "Yes. Materially better. But the deliverable has to be honest about the §1.2 distinction."
 
 Tom: "I will draft the language for the executive summary. The chain detects faster; the chain does not prevent regression; the field-monitoring cadence and validator quality are separate concerns. The §10.20 retention extension supports retroactive root-cause analysis for the long-tail regression case."
 
@@ -840,7 +840,7 @@ The bridge stayed quiet for another beat. Then Klaus said:
 
 "Thank you for putting it that way. I wanted it on the record that the chain is not magic. The 2024 incident is something Hélène and I have lived with. I do not want anyone reading the deliverable to think this audit closes the 2024 question. It does not. It changes the cost of the *next* one."
 
-Karen: "That is the right framing. We will use it."
+Dawn: "That is the right framing. We will use it."
 
 ---
 
@@ -848,9 +848,9 @@ Karen: "That is the right framing. We will use it."
 
 Klaus brought up the question that had been hanging over the engagement since kickoff. By video bridge.
 
-"Stefan Kuhn at BMW asked us last month — and I am going to ask Karen the same question. If a BMW customer's vehicle has an AI-driven false-positive predictive-maintenance alert that costs the customer time and BMW money, can BMW determine whether the false positive came from a regression in Lumière's model or from Eberhardt's integration or from BMW's own vehicle-side data?"
+"Stefan Kuhn at BMW asked us last month — and I am going to ask Dawn the same question. If a BMW customer's vehicle has an AI-driven false-positive predictive-maintenance alert that costs the customer time and BMW money, can BMW determine whether the false positive came from a regression in Lumière's model or from Eberhardt's integration or from BMW's own vehicle-side data?"
 
-Karen had been ready for the question. She had been thinking about it since lunch.
+Dawn had been ready for the question. She had been thinking about it since lunch.
 
 "The §10.21 cross-vendor anchor does that. Three chains, one root-cause path."
 
@@ -879,11 +879,11 @@ Hélène, on the screen: "That is the answer. And the auto-industry context matt
 
 Tom: "I want to capture the answer verbatim. Stefan Kuhn will read it. He will know we addressed his question explicitly."
 
-Karen: "Capture it."
+Dawn: "Capture it."
 
-Klaus turned the question one more time. "Karen — what does the chain say about the modeling-quality side? When BMW reads our deliverable they will ask not only 'where is the regression' but 'how does the chain support the validator?' I want to be honest with them about what the chain does and does not do."
+Klaus turned the question one more time. "Dawn — what does the chain say about the modeling-quality side? When BMW reads our deliverable they will ask not only 'where is the regression' but 'how does the chain support the validator?' I want to be honest with them about what the chain does and does not do."
 
-Karen took a beat. "Per §1.2 epistemic scope, the chain proves what was deployed and that the record was not tampered with. It does not prove the model is correct, that the model complies with policy, or that the model is bias-free. Those are three separate evidence regimes. The fairness-audit report — anchored by `audit.model_handover.fairness_audit_report_sha256` per §10.21 — is the bias claim. The validator harness on Lumière's side, and the field-monitoring cadence on Eberhardt's side, are the correctness claims. The chain proves which model was deployed when and which fairness-audit accompanied it. It does not adjudicate whether the model was good. Stefan will appreciate the distinction. EU AI Act conformity-assessment files specifically need this language — the chain is the integrity foundation; the bias-and-correctness claims live in separate documents that the chain hash-anchors but does not evaluate."
+Dawn took a beat. "Per §1.2 epistemic scope, the chain proves what was deployed and that the record was not tampered with. It does not prove the model is correct, that the model complies with policy, or that the model is bias-free. Those are three separate evidence regimes. The fairness-audit report — anchored by `audit.model_handover.fairness_audit_report_sha256` per §10.21 — is the bias claim. The validator harness on Lumière's side, and the field-monitoring cadence on Eberhardt's side, are the correctness claims. The chain proves which model was deployed when and which fairness-audit accompanied it. It does not adjudicate whether the model was good. Stefan will appreciate the distinction. EU AI Act conformity-assessment files specifically need this language — the chain is the integrity foundation; the bias-and-correctness claims live in separate documents that the chain hash-anchors but does not evaluate."
 
 Klaus: "That is the right framing. The chain is the foundation. The validator and the fairness audit are separate, anchored to the foundation by hash."
 
@@ -895,9 +895,9 @@ Tom: "Logged. The §1.2 distinction is going into the executive summary verbatim
 
 ### 🌆 5:30 PM CET — Joint Debrief by Video Bridge
 
-The full team was on the bridge at 5:30 PM. Stuttgart had moved everyone into the conference room. Paris had pulled chairs up around Hélène's desk. Klaus and Hélène were both on. Tom and Karen led.
+The full team was on the bridge at 5:30 PM. Stuttgart had moved everyone into the conference room. Paris had pulled chairs up around Hélène's desk. Klaus and Hélène were both on. Tom and Dawn led.
 
-Karen ran through the per-company summary first.
+Dawn ran through the per-company summary first.
 
 "Eberhardt-side individual findings: zero Gaps, zero Partials. The chain holds at eight months. IAM is two-AD-domain on-prem federated to Azure AD, fully chain-coupled per §3 and §10.2 operational events. Seal job is chain-governed with HSM at Sindelfingen per §4.2 / §4.3 / §10.5. §10.17 partition-ceremony events are present and well-formed. mTLS rotation to BMW is chain-coupled with downstream OEM per §10.10 rotation-crossing-the-seal-boundary. §10.15 Pattern A multi-region resilience operates correctly with synchronous-read `master.cross_region_replication_completed` events per Round-17 third errata. BSI IT-Grundschutz alignment, ISO 27001, ISO/IEC 27017, TISAX assessment artifacts all feed from the chain.
 
@@ -915,7 +915,7 @@ Karen ran through the per-company summary first.
 
 Klaus: "Read out the regulator-by-regulator posture."
 
-Karen: "Five readers.
+Dawn: "Five readers.
 
 "**EU AI Act.** Article 11 deployer logging: satisfied by Eberhardt's inference chain. Article 12 conformity assessment: satisfied by Eberhardt's chain plus Lumière's fairness-audit chain plus the §10.21 cross-vendor anchor. Article 16 provider obligations: satisfied by Lumière's fairness-audit and model-build chains. The §10.20 retention floor extension closes the long-tail forensic gap that EU AI Act Article 12 logging contemplates for post-market surveillance. The joint chain is a defensible Article 11/12/16 evidence pack — and the §1.2 epistemic-scope discipline gives the conformity-assessment file the right vocabulary for what the chain proves vs. what other regimes prove.
 
@@ -937,15 +937,15 @@ Klaus took a long breath in.
 
 Hélène, on the screen: "We are good. The §10.20 retention extension is the only structural change. The two Nits are §10.21 institution-side emission alignment and translation work. The chain holds across the seam."
 
-Klaus turned to the camera. "Karen — Tom — the Stuttgart and Paris teams. Thank you. This is what I had hoped for. The deliverable for BMW will reference this audit explicitly."
+Klaus turned to the camera. "Dawn — Tom — the Stuttgart and Paris teams. Thank you. This is what I had hoped for. The deliverable for BMW will reference this audit explicitly."
 
-Karen: "Thank you. The formal deliverable will be in your inbox by end of next week. The joint posture, the per-regulator matrix, the three findings classified to the post-amendment spec, the live-trace evidence, and the language for Stefan Kuhn's three questions — all of it will be documented per §10.13 evidentiary-artifacts retention discipline. The deliverable will reference Appendix A consolidated chain envelope schema for the attribute-family lookup the BMW vendor-management read will want, and §13 stakeholder navigation will guide the BSI / LfDI / CNIL / BMW / ISO 26262 reader paths through the deliverable. The §11 references section pins the verifier version both sides use per §10.26."
+Dawn: "Thank you. The formal deliverable will be in your inbox by end of next week. The joint posture, the per-regulator matrix, the three findings classified to the post-amendment spec, the live-trace evidence, and the language for Stefan Kuhn's three questions — all of it will be documented per §10.13 evidentiary-artifacts retention discipline. The deliverable will reference Appendix A consolidated chain envelope schema for the attribute-family lookup the BMW vendor-management read will want, and §13 stakeholder navigation will guide the BSI / LfDI / CNIL / BMW / ISO 26262 reader paths through the deliverable. The §11 references section pins the verifier version both sides use per §10.26."
 
 Hélène: "And from Lumière — thank you. The 90-day retention conversation is one I should have had with myself months ago. Having it forced by the audit is the right reason to have it now. And — for the record — the spec section that names our retention asymmetry as its worked example is a useful place for our policy to land. The §10.20 retention floor will be a permanent line in our model-supply DPA going forward."
 
-Karen: "That is what audits are for. And — the spec is what audits land in. The §10.20 amendment is the durable answer to the question your audit raised."
+Dawn: "That is what audits are for. And — the spec is what audits land in. The §10.20 amendment is the durable answer to the question your audit raised."
 
-Karen caught Raj's eye on the screen as the meeting was winding down. "Same coffee debt as Northbridge?"
+Dawn caught Raj's eye on the screen as the meeting was winding down. "Same coffee debt as Northbridge?"
 
 Raj, deadpan: "Ten engagements ago. Statute of limitations expired."
 
@@ -1005,7 +1005,7 @@ In Paris, Sophie walked Elena to the lobby. Aurélien stayed to chat with Chen a
 
 ### 🧾 Final Assessment Theme
 
-The TGV from the Stuttgart side back across the border was tomorrow's plan. Tonight the team would all stay put — Karen at the Stuttgart hotel, Raj at his Paris hotel near Bastille — and write up the deliverable on shared docs. The drive back to the hotel from Eberhardt was twenty minutes through the Stuttgart hills as the sun was going down. Karen had her coffee, refilled, in the cup holder.
+The TGV from the Stuttgart side back across the border was tomorrow's plan. Tonight the team would all stay put — Dawn at the Stuttgart hotel, Raj at his Paris hotel near Bastille — and write up the deliverable on shared docs. The drive back to the hotel from Eberhardt was twenty minutes through the Stuttgart hills as the sun was going down. Dawn had her coffee, refilled, in the cup holder.
 
 She thought about the day. About Maximilian's terminal at 9:15 in the morning showing a clean §7 PASS on the inference entry. About Aurélien's terminal at 10:00 in Paris showing a clean PASS on the model-build entry. About Chen at noon on the bridge running the byte-equal compare and the §10.21 cross-anchor hashes matching across both chains. About Klaus's question at 3:45 — *does the chain prevent another 2024?* — and her honest §1.2-grounded answer that it does not prevent, it detects faster, and faster detection is materially better than two-week silent regression. About Hélène's quiet acknowledgment of the §10.20 retention asymmetry and her unhesitating commitment to extend. About Klaus's question at 4:30 — *can BMW root-cause a false positive across the seam?* — and the §10.21 three-chain answer that took her ninety seconds to walk and that Stefan Kuhn would read in the deliverable.
 
@@ -1027,7 +1027,7 @@ And the seam — *the seam was the engagement*. Each side's chain alone was easy
 
 The 2024 model-drift incident was the lesson. Pre-chain, three days of reconstruction. Post-chain, three minutes of detection. The §10.20 24-month retention extension closes the long-tail root-cause window. The chain does not prevent the next 2024. It changes the cost of finding out.
 
-Karen picked up her phone at a red light on the way down out of the hills and dictated a one-line note for the report's executive summary.
+Dawn picked up her phone at a red light on the way down out of the hills and dictated a one-line note for the report's executive summary.
 
 > *"The chain at Eberhardt proves what was deployed. The chain at Lumière proves what was built. The §10.21 cross-vendor anchor proves they are the same model — and that is what the joint-supplier audit asked for."*
 

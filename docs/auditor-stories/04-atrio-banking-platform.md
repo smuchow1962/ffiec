@@ -16,9 +16,9 @@ Twelve sponsor banks. Forty-seven fintech programs. Each fintech has a different
 
 Twenty-four months ago Atrio stood up TesseraSeal across the entire platform. Not as a bolt-on. As the ledger of record for every consumer-facing transaction, every credential rotation, every config change, every fraud alert, every regulator-reportable event. The chain runs in two AWS regions active-active under spec §10.15 Pattern A. Each sponsor bank holds its IKM in a dedicated partition on Atrio's Thales Luna network HSM cluster, FIPS 140-2 Level 3, per the §10.5 HSM custody bar. The IKM registry — the table that maps `(sponsor_bank, fintech_program)` pairs to derived chains — sits behind a uniqueness constraint enforced at the database layer per spec §10.1, and the registry is global across both regions per the §10.1 multi-deployment uniqueness rule that forbids per-region registries that drift.
 
-This week is a coordinated examination. Three state banking departments — Indiana, North Carolina, Georgia — are in the building. The OCC is in the building because one sponsor bank, Cardinal National, is national-charter. CFPB is in the building because seven of the 47 fintech programs are consumer-protection-relevant. Karen's team was engaged by Atrio in October to do a vendor-side platform audit. The deliverable is read concurrently by all five regulator audiences. This is the BaaS-industry coordination model — one external audit at the platform serves multiple regulator audiences who would each have to do the work otherwise.
+This week is a coordinated examination. Three state banking departments — Indiana, North Carolina, Georgia — are in the building. The OCC is in the building because one sponsor bank, Cardinal National, is national-charter. CFPB is in the building because seven of the 47 fintech programs are consumer-protection-relevant. Dawn's team was engaged by Atrio in October to do a vendor-side platform audit. The deliverable is read concurrently by all five regulator audiences. This is the BaaS-industry coordination model — one external audit at the platform serves multiple regulator audiences who would each have to do the work otherwise.
 
-Atrio's compliance lead is **Naomi Reisinger**. Senior FDIC examiner for fourteen years before she crossed the table. She knows what regulators are going to ask because she used to be the one asking. Her prep call to Karen lasted eleven minutes.
+Atrio's compliance lead is **Naomi Reisinger**. Senior FDIC examiner for fourteen years before she crossed the table. She knows what regulators are going to ask because she used to be the one asking. Her prep call to Dawn lasted eleven minutes.
 
 This is the diary of that day.
 
@@ -26,7 +26,7 @@ This is the diary of that day.
 
 ## Audit Team
 
-- **Karen** — Lead Auditor (governance and narrative)
+- **Dawn** — Lead Auditor (governance and narrative)
 - **Raj** — Database specialist
 - **Elena** — CRM systems
 - **Mike** — Application and API layer
@@ -41,11 +41,11 @@ Client-side liaison: **Naomi Reisinger**, VP of Compliance & Audit, Atrio Bankin
 
 ## 🌅 8:30 AM — Kickoff and the Drive In
 
-Karen rode in with Raj from the airport hotel. Charlotte morning. Light traffic on I-77 because they had left at 7:15. The Atrio building was glass and a parking deck off Tryon, three blocks from BB&T Ballpark.
+Dawn rode in with Raj from the airport hotel. Charlotte morning. Light traffic on I-77 because they had left at 7:15. The Atrio building was glass and a parking deck off Tryon, three blocks from BB&T Ballpark.
 
 Raj had bought a coffee from the lobby and was nursing it. "Roadmap for me?"
 
-Karen watched the parking deck come into view. "Today is multi-tenant. The hardest test of any platform claim. We'll see if Atrio's IKM registry actually does what it says, or if it's documentation theater."
+Dawn watched the parking deck come into view. "Today is multi-tenant. The hardest test of any platform claim. We'll see if Atrio's IKM registry actually does what it says, or if it's documentation theater."
 
 "Northbridge was full deployment."
 
@@ -65,7 +65,7 @@ Karen watched the parking deck come into view. "Today is multi-tenant. The harde
 
 Raj took a long pull from his coffee. "What's the recurring line?"
 
-Karen looked at him sideways. "It never is."
+Dawn looked at him sideways. "It never is."
 
 "That's the one."
 
@@ -75,21 +75,21 @@ They pulled into the visitor lot at 8:22.
 
 Naomi met them at the badge desk. Navy blazer, a lanyard with two badges — Atrio's and a temporary one for the examiner room. The handshake was brief, the eye contact was direct.
 
-"Karen. Raj. The rest of your team is in the lobby?"
+"Dawn. Raj. The rest of your team is in the lobby?"
 
 "Pulling badges now."
 
 "I have you in the secure conference room on three. The examiner overflow is in the room next door. There's one shared wall and you'll hear them when they take a call. We have a short kickoff at 8:45 with my CISO, my GRC lead, and the on-call site reliability engineer. The rest of the day is yours. The state examiners are running their own queries against the examiner portal independently — they will not interrupt you unless they have a question that crosses your scope."
 
-Karen nodded. "Understood. Naomi — three of us are state-chartered, one is national, CFPB is consumer-protection cross-bank. Confirm the examiner-portal credential matrix matches that?"
+Dawn nodded. "Understood. Naomi — three of us are state-chartered, one is national, CFPB is consumer-protection cross-bank. Confirm the examiner-portal credential matrix matches that?"
 
 Naomi did not pause. "State examiners see only their charter's sponsor bank and the fintechs under it. OCC sees Cardinal National only. CFPB sees consumer-protection-relevant tenant_ids across all banks — loan, deposit, payment products. The small-business banking and B2B treasury tenants are out of CFPB scope and they cannot see those. Diana will want to verify the matrix herself. I expect that."
 
-Karen smiled at the corner of her mouth. "Diana will. That's why she's here."
+Dawn smiled at the corner of her mouth. "Diana will. That's why she's here."
 
 The team kitted up — laptops, badges, NDAs, examiner-portal read credentials issued for the day. Naomi walked them up to the third floor.
 
-> **🔍 Karen's note (internal):**
+> **🔍 Dawn's note (internal):**
 > *Per-tenant isolation is the kind of property that holds 99.9% of the time and breaks 0.1% of the time in the worst possible way. The 0.1% has to be hunted for. Today is the hunt.*
 
 ---
@@ -199,7 +199,7 @@ Raj wrote: *2-of-2 PIN split between bank CISO and Atrio CISO. IKM never leaves 
 
 Naomi let the diagram sit on the screen. "Questions?"
 
-Karen looked around. The team was quiet. "We're going to start working it. Raj on the registry first. Diana on the examiner portal. Mike on the verifier and the cross-tenant refusal. Chen on the Pattern A reconciliation. Luis on the operational events. Elena on the bank-facing console. Tom is going to sit with you and walk the runbook."
+Dawn looked around. The team was quiet. "We're going to start working it. Raj on the registry first. Diana on the examiner portal. Mike on the verifier and the cross-tenant refusal. Chen on the Pattern A reconciliation. Luis on the operational events. Elena on the bank-facing console. Tom is going to sit with you and walk the runbook."
 
 "Reconvene at noon?"
 
@@ -430,9 +430,9 @@ Naomi pulled up the ledger logs for a real rejoin from the previous week — a u
 
 The catering came up — a long tray of wrapped sandwiches, a smaller tray of fruit, and a thermos of coffee that had been brewed in the room next door because the examiners had drained the urn down the hall.
 
-Karen and Tom took a corner. Naomi sat with the rest of the team for the first ten minutes and then peeled off to take a call from the GRC lead. The sound of the OCC examiner laughing through the shared wall came through clearly for about twenty seconds and then went quiet.
+Dawn and Tom took a corner. Naomi sat with the rest of the team for the first ten minutes and then peeled off to take a call from the GRC lead. The sound of the OCC examiner laughing through the shared wall came through clearly for about twenty seconds and then went quiet.
 
-Karen unwrapped a turkey. "Tom. Do we look harder at the cross-region replication event?"
+Dawn unwrapped a turkey. "Tom. Do we look harder at the cross-region replication event?"
 
 Tom set his fork down. "If the spec calls out the event by name, we look at it."
 
@@ -440,7 +440,7 @@ Tom set his fork down. "If the spec calls out the event by name, we look at it."
 
 "And the load-bearing clause?"
 
-Karen pulled her copy of the spec out of her bag. She had it dog-eared at §10.15. "Here. The Round-17 invariant-5 clarification: *Implementations that read these fields from a poll-cached store are non-conformant if the cache may lag the replication pipeline at emission time, even when the cache freshness window is well-bounded.* Then: *Where seal cadence is hourly or sub-hourly, the synchronous-read requirement is load-bearing — a five-minute cache lag against a one-hour seal cycle is a partial conformance.*"
+Dawn pulled her copy of the spec out of her bag. She had it dog-eared at §10.15. "Here. The Round-17 invariant-5 clarification: *Implementations that read these fields from a poll-cached store are non-conformant if the cache may lag the replication pipeline at emission time, even when the cache freshness window is well-bounded.* Then: *Where seal cadence is hourly or sub-hourly, the synchronous-read requirement is load-bearing — a five-minute cache lag against a one-hour seal cycle is a partial conformance.*"
 
 Tom did the math out loud. "Daily seal — slow cadence. The freshness window is wide enough that a small cache lag does not break the event's role as authoritative replication evidence. Hourly seal — fast cadence — and the spec is naming the five-minute-lag-against-one-hour-seal exact case as a partial."
 
@@ -458,15 +458,15 @@ Tom picked up his fork. "So that's the one we're looking for."
 
 "That's why we have to keep looking."
 
-Karen pulled out her copy of the spec and tabbed to §1.2. "Epistemic-scope reading. The chain proves what the AI said at a specific time and that the record was not tampered with after capture. The chain does NOT prove that the AI's statement is factually accurate, that it complied with policy, or that it is free of bias. For Atrio, that boundary matters operationally. The CFPB analyst is reading the chain to confirm that adverse-action notices were sent within the ECOA 30-day clock and that the listed reasons match what the model weighted. She is not reading the chain to confirm the underwriting model is fair — fair-lending evidence is a separate audit-evidence regime under §4.4.5 disparate-impact testing plus the institution's MRM committee review. The §1.2 epistemic boundary keeps Atrio's chain claim honest. Atrio is delivering integrity foundation, not truth foundation."
+Dawn pulled out her copy of the spec and tabbed to §1.2. "Epistemic-scope reading. The chain proves what the AI said at a specific time and that the record was not tampered with after capture. The chain does NOT prove that the AI's statement is factually accurate, that it complied with policy, or that it is free of bias. For Atrio, that boundary matters operationally. The CFPB analyst is reading the chain to confirm that adverse-action notices were sent within the ECOA 30-day clock and that the listed reasons match what the model weighted. She is not reading the chain to confirm the underwriting model is fair — fair-lending evidence is a separate audit-evidence regime under §4.4.5 disparate-impact testing plus the institution's MRM committee review. The §1.2 epistemic boundary keeps Atrio's chain claim honest. Atrio is delivering integrity foundation, not truth foundation."
 
 Tom: "And the SDK-process compromise residual scenario. §1.2's fourth class."
 
-Karen: "Yes. The §1.1 three-layer compromise model — IKM, ledger storage, HSM signing key — is what an attacker has to simultaneously breach to produce a verifying false-negative on a tampered chain. The §1.2 fourth scenario is a compromised SDK process holding a live session key. That produces forward-only chain entries that verify as PASS for as long as the compromise persists. The institution's IKM is not compromised; the ledger storage is not compromised; the HSM is not compromised. Yet the chain produces a verifying record of events the legitimate AI agent did not generate. The window is bounded by host-hardening, intrusion detection, and master-key rotation. Atrio's CC8.1 names the host-hardening posture and the §10.1 weekly fingerprint reconciliation that bounds the master-compromise detection window. For BaaS, the host-hardening posture is the load-bearing operational compensating control."
+Dawn: "Yes. The §1.1 three-layer compromise model — IKM, ledger storage, HSM signing key — is what an attacker has to simultaneously breach to produce a verifying false-negative on a tampered chain. The §1.2 fourth scenario is a compromised SDK process holding a live session key. That produces forward-only chain entries that verify as PASS for as long as the compromise persists. The institution's IKM is not compromised; the ledger storage is not compromised; the HSM is not compromised. Yet the chain produces a verifying record of events the legitimate AI agent did not generate. The window is bounded by host-hardening, intrusion detection, and master-key rotation. Atrio's CC8.1 names the host-hardening posture and the §10.1 weekly fingerprint reconciliation that bounds the master-compromise detection window. For BaaS, the host-hardening posture is the load-bearing operational compensating control."
 
 The OCC examiner laughed through the wall again, shorter this time. The conversation in the team's room went quiet for a moment and then resumed.
 
-Karen finished her sandwich and stood up. "1 PM. Mike runs the cross-tenant matrix. Chen runs the replication event. Diana is already done — she goes to help Elena on the bank-facing console. Tom — sit with Naomi on the runbook. I want to know if §10.15 is mentioned by section number anywhere in the runbook. Also §10.1, §10.5, §10.16, §10.17. The §10.18 cross-referencing rule is normative — every runbook section that touches a normative spec requirement names the spec section it derives from, or it's a Nit. Atrio's runbook is going to get walked under that rule today."
+Dawn finished her sandwich and stood up. "1 PM. Mike runs the cross-tenant matrix. Chen runs the replication event. Diana is already done — she goes to help Elena on the bank-facing console. Tom — sit with Naomi on the runbook. I want to know if §10.15 is mentioned by section number anywhere in the runbook. Also §10.1, §10.5, §10.16, §10.17. The §10.18 cross-referencing rule is normative — every runbook section that touches a normative spec requirement names the spec section it derives from, or it's a Nit. Atrio's runbook is going to get walked under that rule today."
 
 "On it."
 
@@ -549,7 +549,7 @@ He wrote in his notebook: *Twenty-five cases. Refusal is at the verifier credent
 > **✓ Confirmation #8**
 > Cross-tenant query refusal is uniform across all five credential types tested in a 5×5 matrix. Twenty-five cases, twenty-five correct outcomes. The verifier credential check is the single enforcement point — all refusals exit code 1 per §10.12, all are logged to the platform operational chain per §10.2. The implementation does not branch by credential type, which means the property is structural rather than per-credential policy.
 
-Mike took the photo to Karen for her notebook.
+Mike took the photo to Dawn for her notebook.
 
 ---
 
@@ -611,9 +611,9 @@ Chen and Naomi spent another fifteen minutes confirming the boundary — that no
 > **✓ Confirmation #9**
 > Per-fintech Merkle root reconciliation — three random fintechs across three different sponsor banks, sampled across the past week. Recompute from raw events matches the sealed root in every case. The replication-event cache lag does not propagate into seal correctness — the seal mechanism reads the seal-region event store directly per §4.2, not the cache. Chain integrity holds. The Pattern A worked-example invariant 5 reconciliation evidence (sum of per-region counts equals seal region count for the tenant-day) is documented in the institution's operational events per §10.15 Pattern A verifier-behavior clause; the verifier's PASS output is silent on replication completeness, but the institution's reconciliation makes the gap visible at the next layer of audit.
 
-Chen walked back to Karen and put the writeup on the table. "One partial. One confirmation. The seal is fine. The event is the issue. The Round-17 §10.15 invariant-5 clarification closed what would have been an ambiguous reading; the clarification is exactly what made the partial mechanically determinable."
+Chen walked back to Dawn and put the writeup on the table. "One partial. One confirmation. The seal is fine. The event is the issue. The Round-17 §10.15 invariant-5 clarification closed what would have been an ambiguous reading; the clarification is exactly what made the partial mechanically determinable."
 
-Karen wrote: *Partial-001 — bounded, in-flight fix, ETA 60 days, accepted by Naomi. §10.15 invariant-5 clarification was the discretion-removing clause. The earlier ambiguity is closed by the Round-17 spec edit, not by deletion of the finding.*
+Dawn wrote: *Partial-001 — bounded, in-flight fix, ETA 60 days, accepted by Naomi. §10.15 invariant-5 clarification was the discretion-removing clause. The earlier ambiguity is closed by the Round-17 spec edit, not by deletion of the finding.*
 
 ---
 
@@ -778,13 +778,13 @@ Mike pulled one more case — a sample from a fintech where the deployment-inten
 
 ## 🇪🇸 3:55 PM — ECOA Translation, Adverse-Action Reasons, FCRA Reinvestigation
 
-The CFPB analyst was the busiest examiner in the building because the consumer-protection programs include mortgage-class adverse-action workflows — the BNPL platform issues credit-decline notices, the SMB banking fintech issues credit-line-decline notices, and the healthcare-FSA program issues adverse-action notices on FSA application denials. All seven consumer-protection programs implicate ECOA Reg B §1002.9. Karen pulled Naomi for the ECOA chain walk.
+The CFPB analyst was the busiest examiner in the building because the consumer-protection programs include mortgage-class adverse-action workflows — the BNPL platform issues credit-decline notices, the SMB banking fintech issues credit-line-decline notices, and the healthcare-FSA program issues adverse-action notices on FSA application denials. All seven consumer-protection programs implicate ECOA Reg B §1002.9. Dawn pulled Naomi for the ECOA chain walk.
 
 The §10.11 translation entry schema covers the customer-language translation step. Atrio's BNPL fintech serves Spanish-speaking customers — the `audit.ecoa.translation.target_language = "es-US"`, `translator_kind = "llm"` (the institution's Spanish-fluent LLM model handles the translation), `translator_id = "anthropic-claude-sonnet"`, `output_hash = SHA-256(...)` of the customer-facing translated text (the text itself is customer PII; the hash binds the translation under the chain without binding the PII), `delivery_method = "secure_message"`, `delivery_timestamp` in RFC 3339 UTC. The translation entry's `chain_kind` is `"translation"` per §3 enumeration. The translation entry binds to the AI's original adverse-action decision via `parent_run_id` / `parent_seq` per §4.4. The §10.11 Round-17 CFPB-N1 clarification — the delivery_timestamp REQUIRED on any translation entry where delivery_method is also recorded — is in place; the two attributes together form the within-window evidence the 30-day ECOA clock check needs.
 
 The §10.11.1 adverse-action reasons family covers the underlying decision the translation chains to. `audit.ecoa.adverse_action.reasons = ["insufficient-credit-history", "high-debt-to-income"]` (the institution's structured reason identifiers, NOT free-form prose). `audit.ecoa.adverse_action.feature_attributions` was populated for the BNPL platform — Atrio's underwriting model exposes SHAP at decision time. `audit.ecoa.adverse_action.model_explanation_method = "shap_top_k"` per §10.11.1's enumerated set. A CFPB examiner reading the chain now answers "do the listed reasons match the model's actual weights?" mechanically rather than circumstantially — the integrity binding makes the chain answer the question without depending on the institution's narrative.
 
-The §10.11.2 FCRA §611 reinvestigation family covers the dispute trail. Karen asked Naomi to pull a sample. Last quarter the BNPL platform handled 247 FCRA §611 disputes. Naomi pulled one at random — a consumer disputed a credit-bureau-furnished item that drove the BNPL's adverse-action decision. The chain entry carried `chain_kind = "audit"` plus the `audit.fcra.reinvestigation.*` family.
+The §10.11.2 FCRA §611 reinvestigation family covers the dispute trail. Dawn asked Naomi to pull a sample. Last quarter the BNPL platform handled 247 FCRA §611 disputes. Naomi pulled one at random — a consumer disputed a credit-bureau-furnished item that drove the BNPL's adverse-action decision. The chain entry carried `chain_kind = "audit"` plus the `audit.fcra.reinvestigation.*` family.
 
 ```
 audit.fcra.reinvestigation.dispute_received_at:           2026-03-12T14:22:00Z
@@ -932,7 +932,7 @@ Luis wrote: *Operational-event stream is complete and at the institution's docum
 
 ## 😬 4:50 PM — The Coordinated Examiner Room
 
-Naomi walked Karen and Tom to the room next door. The shared wall was the wall Karen had heard the OCC examiner laugh through. The room was full — three state examiners at one long table, the OCC examiner at her own table by the window, the CFPB analyst at a third table near the door. Each had a laptop and an examiner-portal session open.
+Naomi walked Dawn and Tom to the room next door. The shared wall was the wall Dawn had heard the OCC examiner laugh through. The room was full — three state examiners at one long table, the OCC examiner at her own table by the window, the CFPB analyst at a third table near the door. Each had a laptop and an examiner-portal session open.
 
 Naomi made introductions briefly. The state examiners — Indiana, North Carolina, Georgia. The OCC examiner — Lieutenant Colonel-stiff posture, civilian career, polite. The CFPB analyst — early thirties, tab-heavy browser, working through a list.
 
@@ -946,9 +946,9 @@ Tom paused at the OCC examiner's table briefly to glance at her notebook page. S
 
 The CFPB analyst's backdating-detection check ran on §10.4 NTP discipline as the foundation. Atrio's application hosts and ledger servers are NTP-synchronized; the §4.2.2 day-boundary semantics use the ledger's receive timestamp as authoritative; application-host clock drift is a clock-skew anomaly the verifier reports rather than an integrity failure. The CFPB analyst was not testing the NTP discipline directly — she was testing that the chain's recorded timestamps matched the bureau's own complaint-portal timestamps within the noise band the §10.14 informative trusted-time clause names as the v1.0 baseline. RFC 3161 trusted-timestamp integration is RECOMMENDED but NOT REQUIRED for v1.0 conformance per §10.14; institutions requiring maximum timestamp credibility in high-stakes disputes operate RFC 3161 alongside NTP. Atrio operates NTP only at v1.0; the §10.14 forward commitment for v1.x extension remains a candidate scope addition Atrio has not yet adopted.
 
-Karen and Tom watched for ten minutes. Tom whispered, "Notice anything?"
+Dawn and Tom watched for ten minutes. Tom whispered, "Notice anything?"
 
-Karen whispered back. "Notice three things. One — none of them can see what the others can see. The Indiana examiner has not glanced at Cardinal National. The OCC examiner has not opened a Midwest Savings tab. The CFPB analyst has not pulled the small-business banking fintech. The credential matrix is doing its job in the room. Two — they are working independently and reaching independent conclusions. None of them is asking Naomi for a 'guided tour.' They are running queries. Three — none of them looks frustrated. The portal is doing what they need it to do."
+Dawn whispered back. "Notice three things. One — none of them can see what the others can see. The Indiana examiner has not glanced at Cardinal National. The OCC examiner has not opened a Midwest Savings tab. The CFPB analyst has not pulled the small-business banking fintech. The credential matrix is doing its job in the room. Two — they are working independently and reaching independent conclusions. None of them is asking Naomi for a 'guided tour.' They are running queries. Three — none of them looks frustrated. The portal is doing what they need it to do."
 
 "And the chain audit log on their accesses?"
 
@@ -958,7 +958,7 @@ Naomi waited until the OCC examiner finished her current page and approached her
 
 Naomi came back. "She wanted to know if she could pull a 90-day window's seal records in a single export. The portal supports it but the link is in a submenu she hadn't found. I showed her."
 
-Karen wrote: *Coordinated examiner room — three states, OCC, CFPB, all working independently against partitioned credentials. No frustration. No requests for "guided tours." Naomi answered one UX question in 30 seconds. The credential partitioning is doing its job in the live regulator-audience scenario, not just in a test matrix.*
+Dawn wrote: *Coordinated examiner room — three states, OCC, CFPB, all working independently against partitioned credentials. No frustration. No requests for "guided tours." Naomi answered one UX question in 30 seconds. The credential partitioning is doing its job in the live regulator-audience scenario, not just in a test matrix.*
 
 > **✓ Confirmation #17**
 > The examiner-portal credential matrix functions correctly under live regulator load. Five regulator audiences in one room, each running independent queries against partitioned scopes. No credential overlapped any scope it shouldn't have. No regulator was blocked from a query they were entitled to run. One UX question — finding a multi-day export link — was resolved in 30 seconds. The OCC examiner's fingerprint-matching exercise against the public-key publication endpoint is the live exercise of §10.1 fingerprint reconciliation. The CFPB analyst's backdating-detection walk leans on §10.3 append-only enforcement and §10.4 time-synchronization discipline. The role-based access control matrix in the TesseraSeal install matches the spec's recommendations and matches the live-day regulator audience.
@@ -969,7 +969,7 @@ They left the examiner room. Naomi closed the door behind them.
 
 ## 🔍 5:00 PM — The Final Stress Test
 
-Karen wanted one more test before debrief. The 47-tenant × 30-day verifier batch.
+Dawn wanted one more test before debrief. The 47-tenant × 30-day verifier batch.
 
 Naomi had Atrio's automation team prepare the batch on stand-by. Naomi pinged the SRE channel. "Batch is staged. Want me to kick it off?"
 
@@ -992,26 +992,26 @@ Banks covered:     12 / 12
 Fintechs covered:  47 / 47
 ```
 
-Karen looked at the screen. She looked at Tom. Tom was already looking at her.
+Dawn looked at the screen. She looked at Tom. Tom was already looking at her.
 
-Karen: "This is the audit equivalent of the QA team's regression-pass green checkmark."
+Dawn: "This is the audit equivalent of the QA team's regression-pass green checkmark."
 
 Tom: "The shape of the green checkmark is what's interesting. 1,410 of 1,410 across twelve banks across two regions across 47 fintechs across 30 days. If any single tenant's chain were broken, or any bank's HSM key had gone bad, or the cross-region pinning had drifted, this batch would have surfaced it."
 
-Karen wrote: *1,410 PASS, 0 FAIL, 3.7s average per run, 86s wall clock for the full batch in parallel. This is the multi-tenant claim under verification. The platform delivers what it documents.*
+Dawn wrote: *1,410 PASS, 0 FAIL, 3.7s average per run, 86s wall clock for the full batch in parallel. This is the multi-tenant claim under verification. The platform delivers what it documents.*
 
 > **✓ Confirmation #18**
 > Forty-seven-tenant-by-thirty-day verifier batch completed in 86 seconds wall clock with 1,410 of 1,410 PASS. Average per-run latency 3.7 seconds. Twelve banks covered. Both regions covered. Each verifier walks §7 end-to-end with the §10.8 constant-time discipline on §7 step 8 (fingerprint) and §7 step 9 (MAC), and the §10.12 exit-code 0 contract on PASS. This is the quantitative evidence that the multi-tenant claim is real at scale, not just at the spot-check level.
 
 Naomi looked at the screen for a moment. "We run that batch nightly. The result is on the SRE dashboard every morning. I look at it before I look at email."
 
-Karen: "I would too."
+Dawn: "I would too."
 
 ---
 
 ## 📁 5:15 PM — Evidentiary Artifact Custody Walk
 
-Before debrief, Karen wanted Tom to walk Atrio's §10.13 evidentiary-artifact retention with Naomi. The §10.13 list is informative but is a load-bearing FRE 901(b)(9) authentication-of-the-process foundation when an institution's chain entries enter litigation. For a multi-tenant platform serving twelve sponsor banks, §10.13 retention is not merely Atrio's concern — every sponsor bank has a contractual reliance interest in Atrio's retention discipline because the bank's IT witness will rely on Atrio's evidentiary artifacts to lay foundation for chain entries originating on Atrio's platform.
+Before debrief, Dawn wanted Tom to walk Atrio's §10.13 evidentiary-artifact retention with Naomi. The §10.13 list is informative but is a load-bearing FRE 901(b)(9) authentication-of-the-process foundation when an institution's chain entries enter litigation. For a multi-tenant platform serving twelve sponsor banks, §10.13 retention is not merely Atrio's concern — every sponsor bank has a contractual reliance interest in Atrio's retention discipline because the bank's IT witness will rely on Atrio's evidentiary artifacts to lay foundation for chain entries originating on Atrio's platform.
 
 Naomi pulled the artifact custody list:
 
@@ -1037,7 +1037,7 @@ Tom wrote: *§10.13 evidentiary-artifact retention is in place across the SDK ve
 
 The team reconvened in the secure conference room. Coffee was the urn from down the hall — refilled now that the examiners had finished their day. The shared wall was quiet. The OCC examiner had left at 4:50. The state examiners had left at 5:10. The CFPB analyst was still in the room next door but on a phone call to her supervisor.
 
-Karen stood at the whiteboard.
+Dawn stood at the whiteboard.
 
 "Atrio Banking Platform. Twenty-four months on TesseraSeal. Multi-tenant. Twelve sponsor banks, forty-seven fintech programs, two regions active-active under §10.15 Pattern A. Today we tested the §10.1 IKM registry, the §3 / §3.1 tenant-id discipline including the legacy-aliasing pattern, the §4.1 HKDF tenant binding and the §4.1.1 Model B HSM-resident PRK handshake, the §10.5 HSM custody bar, the §10.7 software-key adapter exclusion, the §10.3 append-only enforcement, the §10.12 cross-tenant refusal property, the §10.8 constant-time comparison discipline, the §10.15 multi-region semantics including the Round-17 invariant-5 clarification, the §4.2 per-bank seal aggregation, the §10.10 + §10.10.1 master-key rotation across the seal boundary, the §10.9 retention coupling, the §10.17 partition-ceremony attestation, the §10.25 run-resume contract with the §4.4 genesis-block uniqueness anti-spoof, the §4.4.1 routing-event family, the §4.4.2 deployment-intent family, the §10.11 / §10.11.1 / §10.11.2 ECOA + adverse-action reasons + FCRA reinvestigation lifecycle, the §10.22 redaction discipline, the §10.23 consumer-correlation index integrity, the §4.4.5 underwriting features and disparate-impact testing, the §4.4 cross_border_transfer attribute set, the §10.16 SaaS-edge mirror with the four-number lag discipline, the §4.4.6 connector source attribution with stable run_id discipline, the examiner-portal role-based access matrix, and the 1,410-run verifier batch as the quantitative ceiling test."
 
@@ -1062,7 +1062,7 @@ She moved to the nit.
 
 Naomi nodded. "Thirty-minute fix tonight. The 60-day fix is a sprint that started two weeks ago."
 
-Karen continued.
+Dawn continued.
 
 "Three observations to close."
 
@@ -1082,21 +1082,21 @@ Tom answered. "What we wrote. The eighteen confirmations are a vendor-side affir
 
 "Nit goes in the runbook section and is closed by the time the report is filed. That one doesn't need to go to the regulators."
 
-Naomi exhaled. "Karen."
+Naomi exhaled. "Dawn."
 
 "Yes."
 
 "Thank you for the partial. We caught it ourselves but having it written into an external audit closes the ticket faster internally."
 
-Karen smiled at the corner of her mouth. "That's what I figured."
+Dawn smiled at the corner of her mouth. "That's what I figured."
 
-Karen closed her notebook. "We'll have the report Thursday. You'll have it before the OCC's exit meeting Friday morning."
+Dawn closed her notebook. "We'll have the report Thursday. You'll have it before the OCC's exit meeting Friday morning."
 
 The team packed up. Raj and Luis loaded the laptops into the backpacks. Diana said goodbye to Naomi at the door. Mike took one last look at the BNPL fintech's verifier dashboard on the conference room screen.
 
-Karen walked out last. She turned at the door and looked back at the table — the empty coffee cups, the whiteboard with the twenty-one confirmations and one partial in her handwriting, the screen still showing the 1,410 / 1,410 batch summary.
+Dawn walked out last. She turned at the door and looked back at the table — the empty coffee cups, the whiteboard with the twenty-one confirmations and one partial in her handwriting, the screen still showing the 1,410 / 1,410 batch summary.
 
-Naomi was still at the table, gathering her own notes. She looked up when Karen turned.
+Naomi was still at the table, gathering her own notes. She looked up when Dawn turned.
 
 "Where are you flying next week?"
 
@@ -1106,7 +1106,7 @@ Naomi nodded once. "Good engagement."
 
 "We'll see. It never is." She smiled. "Sometimes part of it is. Today, all of it was."
 
-> **🔍 Karen's note (internal):**
+> **🔍 Dawn's note (internal):**
 > *It never is. But sometimes it is.*
 >
 > *Today, it was. Twelve banks, forty-seven fintechs, two regions, twenty-four months. One partial — bounded, scheduled, accepted. The §10.1 hinge held. The §10.15 invariant-5 clarification did its job. The §10.16 four-number discipline preserved the non-conformance bar from being downgraded to a Nit. That was the test. That was the answer.*
@@ -1115,7 +1115,7 @@ Naomi nodded once. "Good engagement."
 
 ## ✅ vs ✅ — What They Expected vs What They Found
 
-### ✅ What Karen's Team Expected Walking In
+### ✅ What Dawn's Team Expected Walking In
 
 | Item | Expectation |
 |---|---|
@@ -1142,7 +1142,7 @@ Naomi nodded once. "Good engagement."
 | §10.18 runbook cross-referencing — every normative spec section named in the runbook | Walk the runbook |
 | Quantitative ceiling — does the platform actually verify forty-seven fintechs across thirty days without something going sideways | Run the batch |
 
-### ✅ What Karen's Team Found
+### ✅ What Dawn's Team Found
 
 | Item | Outcome |
 |---|---|
@@ -1195,4 +1195,4 @@ The hinge held.
 
 ---
 
-*End of diary. Filed Tuesday evening. Report drafted Wednesday and Thursday. Delivered Friday morning before the OCC exit meeting. Karen flies out Friday afternoon for a retail-pharmacy engagement the following Tuesday.*
+*End of diary. Filed Tuesday evening. Report drafted Wednesday and Thursday. Delivered Friday morning before the OCC exit meeting. Dawn flies out Friday afternoon for a retail-pharmacy engagement the following Tuesday.*

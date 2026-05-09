@@ -6,7 +6,7 @@ A growing set of day-in-the-life audit narratives. Same team, same playbook, dif
 
 The eight people who travel together when the engagement requires it:
 
-- **Karen** — Lead Auditor (governance + narrative)
+- **Dawn** — Lead Auditor (governance + narrative)
 - **Raj** — Database specialist
 - **Elena** — CRM systems
 - **Mike** — Application / API layer
@@ -33,7 +33,7 @@ Eleven distinct deployment contexts show up across these stories.
 
 ### [01 — Northbridge Federal Savings (banking)](01-northbridge-federal-savings.md)
 
-A regional US bank, ~$45B consolidated assets, OCC-supervised. **TesseraSeal in use across all data capture for 18 months.** Every customer-facing surface is instrumented. The team walks in expecting the baseline. They finish 30% under budget time with one Nit and zero Gaps or Partials. Karen's recurring "It never is" gets quietly disconfirmed by 11 AM.
+A regional US bank, ~$45B consolidated assets, OCC-supervised. **TesseraSeal in use across all data capture for 18 months.** Every customer-facing surface is instrumented. The team walks in expecting the baseline. They finish 30% under budget time with one Nit and zero Gaps or Partials. Dawn's recurring "It never is" gets quietly disconfirmed by 11 AM.
 
 ### [02 — Mercator Health System (healthcare)](02-mercator-health-system.md)
 
@@ -63,11 +63,11 @@ A private R1 research university, ~28,000 students, ~$1.4B endowment. Affiliated
 
 ### [08 — NetiVa Intelligence (Tel Aviv)](08-netiva-tel-aviv.md)
 
-An Israeli AI company providing financial-market intelligence and AML tooling to 23 Tier-1 banks worldwide. Founded by Unit 8200 alumni. **TesseraSeal in production for 14 months. Multi-tenant.** Day 1 of a 3-day vendor-management evaluation commissioned by Heritage Pacific Bank. **Only Karen, Luis, and Chen travel to Tel Aviv; the other five join by video bridge from US Eastern Time when the afternoon overlap window opens.** Bank of Israel + ISA + INCD coordination posture. Nation-state threat model assumed. The 4:30 PM "Heritage Question" pivots from technical confirmation to vendor-risk decision support.
+An Israeli AI company providing financial-market intelligence and AML tooling to 23 Tier-1 banks worldwide. Founded by Unit 8200 alumni. **TesseraSeal in production for 14 months. Multi-tenant.** Day 1 of a 3-day vendor-management evaluation commissioned by Heritage Pacific Bank. **Only Dawn, Luis, and Chen travel to Tel Aviv; the other five join by video bridge from US Eastern Time when the afternoon overlap window opens.** Bank of Israel + ISA + INCD coordination posture. Nation-state threat model assumed. The 4:30 PM "Heritage Question" pivots from technical confirmation to vendor-risk decision support.
 
 ### [09 — Sun-Won Cosmetics Group (Seoul + Taipei)](09-sun-won-cosmetics-korea-taiwan.md)
 
-A Korean K-beauty retail group with 300+ stores in Korea and 80+ in Taiwan. KOSPI parent + Taipei Exchange subsidiary. **TesseraSeal in production for 16 months across 4 use cases.** The team splits — Karen, Raj, Diana, Tom in Seoul; Elena, Mike, Luis, Chen in Taipei. Three regulators reviewing the same chain artifacts: PIPA + PDPA + FSS for a BNPL consumer-finance arm + Taiwan FSC for the Taipei Exchange listing. The cross-border data-flow basis on the inventory tenant is the day's most interesting Partial.
+A Korean K-beauty retail group with 300+ stores in Korea and 80+ in Taiwan. KOSPI parent + Taipei Exchange subsidiary. **TesseraSeal in production for 16 months across 4 use cases.** The team splits — Dawn, Raj, Diana, Tom in Seoul; Elena, Mike, Luis, Chen in Taipei. Three regulators reviewing the same chain artifacts: PIPA + PDPA + FSS for a BNPL consumer-finance arm + Taiwan FSC for the Taipei Exchange listing. The cross-border data-flow basis on the inventory tenant is the day's most interesting Partial.
 
 ### [10 — Salt Pond Toys (Rhode Island + China + Los Angeles)](10-salt-pond-toys-rhode-island.md)
 
@@ -112,9 +112,9 @@ The stories are not training material in the regulator-pack sense. The audit-pro
 
 Across the eleven stories, certain through-lines repeat:
 
-- **Karen's "It never is."** Calibrated to context at every kickoff. By NetiVa it has become "It never is. But under the INCD threat model, even when it is — you stress it harder." By Eberhardt × Lumière it lands as "It never is. Today the question is whether the joint chain holds at the handoff."
-- **The drive-in monologue** (or elevator monologue, or video-bridge monologue, depending on geography). Karen and Raj — or Karen and Tom, or Karen alone — review prior engagements at the start of each new client. The thread accumulates. By Story 11, Karen names ten prior contexts and slots Eberhardt × Lumière as a more rigorous version of Helmstad's CRO PGP-signed-PDF approach.
-- **The 4:30 PM client question.** Each engagement has a moment where the company's CAE asks Karen a high-stakes specific question — FDA inspector reviewability (Helmstad), public-safety evidentiary defensibility (Pacific Crescent), litigation-defense scope (Olmstead), back-out cost under nation-state-coordinated incident-response (NetiVa), three-regulator simultaneity (Sun-Won), 24-hour CPSC recall (Salt Pond), root-cause attribution across two suppliers (Eberhardt × Lumière). Karen's answer is always sober, always concrete.
+- **Dawn's "It never is."** Calibrated to context at every kickoff. By NetiVa it has become "It never is. But under the INCD threat model, even when it is — you stress it harder." By Eberhardt × Lumière it lands as "It never is. Today the question is whether the joint chain holds at the handoff."
+- **The drive-in monologue** (or elevator monologue, or video-bridge monologue, depending on geography). Dawn and Raj — or Dawn and Tom, or Dawn alone — review prior engagements at the start of each new client. The thread accumulates. By Story 11, Dawn names ten prior contexts and slots Eberhardt × Lumière as a more rigorous version of Helmstad's CRO PGP-signed-PDF approach.
+- **The 4:30 PM client question.** Each engagement has a moment where the company's CAE asks Dawn a high-stakes specific question — FDA inspector reviewability (Helmstad), public-safety evidentiary defensibility (Pacific Crescent), litigation-defense scope (Olmstead), back-out cost under nation-state-coordinated incident-response (NetiVa), three-regulator simultaneity (Sun-Won), 24-hour CPSC recall (Salt Pond), root-cause attribution across two suppliers (Eberhardt × Lumière). Dawn's answer is always sober, always concrete.
 - **Tom's posture shift.** In the diary baseline he was "sweating." Across these eleven, he has been "pleased" (Northbridge), "negotiating coverage extensions" (Mercator, Helmstad), "mediating the IT/OT culture gap" (Stelvio, Pacific Crescent), "navigating jurisdictional splits" (Olmstead), "moderating cross-time-zone debriefs" (NetiVa, Salt Pond, Sun-Won, Eberhardt × Lumière), and "running quiet shop in a coordinated-examiner room" (Atrio).
 - **The reconciliation test.** Always 5-10 records traced end-to-end, always the load-bearing scene. The trace shape varies by engagement — single-jurisdiction (Northbridge), bifurcated (Mercator), three-tier (Stelvio), multi-tenant batch (Atrio's 1,410-run), cross-jurisdiction (Sun-Won), cross-location with bonded-carrier handoff (Salt Pond), cross-vendor anchor verification (Eberhardt × Lumière), three-day rolling reconciliation (NetiVa).
 - **Cross-vendor anchors.** First introduced as Helmstad's PGP-signed CRO PDF hashed into the chain. Refined into Salt Pond's Bureau Veritas CPSIA-cert anchor. Climaxes at Eberhardt × Lumière as bidirectional hash-equality between two independent chains. The pattern matters more each engagement.

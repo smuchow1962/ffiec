@@ -4,7 +4,7 @@
 **Client:** NetiVa Intelligence Ltd. — Israeli AI company, Sarona Tower HQ (Tel Aviv), R&D campus in Herzliya, ~340 employees, Unit 8200 alumni founders. Financial-market intelligence and AI-driven AML tooling for 23 Tier-1 banks across US, UK, Singapore, Israel, Australia. Multi-tenant SaaS vendor under spec §10.1 IKM-registry uniqueness discipline.
 **Posture:** TesseraSeal in production for 14 months. Multi-tenant. 23 customer-banks → 23 IKMs in dedicated HSM partitions per spec §10.5 FIPS 140-2 Level 3 custody. Each AI use case is a `tenant_id` under that bank's IKM (per-tenant HKDF binding under spec §4.1). ~110 tenants in production across AML transaction monitoring, KYC enhancement, sanctions screening, and market-surveillance.
 **Date:** Tuesday, two weeks after Olmstead. **Day 1 of a 3-day visit.**
-**Auditor:** the same eight-person team — but split across two time zones for the first time. Karen, Luis, and Chen flew to Tel Aviv. Raj, Elena, Mike, Diana, and Tom are joining remotely from the US Eastern time zone.
+**Auditor:** the same eight-person team — but split across two time zones for the first time. Dawn, Luis, and Chen flew to Tel Aviv. Raj, Elena, Mike, Diana, and Tom are joining remotely from the US Eastern time zone.
 
 ---
 
@@ -18,15 +18,15 @@ NetiVa stood up TesseraSeal 14 months ago. The chain is the ledger of record for
 
 The engagement is unusual in its commissioning shape. Heritage Pacific Bank — a $180B regional headquartered in Charlotte, NetiVa's largest US customer by transaction volume — commissioned the evaluation under its own vendor-management framework (OCC Bulletin 2013-29 + the June 2023 Interagency Guidance on Third-Party Relationships). NetiVa consented to the engagement and cost-shares the fee. The deliverable will be read by Heritage's vendor-management committee, NetiVa's own audit committee, and (with NetiVa's permission) by Bank of Israel and Israeli Securities Authority examiners during their next supervisory review. Three audiences across two regulatory jurisdictions reading one report. The cross-language cross-jurisdiction pattern is exactly what spec §10.17's "cross-language CC8.1 discoverability for multi-tenant SaaS vendors" clause speaks to and what spec §10.18 CC8.1-and-runbook cross-referencing closes operationally — both clauses are normative and both were folded into the spec body in the Wave-6 second errata after the engagement that produced this very story surfaced the gap.
 
-Karen's team was engaged in March. The 3-day visit was scheduled around NetiVa's Q1 board meeting and Heritage's vendor-management committee calendar. Day 1 (today) is the architecture overview, the per-tenant isolation deep-dive, and the disaster-recovery posture. Day 2 is HSM custody and the IKM-registry deep-dive at the Bynet colocation in Petach Tikva. Day 3 is the cross-border data-flow walkthrough and the regulator-coordination tabletop with the INCD's banking-sector liaison.
+Dawn's team was engaged in March. The 3-day visit was scheduled around NetiVa's Q1 board meeting and Heritage's vendor-management committee calendar. Day 1 (today) is the architecture overview, the per-tenant isolation deep-dive, and the disaster-recovery posture. Day 2 is HSM custody and the IKM-registry deep-dive at the Bynet colocation in Petach Tikva. Day 3 is the cross-border data-flow walkthrough and the regulator-coordination tabletop with the INCD's banking-sector liaison.
 
 The engagement reads against several v1.0b spec sections that the team has internalized over the prior seven engagements: §10.1 IKM-registry uniqueness for multi-tenant SaaS, §10.5 FIPS 140-2 Level 3 HSM custody with §10.6 32-byte minimum and §10.6.1 RNG generation, §10.7 software-key adapter exclusion in production, §10.8 constant-time comparison, §10.9 IKM retention coupling, §10.10 IKM rotation crossing the seal boundary, §10.11 / §10.11.1 ECOA adverse-action notice translation and the new `audit.ecoa.adverse_action.*` schema, §10.12 verifier CLI exit-code contract, §10.13 evidentiary-artifact retention, §10.14 trusted-time integration RECOMMENDED at v1.0b, §10.15 multi-region resilience Pattern A, §10.16 SaaS-edge capture connectors, §10.17 HSM partition ceremony attestation (the section this engagement helped produce, per Wave-6 second errata), §10.18 CC8.1 and runbook cross-referencing, §10.19 chain-coverage map with version-stamping per Round-17 M&A-P3, §10.21 cross-vendor model-handover schema with Round-17 M&A-G2 contract binding, §10.22 redaction discipline pre-MAC at the SDK boundary, §10.23 consumer-correlation index integrity, §10.24 entity succession, §10.25 run resume and chain-tail acquisition, §10.26 reference verifier distribution discipline, §1.2 epistemic scope, §1.3 security definitions, §1.4 compositional-security argument, §3.5 canonical-encoding, §4.1 per-tenant HKDF binding, §4.2 daily Merkle seal, §4.3 sign_payload v1.0b 12-line wire form, §4.4 OTLP attribute set including `ffiec.chain.region` and `audit.cross_border_transfer.*`, §4.4.6 SaaS-edge connector source attribution, and §7 verification procedure with §10.12 exit codes.
 
-NetiVa's company-side liaison is **Yael Shamir**, VP of Information Security. Ex-Mossad cyber. Fluent Hebrew, English, Russian. Direct. Treats Karen as a peer. She is not a regulator and not an auditor; she is a defender, and her threat model assumes capable nation-state adversaries are continuously present in the network. She does not oversell. She challenges any imprecise question.
+NetiVa's company-side liaison is **Yael Shamir**, VP of Information Security. Ex-Mossad cyber. Fluent Hebrew, English, Russian. Direct. Treats Dawn as a peer. She is not a regulator and not an auditor; she is a defender, and her threat model assumes capable nation-state adversaries are continuously present in the network. She does not oversell. She challenges any imprecise question.
 
-The engagement also has a second client-side voice: **Adrienne Kowalski**, VP of Vendor Risk at Heritage Pacific Bank, joining remotely from Charlotte at the afternoon US-overlap window. Adrienne and Karen have known each other for years. Her reading angle is plainly transactional — *"is this NetiVa deployment good enough for me to certify in our vendor-management framework, OCC-acceptable, with renewal at 30-day notice if anything shifts."*
+The engagement also has a second client-side voice: **Adrienne Kowalski**, VP of Vendor Risk at Heritage Pacific Bank, joining remotely from Charlotte at the afternoon US-overlap window. Adrienne and Dawn have known each other for years. Her reading angle is plainly transactional — *"is this NetiVa deployment good enough for me to certify in our vendor-management framework, OCC-acceptable, with renewal at 30-day notice if anything shifts."*
 
-By the time Karen's visiting team flew to Tel Aviv, TesseraSeal had been audited at six US institutions across banking, healthcare, BaaS, industrial, biopharma, utility, and higher-ed. Northbridge was seven engagements back. One §10.16 SaaS-edge non-conformance, the chain itself otherwise held byte-for-byte — the cleanest engagement Karen had run in years. NetiVa was the eighth engagement of the cycle and the first multi-jurisdiction multi-tenant SaaS vendor; Karen had stopped expecting another Northbridge several weeks ago. The chain primitive was familiar. The new question at NetiVa was whether the multi-tenant SaaS-vendor + HSM-partition + Israeli regulatory composition (Bank of Israel directives 357 / 359 / 361 / 365 / 367 / 411 / 414, PPL Amendment 13, INCD coordination, Equal Opportunity Employment Law) holds together.
+By the time Dawn's visiting team flew to Tel Aviv, TesseraSeal had been audited at six US institutions across banking, healthcare, BaaS, industrial, biopharma, utility, and higher-ed. Northbridge was seven engagements back. One §10.16 SaaS-edge non-conformance, the chain itself otherwise held byte-for-byte — the cleanest engagement Dawn had run in years. NetiVa was the eighth engagement of the cycle and the first multi-jurisdiction multi-tenant SaaS vendor; Dawn had stopped expecting another Northbridge several weeks ago. The chain primitive was familiar. The new question at NetiVa was whether the multi-tenant SaaS-vendor + HSM-partition + Israeli regulatory composition (Bank of Israel directives 357 / 359 / 361 / 365 / 367 / 411 / 414, PPL Amendment 13, INCD coordination, Equal Opportunity Employment Law) holds together.
 
 This is the diary of Day 1.
 
@@ -36,7 +36,7 @@ This is the diary of Day 1.
 
 ### In Tel Aviv
 
-- **Karen** — Lead Auditor (governance and narrative)
+- **Dawn** — Lead Auditor (governance and narrative)
 - **Luis** — DevOps, logs, pipelines
 - **Chen** — Data engineering and ETL
 
@@ -56,11 +56,11 @@ Customer-bank liaison joining remote: **Adrienne Kowalski**, VP of Vendor Risk, 
 
 ## 🌅 7:30 AM IL — Tea with Yael
 
-Karen had walked the eight blocks from the hotel to Sarona Tower in the cool morning. Tel Aviv was still waking up. The market vendors at HaCarmel had been setting out olives and ka'ak for forty minutes. The traffic on Kaplan was still light. By the time Karen rode the elevator to the 38th floor, the lobby coffee bar was already open and Yael was waiting at a small table by the window.
+Dawn had walked the eight blocks from the hotel to Sarona Tower in the cool morning. Tel Aviv was still waking up. The market vendors at HaCarmel had been setting out olives and ka'ak for forty minutes. The traffic on Kaplan was still light. By the time Dawn rode the elevator to the 38th floor, the lobby coffee bar was already open and Yael was waiting at a small table by the window.
 
 Yael did not stand. She gestured to the chair across the table. Two glass mugs, two tea bags, hot water in a small carafe.
 
-"Karen. Good flight?"
+"Dawn. Good flight?"
 
 "Long. We slept the second half."
 
@@ -74,7 +74,7 @@ Yael nodded once and poured the water. "Three days. You set the order. I will no
 
 "That is the order I would set."
 
-Karen tasted the tea. Mint and something else — verbena, maybe. "One thing before kickoff. Heritage commissioned this. You consented to it. The deliverable goes to your audit committee, Heritage's vendor-management committee, and — with your permission — Bank of Israel and ISA when their next supervisory cycle comes around. You are sure on the third one."
+Dawn tasted the tea. Mint and something else — verbena, maybe. "One thing before kickoff. Heritage commissioned this. You consented to it. The deliverable goes to your audit committee, Heritage's vendor-management committee, and — with your permission — Bank of Israel and ISA when their next supervisory cycle comes around. You are sure on the third one."
 
 "I am sure. Bank of Israel has been asking about TesseraSeal in the AML examiner room for nine months. ISA has been asking about it in the public-listing-arm examination since last fall. If your report is good, it serves both audiences. If your report finds something, I want it found before they find it."
 
@@ -82,20 +82,20 @@ Karen tasted the tea. Mint and something else — verbena, maybe. "One thing bef
 
 "It will not be ego."
 
-Karen drank the tea.
+Dawn drank the tea.
 
 Yael set down her mug. "One thing more before we walk in. Spec §1.2. The chain proves what the AI said and that the record was not tampered with after capture. It does not prove the AI's statement is factually accurate, policy-compliant, or unbiased. We tell our customer-banks that on Day 1 of every onboarding. The chain is the integrity foundation, not the truth foundation. Bank of Israel accepts the framing. INCD accepts it. Heritage's vendor-management committee accepts it. If your report claims more than that, your report is wrong. If your report claims less than that, your report is incomplete."
 
-Karen wrote in her notebook. *§1.2 epistemic scope. Yael said it without naming the section number, but she has read the spec. That is what mature engineering looks like — the team has internalized the spec's epistemic discipline so the language they use in operational conversations matches the spec's language without translation.*
+Dawn wrote in her notebook. *§1.2 epistemic scope. Yael said it without naming the section number, but she has read the spec. That is what mature engineering looks like — the team has internalized the spec's epistemic discipline so the language they use in operational conversations matches the spec's language without translation.*
 
-> **🔍 Karen's note (internal):**
+> **🔍 Dawn's note (internal):**
 > *Yael set the rules with one sentence. "If your report finds something, I want it found before they find it." That is the shape of mature engineering and it is also the shape of someone who has spent her career on the defending side. Today she is on the audited side and the discipline carries over. The §1.2 framing is on her tongue without effort. She has read the spec.*
 
 ---
 
 ## 🌅 8:30 AM IL — Kickoff and the Elevator Up
 
-Karen met Luis and Chen in the Sarona Tower lobby at 8:15. Luis had already been to the coffee bar — he had a cardboard cup of something dark and a pastry in a paper bag. Chen had her laptop case and a bottle of water. Neither of them had slept enough. Both of them were ready.
+Dawn met Luis and Chen in the Sarona Tower lobby at 8:15. Luis had already been to the coffee bar — he had a cardboard cup of something dark and a pastry in a paper bag. Chen had her laptop case and a bottle of water. Neither of them had slept enough. Both of them were ready.
 
 "Same trio kickoff as usual?" Luis asked.
 
@@ -103,9 +103,9 @@ Karen met Luis and Chen in the Sarona Tower lobby at 8:15. Luis had already been
 
 "I noticed."
 
-Karen pressed the elevator call button. The car came down quick. The three of them got on alone. The car started up.
+Dawn pressed the elevator call button. The car came down quick. The three of them got on alone. The car started up.
 
-"We have done seven of these in seven months," Karen said. "Multi-tenant, full deployment, Israel, nation-state threat model. This is the hardest version yet. The reason is not that NetiVa is worse. The reason is that the threat model assumes someone has been inside their network for 18 months."
+"We have done seven of these in seven months," Dawn said. "Multi-tenant, full deployment, Israel, nation-state threat model. This is the hardest version yet. The reason is not that NetiVa is worse. The reason is that the threat model assumes someone has been inside their network for 18 months."
 
 Luis set his coffee cup down on the floor between his feet so he could button his cuff. "Northbridge was full deployment, single tenant. Mercator was bifurcated. Stelvio was tiered. Atrio was the multi-tenant test."
 
@@ -125,17 +125,17 @@ Luis picked up his coffee. "Recurring line."
 
 Chen pressed Luis. "What's the §10.17 read here?"
 
-Luis: "Wave-6 second errata. The spec was amended after the Tel Aviv engagement that's about to happen. §10.17 mandates `chain.partition_ceremony_attended` for partition creation, partition wipe, IKM rotation, partition-PIN reset, controlling-person rotation. Today's engagement is the source of the spec text. We will surface the partial because we know what §10.17 will say, but we won't pretend the spec already says it — the spec amendment hadn't landed when Karen booked the trip. The right framing is: today's engagement produces a partial; the spec amendment closes the partial against normative text the engagement helped write. That is the right shape — the spec is responsive to field engagements, not the other way around."
+Luis: "Wave-6 second errata. The spec was amended after the Tel Aviv engagement that's about to happen. §10.17 mandates `chain.partition_ceremony_attended` for partition creation, partition wipe, IKM rotation, partition-PIN reset, controlling-person rotation. Today's engagement is the source of the spec text. We will surface the partial because we know what §10.17 will say, but we won't pretend the spec already says it — the spec amendment hadn't landed when Dawn booked the trip. The right framing is: today's engagement produces a partial; the spec amendment closes the partial against normative text the engagement helped write. That is the right shape — the spec is responsive to field engagements, not the other way around."
 
-Karen nodded once. "Exactly. We surface the partial. We name the fix. The spec amendment is the post-engagement closure narrative. The institution remediates against §10.17 normative text, not against what we recommended in our deliverable."
+Dawn nodded once. "Exactly. We surface the partial. We name the fix. The spec amendment is the post-engagement closure narrative. The institution remediates against §10.17 normative text, not against what we recommended in our deliverable."
 
 "That's the one."
 
 The elevator stopped at thirty-eight. The doors opened on a glass wall and a NetiVa logo in brushed steel. Yael was at the reception desk talking to the security guard in Hebrew. She turned when the elevator doors opened and switched to English.
 
-"Karen. Luis. Chen. Welcome to NetiVa. The conference room is around the corner. The wall monitor is already on. I have my CISO and my SRE lead in the room. The rest of your team comes on the bridge at 3:30. We'll start with the architecture."
+"Dawn. Luis. Chen. Welcome to NetiVa. The conference room is around the corner. The wall monitor is already on. I have my CISO and my SRE lead in the room. The rest of your team comes on the bridge at 3:30. We'll start with the architecture."
 
-> **🔍 Karen's note (internal):**
+> **🔍 Dawn's note (internal):**
 > *Three of us. Eight time zones. Twenty-three customer banks watching. Nation-state threat model. The chain either holds or it doesn't, and either way I want to be sure today.*
 
 ---
@@ -181,7 +181,7 @@ flowchart LR
 
 Yael let the diagram sit. "Twenty-three customer-banks. Twenty-three IKMs. Each IKM lives in a dedicated partition on the Thales Luna PCIe HSM cluster in Bynet colo Petach Tikva. Thales Luna 7000 PCIe is on the spec §10.5 conformant-HSM list — FIPS 140-2 Level 3, private signing key non-extractable. The Be'er Sheva region holds the active-active replica per spec §10.15 Pattern A. Each customer-bank's tenants — between four and seven of them depending on the use cases the bank licenses — derive session keys from that bank's IKM by HKDF with `info_base || '|' || utf8(tenant_id)` per spec §4.1. Each IKM is at least 32 bytes (256 bits) per spec §10.6 and was generated inside the partition by the HSM's internal CSPRNG per spec §10.6.1 — the highest-assurance RNG posture; the `master_key.generated` operational event records `rng_source = 'hsm.thales-luna-7000'` for every IKM under §10.2."
 
-Karen wrote in her notebook. *Twenty-three IKMs in twenty-three partitions. Per-tenant derivation. Same shape as Atrio scaled up by a factor of two. Different threat model.*
+Dawn wrote in her notebook. *Twenty-three IKMs in twenty-three partitions. Per-tenant derivation. Same shape as Atrio scaled up by a factor of two. Different threat model.*
 
 Luis asked the first question. "The HSM cluster — how many physical units?"
 
@@ -189,7 +189,7 @@ Maya answered. Her English was careful. "Six PCIe Luna 7000s in the primary part
 
 Chen wrote. *2-of-2 PIN split between customer-bank CISO and NetiVa CISO. Same shape as Atrio's bank-CISO/Atrio-CISO split. The difference is twenty-three different banks instead of twelve.*
 
-Karen asked, "And the run-locality?"
+Dawn asked, "And the run-locality?"
 
 Yael clicked to the next slide. "Run-locality is enforced. Every chain entry carries a `region` field — `il-pt` for Tel Aviv-Petach Tikva, `il-bs` for Be'er Sheva — recorded under MAC binding via the `ffiec.chain.region` attribute per spec §4.4. The load-bearing run-locality enforcement is the SDK per-process region binding under spec §10.15 — one SDK process per region, pinned to that region's IKM endpoint and ledger endpoint. Multi-region SDK processes are non-conformant; the attribute itself is advisory evidence, the per-process binding is the integrity floor. The seal job runs in the region that owns the run. Cross-region writes are prevented at the application layer and verified by the seal aggregator. Replication completion is a chain event — `master.cross_region_replication_completed` per spec §10.2 — and the per-region count and replication-completion timestamp reflect the replication pipeline's state at emission time per the §10.15 Pattern A invariant 5 freshness rule (Wave-6 third errata; we do a synchronous read against the replication pipeline rather than a cached representation)."
 
@@ -210,39 +210,39 @@ Luis: "Fingerprint truncation. Spec §10.6 names the 16-byte truncation as foren
 
 Maya: "Not yet. Our retention horizon is 7-9 years per FFIEC and Bank of Israel; the 16-byte truncation's birthday bound at 2^64 is comfortably outside that horizon under any practical compute budget. We track the 32-byte option as a v1.0b optional discipline (the Wave-6 spawned cryptographic-agility roadmap names it for >25-year horizons). When our retention horizon extends — if a customer-bank's regulator extends to 25 years for AML records, for example — we will move to the 32-byte mode."
 
-Karen wrote. *§10.6 / §10.6.1 deep-dive complete. Highest-assurance RNG. 32-byte option tracked. The team reads the cryptographic-agility roadmap.*
+Dawn wrote. *§10.6 / §10.6.1 deep-dive complete. Highest-assurance RNG. 32-byte option tracked. The team reads the cryptographic-agility roadmap.*
 
-Karen pulled the next thread. "And the fingerprint rotation cadence?"
+Dawn pulled the next thread. "And the fingerprint rotation cadence?"
 
 "365 days per spec §4.3. Two of our customer-banks have rotated already — Heritage Pacific rotated in March of this year, UK Tier-1 #2 rotated last August. The rotation procedure ran clean both times. The IKM rotation itself crosses the seal boundary per spec §10.10; the day-after seal records `key_versions = [old, new]` and the `master_key.rotation_observed` operational event under §10.2 is emitted when an entry under the new `key_version` first appears. We retain every IKM generation per spec §10.9 retention coupling — a request to retire an IKM whose `key_version` is still referenced by retained chain entries requires explicit override and is logged as `master_key.retired`. The rotation hand-off is signed by both the outgoing and incoming keypairs. The verifier handles the hand-off transparently — `key_versions` cross-check at §7 step 11 catches silent rewrites against actual per-event distribution, and the `signed_at` per §4.3 binds the rotation moment under the HSM signature."
 
-Karen wrote. *Rotation is itself a chain event with dual-signed hand-off. The verifier reads the `signing_pubkey_fingerprint` field per entry and validates the entry against the keypair active at that entry's seal time. That is the right structural shape for long-running chains across rotation boundaries.*
+Dawn wrote. *Rotation is itself a chain event with dual-signed hand-off. The verifier reads the `signing_pubkey_fingerprint` field per entry and validates the entry against the keypair active at that entry's seal time. That is the right structural shape for long-running chains across rotation boundaries.*
 
 Yael paused. "Be precise — what specifically are you asking about the threat model? You said 'nation-state' on the elevator and Eitan caught it on the lobby camera audio."
 
-Karen smiled. The lobby camera had picked up the elevator-doors-opening conversation. Yael's people had clipped it and forwarded it to her in the eleven minutes between the elevator and the kickoff. "Fair. Specifically — your operational assumption is that capable nation-state actors are present in the network and the chain has to hold under their access. IRGC cyber. Lazarus-equivalent. North-Korean adjacent groups. Russian SVR-style. INCD coordination assumes Iran cyber is actively probing Israeli financial infrastructure. The chain claim is that even if a determined attacker is inside the application layer, they cannot forge a chain entry, and they cannot read a tenant they don't have the credential for, and they cannot tamper with a sealed entry without the daily seal failing the next morning."
+Dawn smiled. The lobby camera had picked up the elevator-doors-opening conversation. Yael's people had clipped it and forwarded it to her in the eleven minutes between the elevator and the kickoff. "Fair. Specifically — your operational assumption is that capable nation-state actors are present in the network and the chain has to hold under their access. IRGC cyber. Lazarus-equivalent. North-Korean adjacent groups. Russian SVR-style. INCD coordination assumes Iran cyber is actively probing Israeli financial infrastructure. The chain claim is that even if a determined attacker is inside the application layer, they cannot forge a chain entry, and they cannot read a tenant they don't have the credential for, and they cannot tamper with a sealed entry without the daily seal failing the next morning."
 
 Yael nodded once. "That is the operating assumption. We do not say 'if'; we say 'when.' Eitan?"
 
 Eitan spoke for the first time. "We assume 18-month dwell. INCD's published baseline. We design for it. The chain is a control we trust because the design says we should — the IKM is on the HSM, the application cannot read it, the daily seal is signed by Ed25519 inside the HSM, the verifier runs on a separate operational footprint. The §1.4 compositional-security argument is what makes me sleep. Three independent authentication layers: per-event HMAC (Layer 1, §4.1), daily Merkle seal (Layer 2, §4.2), HSM-rooted root signature (Layer 3, §4.3). An attacker who breaks one layer cannot silently tamper. An attacker who has root on the SDK process — spec §1.2's fourth-class compromise; Adversary F per the threat-model design doc — can produce verifying entries until detection, but cannot retroactively alter past entries. That bounds the forward-only attack window. We compose host-hardening, anomaly detection on the captured stream, and out-of-band agent-behavior monitoring against that residual class."
 
-Karen wrote. *That is the right answer. The chain is not a prevention control. It is a detection control. The team understands the difference. Spec §1.2 epistemic scope is exactly the framing — what the chain proves, what it does not prove. The team has read the spec.*
+Dawn wrote. *That is the right answer. The chain is not a prevention control. It is a detection control. The team understands the difference. Spec §1.2 epistemic scope is exactly the framing — what the chain proves, what it does not prove. The team has read the spec.*
 
-Karen asked the follow-on. "Software-key adapter posture. Spec §10.7. You ship an HSM-only build for production?"
+Dawn asked the follow-on. "Software-key adapter posture. Spec §10.7. You ship an HSM-only build for production?"
 
 Eitan: "Compile-time exclusion. The strictest pattern under §10.7. The software adapter source is conditional-compiled out of production builds — a build-flag gates the file. No run-time-only environment variable can resurrect what was never compiled in. The verifier under §10.7 also refuses any chain whose `dev_mode` is true or whose `kms_handle_uri` begins with `plaintext-` under `--strict`. Double-protection by spec design."
 
-Karen wrote. *Compile-time exclusion. The §10.7 strictest pattern. CC8.1 documents the adapter is unreachable.*
+Dawn wrote. *Compile-time exclusion. The §10.7 strictest pattern. CC8.1 documents the adapter is unreachable.*
 
 Yael continued. "One more piece. Spec §1.3 effective security level. Each customer-bank's chain composes three layers — per-event MAC under §4.1 with HMAC-SHA-256 (FIPS 198-1) providing EUF-CMA security; daily Merkle seal under §4.2 with RFC 6962 leaf-and-node prefixes providing second-preimage resistance over SHA-256 (FIPS 180-4); HSM-rooted root signature under §4.3 with Ed25519 (FIPS 186-5, RFC 8032) providing EUF-CMA security. Per §1.4 the composition is at least as strong as the strongest layer, and the effective security level is 128 bits per NIST SP 800-175B's baseline. We track the cryptographic-agility roadmap from the Wave-6 spawned Mihail Vasiliev (CFRG) review — hash-function agility with five-call-site dispatch, hybrid signature variant B with Ed25519+ML-DSA-65 or Ed25519+SLH-DSA-SHA2-192f pairings, key transparency with regulator-operated CT log, HNDL response with dual-algorithm seal mandate effective 2030-01-01. Our HSMs will support FIPS-204-validated post-quantum primitives by 2027-2028 per Thales's published roadmap; we will activate the dual-algorithm seal earlier than the 2030-01-01 mandate if our customer-banks ask."
 
-Karen wrote. *§1.3 / §1.4 cryptographic foundations engaged. Crypto-agility roadmap is on Yael's slide. The team is forward-looking about post-quantum.*
+Dawn wrote. *§1.3 / §1.4 cryptographic foundations engaged. Crypto-agility roadmap is on Yael's slide. The team is forward-looking about post-quantum.*
 
 The architecture walkthrough ran another twenty minutes. AI inference layer, chain integration points, daily seal job topology, verifier credential path, the customer-bank-facing portal where each bank's CISO can run the reference verifier per spec §10.26 against their own tenants from their own console. The verifier is the spec-pinned reference verifier release per §11 References — Cosign-signed binary, reproducible build, per-platform binaries (Linux x86_64 + ARM64 in production, Windows + macOS for examiner laptops), SHA-256 / SHA-512 manifests, CycloneDX SBOM, all per §10.26 distribution discipline. Each customer-bank's CC8.1 names the implementation, version, and verification key per §10.26's three-name citation rule. Yael covered each piece without hurrying.
 
 At 9:55 she stopped. "Database deep-dive next?"
 
-Karen nodded. "Chen is on the laptop. Luis is going to tail the daily seal logs while Chen runs queries. I want to see the IKM registry first."
+Dawn nodded. "Chen is on the laptop. Luis is going to tail the daily seal logs while Chen runs queries. I want to see the IKM registry first."
 
 ---
 
@@ -344,15 +344,15 @@ The result came back. Heritage Pacific's AML tenant. 1,847,392 entries total. 14
 
 Chen wrote. *Operational events are about 0.77% of the total entry volume. The chain is dominated by model decisions, which is the right shape — the operational events are configuration and control activities, the model decisions are the actual AML transaction-monitoring scoring. The 1.83M model decisions over 14 months is consistent with a Tier-1 bank's transaction volume passing through an AML overlay.*
 
-Yael saw the query and raised an eyebrow at Karen. "That was clever. The ratio is the integrity test on the chain composition. If a chain claimed to be a model-decision chain were actually 50% configuration events, the claim would not hold."
+Yael saw the query and raised an eyebrow at Dawn. "That was clever. The ratio is the integrity test on the chain composition. If a chain claimed to be a model-decision chain were actually 50% configuration events, the claim would not hold."
 
-Karen smiled. "Chen earned her seat by being the one who asks for that ratio."
+Dawn smiled. "Chen earned her seat by being the one who asks for that ratio."
 
 Chen ran the same query against the bank-19 sanctions-screening tenant — the one with the April 30 incident. The ratio held: 14,847 operational events, 1,022,489 sanctions screening decisions, no sequence gaps. The eleven replay entries from April 30 showed up as the expected eleven extra entries with `parent_event_id` references back to the originals.
 
 At 10:55 Yael said, "Diana joins at 11. The IAM video link to the colocation."
 
-Karen looked at her watch. "She set her alarm for 4:25 AM ET. She'll be awake."
+Dawn looked at her watch. "She set her alarm for 4:25 AM ET. She'll be awake."
 
 ---
 
@@ -386,14 +386,14 @@ Diana stopped typing. "Is the English version the canonical one for the customer
 
 "The English version is canonical for the customer-facing controls. The Hebrew version is canonical for the colocation operations. There is overlap."
 
-Karen leaned in. "Yael — for our purposes, the Hebrew-only operational detail is a discoverability issue. Heritage's auditor reads English. Bank of Israel's auditor reads Hebrew and English both. The customer-facing CC8.1 control should reference the existence of the Hebrew runbook and identify which sections live there. Right now, a Heritage-side reviewer reading this CC8.1 would not know there is additional procedural detail in a runbook they cannot read."
+Dawn leaned in. "Yael — for our purposes, the Hebrew-only operational detail is a discoverability issue. Heritage's auditor reads English. Bank of Israel's auditor reads Hebrew and English both. The customer-facing CC8.1 control should reference the existence of the Hebrew runbook and identify which sections live there. Right now, a Heritage-side reviewer reading this CC8.1 would not know there is additional procedural detail in a runbook they cannot read."
 
 Yael wrote it down. "That is fair. That is a Nit, not a Partial. The control itself is correct. The discoverability gap is a documentation issue."
 
 > **⚠️ Finding-001 (Nit at engagement time; now a §10.18 control-completeness item against normative spec text)**
 > Customer-bank verifier-credential rotation under CC8.1 is well-formed and correctly structured. The 90-day rotation procedure, the customer-as-validator control point, and the T-14/T-0/T+7/T+14 timeline are documented in the English-language CC8.1 control document. However, the operational detail for the rotation — Bynet colocation on-call escalation, INCD coordination notes per Directive 361 §5, on-site dual-control physical-access procedures — lives in a Hebrew-language internal-ops runbook that is not cross-referenced from the English CC8.1 document. A non-Hebrew-reading customer-bank auditor would not know the additional detail exists.
 >
-> **Spec status — closed-by-amendment.** When Karen surfaced this on Day 1, no normative spec section governed cross-language CC8.1 discoverability. The engagement team treated it as a documentation Nit. The spec was amended after this engagement — Wave-6 second errata (per the §12 change-log entry) folded the very fix Karen recommended into normative spec text. **§10.17's "cross-language CC8.1 discoverability for multi-tenant SaaS vendors"** clause now requires that for multi-tenant SaaS vendors per §10.1 serving customers in multiple jurisdictions, the institution's CC8.1 control description for partition-ceremony procedures MUST be available in a language the customer-bank auditor can read; if operational runbooks are maintained in a different language, the CC8.1 MUST cross-reference the runbook by title, table-of-contents structure, and the named sections that describe ceremony procedures. **§10.18 CC8.1 and runbook cross-referencing** generalises the rule across all normative spec elements — every runbook section supporting a normative requirement MUST cross-reference the spec section number (`Multi-Tenant Operations (per spec §10.1)`, `Multi-Region Failover (per spec §10.15)`, etc.). The omission is now a CC8.1 discoverability Nit testable by SOC 2 engagement teams and customer-bank vendor-management auditors.
+> **Spec status — closed-by-amendment.** When Dawn surfaced this on Day 1, no normative spec section governed cross-language CC8.1 discoverability. The engagement team treated it as a documentation Nit. The spec was amended after this engagement — Wave-6 second errata (per the §12 change-log entry) folded the very fix Dawn recommended into normative spec text. **§10.17's "cross-language CC8.1 discoverability for multi-tenant SaaS vendors"** clause now requires that for multi-tenant SaaS vendors per §10.1 serving customers in multiple jurisdictions, the institution's CC8.1 control description for partition-ceremony procedures MUST be available in a language the customer-bank auditor can read; if operational runbooks are maintained in a different language, the CC8.1 MUST cross-reference the runbook by title, table-of-contents structure, and the named sections that describe ceremony procedures. **§10.18 CC8.1 and runbook cross-referencing** generalises the rule across all normative spec elements — every runbook section supporting a normative requirement MUST cross-reference the spec section number (`Multi-Tenant Operations (per spec §10.1)`, `Multi-Region Failover (per spec §10.15)`, etc.). The omission is now a CC8.1 discoverability Nit testable by SOC 2 engagement teams and customer-bank vendor-management auditors.
 >
 > **Severity reclassification.** Under §10.18 the finding remains a Nit (the spec section names this severity explicitly: omission "does not affect chain integrity but breaks the verification path a reviewer needs to walk: from the runbook section to the spec requirement to the audit-procedure that tests the requirement"). The institution remediates against §10.17's cross-language rule and §10.18's cross-referencing rule jointly. **Fix:** add an English-language pointer in CC8.1 indicating the existence and table-of-contents of the Hebrew runbook by title and named ceremony-procedure sections per §10.17; add inline spec-section cross-references throughout the Hebrew runbook per §10.18 (`חלק 4 — מולטי-טננט (לפי מפרט §10.1)`). ~1 hour to draft for the English pointer; ~3 hours for the Hebrew runbook annotations. Yael accepts. The institution's CC8.1 explicitly names the cross-reference style per §10.18.
 
@@ -435,13 +435,13 @@ Yael smiled. "Brooklyn is not a fair comparison. Brooklyn took the recipe with t
 
 Chen asked Yael where she had grown up. Yael said Haifa, then Tel Aviv after the army. Twenty-two years on the cyber side. Mossad for fourteen, NetiVa for the last eight. The conversation drifted to the food, to the city, to the weather (mid-eighties, dry, pleasant). The trio ate.
 
-Halfway through the meal a fifth person came in. He nodded at Yael, ordered, and sat down at their table without asking. Yael switched fully to English. "Karen, Luis, Chen — this is **Avishai Goren**. He is the INCD banking-sector liaison. He happens to be in the Sarona building today and I told him you were here. Avishai, this is Karen's audit team."
+Halfway through the meal a fifth person came in. He nodded at Yael, ordered, and sat down at their table without asking. Yael switched fully to English. "Dawn, Luis, Chen — this is **Avishai Goren**. He is the INCD banking-sector liaison. He happens to be in the Sarona building today and I told him you were here. Avishai, this is Dawn's audit team."
 
-Karen put her fork down. *Avishai-style framing. That is a different Avishai but the pattern is the same. INCD liaison. Quiet listener. Tea over tactics. The Pacific Crescent NERC liaison was the same shape.*
+Dawn put her fork down. *Avishai-style framing. That is a different Avishai but the pattern is the same. INCD liaison. Quiet listener. Tea over tactics. The Pacific Crescent NERC liaison was the same shape.*
 
 Avishai shook hands across the table. His English was very precise, slightly accented in a different way than Yael's — more Russian-tinged. "I will not interrupt. I just wanted to meet the team. Yael speaks well of you."
 
-"You are welcome to sit," Karen said.
+"You are welcome to sit," Dawn said.
 
 He ate quietly. He listened. The trio went back to talking about food. Avishai listened. After a few minutes Yael said, in English, "Avishai, the trio walked the architecture this morning. They saw the IKM registry under spec §10.1, the per-bank seal aggregation under §4.2, the cross-tenant refusal under §10.12, the IKM-rotation crossing under §10.10, the §10.7 software-key adapter compile-time exclusion, the §10.8 constant-time discipline. They run their own reference verifier per §10.26 against three of our customer-banks' tenants this afternoon."
 
@@ -449,9 +449,9 @@ Avishai nodded. "Which three?"
 
 "Heritage Pacific, UK Tier-1 #2, Singapore Tier-1 #3. Pre-cleared with each of those customers' CISOs."
 
-Avishai turned to Karen. "Heritage Pacific is the commissioning customer. The other two are pre-cleared." He said it as a statement, not a question. He had read the engagement file before he came to the building. The Cyber Defense Law 5778-2018 mandates INCD coordination for any institution operating critical financial infrastructure — NetiVa is critical because twenty-three Tier-1 banks depend on its AML output. Directive 359 cyber-defense management and Directive 357 third-party risk are the operational directives in scope; Directive 414 third-party-risk annual vendor audit governs Bank of Israel's review of NetiVa as a vendor to Israeli megabanks. Israeli Equal Opportunity in Employment Law (1988, amended 2022 for automated decisions) governs any employment-decision use case under NetiVa's tooling — not in scope for AML-monitoring tenants but relevant for any future HR-AI tenants. None of NetiVa's current 110 tenants engage Equal Opportunity Employment Law.
+Avishai turned to Dawn. "Heritage Pacific is the commissioning customer. The other two are pre-cleared." He said it as a statement, not a question. He had read the engagement file before he came to the building. The Cyber Defense Law 5778-2018 mandates INCD coordination for any institution operating critical financial infrastructure — NetiVa is critical because twenty-three Tier-1 banks depend on its AML output. Directive 359 cyber-defense management and Directive 357 third-party risk are the operational directives in scope; Directive 414 third-party-risk annual vendor audit governs Bank of Israel's review of NetiVa as a vendor to Israeli megabanks. Israeli Equal Opportunity in Employment Law (1988, amended 2022 for automated decisions) governs any employment-decision use case under NetiVa's tooling — not in scope for AML-monitoring tenants but relevant for any future HR-AI tenants. None of NetiVa's current 110 tenants engage Equal Opportunity Employment Law.
 
-Karen said, "Yes."
+Dawn said, "Yes."
 
 "The chain claim is the chain claim regardless of who runs the verifier. The customer-bank red-team probes you mentioned earlier — Yael told me about them at our quarterly last month — those are the harder test. A vendor's auditor is one verifier credential. A customer-bank's red team is twenty determined engineers with a Capture-the-Flag budget. The fact that all six bypass patterns refused at the route layer is the answer that mattered to me last quarter."
 
@@ -459,11 +459,11 @@ He took a bite of falafel.
 
 "I am not formally part of your engagement. I will be at tomorrow's tabletop on Day 3. Today I am just a person eating lunch at a falafel place in Sarona who happens to know everyone at this table."
 
-Karen smiled at the corner of her mouth. "Understood."
+Dawn smiled at the corner of her mouth. "Understood."
 
-He ate quietly for the rest of the meal. He listened. The trio finished talking about the morning — the registry, the seal logs, the credential rotation, the Hebrew-runbook nit. Avishai did not say anything substantive about any of it. He nodded once when Karen described the cross-tenant refusal. He nodded again when Luis mentioned the 14-month no-page record on the seal job.
+He ate quietly for the rest of the meal. He listened. The trio finished talking about the morning — the registry, the seal logs, the credential rotation, the Hebrew-runbook nit. Avishai did not say anything substantive about any of it. He nodded once when Dawn described the cross-tenant refusal. He nodded again when Luis mentioned the 14-month no-page record on the seal job.
 
-At the end of the meal, when Yael was paying the owner, Avishai said one sentence to Karen across the table.
+At the end of the meal, when Yael was paying the owner, Avishai said one sentence to Dawn across the table.
 
 "The threat model is real. The chain is the right shape. Tomorrow's tabletop will tell you what we ask for. Bring the three-name verifier citation for each customer-bank — implementation, version, verification key. Spec §10.26. We will test the chain reads the same on three independent verifier binaries. INCD's red-team posture treats verifier-output authenticity as the load-bearing examiner-side signal."
 
@@ -471,9 +471,9 @@ Then he stood up, nodded once to all four of them, and walked out.
 
 Yael paid the owner in cash. The trio left a generous tip. The four of them walked back to Sarona Tower.
 
-Karen wrote in her notebook on the walk back to the building. *Avishai is not formally part of the engagement. He is part of the engagement. Tomorrow's tabletop will tell us what INCD asks for in a Tier-1-suspected incident. The chain has to be a control he trusts. Today is half about Yael and half about him. He had read the engagement file before he came to the building. The customer-bank red team probe last quarter — Yael had briefed him on it at their quarterly. That means the INCD liaison sees the customer-bank red-team results in real time, which means the chain is being stress-tested by parties NetiVa does not control, and the results are visible to the regulator without NetiVa needing to surface them. That is the right operational shape and it is exactly what makes this deployment harder to break than Atrio's.*
+Dawn wrote in her notebook on the walk back to the building. *Avishai is not formally part of the engagement. He is part of the engagement. Tomorrow's tabletop will tell us what INCD asks for in a Tier-1-suspected incident. The chain has to be a control he trusts. Today is half about Yael and half about him. He had read the engagement file before he came to the building. The customer-bank red team probe last quarter — Yael had briefed him on it at their quarterly. That means the INCD liaison sees the customer-bank red-team results in real time, which means the chain is being stress-tested by parties NetiVa does not control, and the results are visible to the regulator without NetiVa needing to surface them. That is the right operational shape and it is exactly what makes this deployment harder to break than Atrio's.*
 
-> **🔍 Karen's note (internal):**
+> **🔍 Dawn's note (internal):**
 > *INCD coordination is not a slide in a runbook. It is a person who happens to be in the building who happens to listen to your audit team during lunch. That is the operating shape of Israeli banking-sector cybersecurity oversight. The relationships are personal. The trust is earned per engagement. Pacific Crescent's NERC liaison was the same shape — quiet, attentive, the test was whether he trusted us, not whether we passed his form.*
 
 ---
@@ -496,7 +496,7 @@ Luis asked, "What was the cause?"
 
 "A bug in our model-output serialization for sanctions-screening. The model returned a NaN in one of the score fields. The serializer wrote the NaN as the literal string 'NaN' instead of canonicalizing per spec §3.5. When the verifier recomputed the HMAC, the canonical encoding it produced did not match the entry as written. The HMAC mismatch was the failure mode."
 
-Karen wrote. *Spec §3.5 canonical encoding. The verifier caught the encoding inconsistency. The failure was a real bug, not a false positive. Per §1.2 epistemic scope the chain detected the integrity break — the verifier's "FAIL" exit code 1 per §10.12 is the load-bearing signal, the §7 step number on stdout names what failed.*
+Dawn wrote. *Spec §3.5 canonical encoding. The verifier caught the encoding inconsistency. The failure was a real bug, not a false positive. Per §1.2 epistemic scope the chain detected the integrity break — the verifier's "FAIL" exit code 1 per §10.12 is the load-bearing signal, the §7 step number on stdout names what failed.*
 
 Maya continued. "The chain.verification_failure event auto-paged the Tier-1 on-call. Yael was on the bridge at 04:01 IL. Bank-19's CISO was on the bridge at 04:14 IL — we had pre-arranged the cross-time-zone paging chain at onboarding so an Israeli-time incident gets to the right person on their side regardless of where they are. The model bug was identified by 06:30. The fix was deployed by 14:00. The replay of the affected entries — there were eleven of them — was done by 16:00. The replay went through the spec §10.25 run-resume path — the SDK acquired the affected runs' chain tails through the in-memory state mechanism (we never lost local persistence), single-writer-per-run discipline held at the file-lock layer, and the ledger's ingestion cross-check on `(prev_hash, seq)` monotonicity per §10.25 confirmed each batch's claimed prev_hash equalled the ledger's last-known payload_hash for the run. Genesis-form anti-spoof per §4.4 didn't fire — the runs already existed. Bank-19's verifier ran a full-day reconciliation at 17:00 and returned exit code 0 PASS per §10.12 on all eleven re-issued entries."
 
@@ -507,17 +507,17 @@ Luis read the incident timeline twice. "Six hours and twenty-three minutes from 
 > **✓ Confirmation #5**
 > The `chain.verification_failure` operational event under spec §10.2 auto-pages the Tier-1 on-call and the affected customer-bank's CISO via a pre-arranged cross-time-zone paging chain. Six-hour-twenty-three-minute mean time to fix on the April 30 incident. Eleven affected entries replayed with `parent_event_id` references and `replay_reason` annotations. Both original and replay entries remain in the chain per spec §10.3 (append-only enforcement at application and database-role layers; deletion catch by the §4.2 Merkle seal as defense-in-depth). Customer-bank's own verifier validated the replay independently.
 
-Karen looked at the pipeline dashboard. "Yael — the INCD notification clock. Did this incident trigger it?"
+Dawn looked at the pipeline dashboard. "Yael — the INCD notification clock. Did this incident trigger it?"
 
 "No. INCD's Directive 361 §5 clock is for nation-state-suspected incidents. A serialization bug is not nation-state-suspected. We notified INCD as part of our standard quarterly summary — the bug appears in the Q2 quarterly. If the incident had been suspected as adversary-driven, the clock starts at the moment of determination and we file within one hour."
 
-Karen wrote. *One-hour clock for nation-state-suspected. Standard quarterly summary for non-suspected. The discrimination point is the determination of suspicion, not the verification failure itself. That is the right structural property.*
+Dawn wrote. *One-hour clock for nation-state-suspected. Standard quarterly summary for non-suspected. The discrimination point is the determination of suspicion, not the verification failure itself. That is the right structural property.*
 
-Karen asked the follow-up. "Directive 411 §3 incident reporting clock. How does that compose?"
+Dawn asked the follow-up. "Directive 411 §3 incident reporting clock. How does that compose?"
 
 Yael answered without consulting a runbook. "Directive 411 §3 is a 30-minute initial-notification clock for any operational event affecting customer data or critical systems. The serialization bug hit Directive 411 §3 — we filed the initial notification with the Bank of Israel Banking Supervisor at 04:17 IL on April 30, sixteen minutes after page. Directive 365 operational-resilience reporting captured it as well — 6h 23m total recovery time, well within Directive 365 §3's 2-hour recovery target plus the within-day full-restore practice. The Q2 Directive 365 annual drill report will include the April 30 incident as a real-world drill and reference the Bank of Israel Banking Supervisor case number. Directive 367 §4 cloud-and-AI logging duties also covered — the chain itself is the AI-decision log Directive 367 names. Three Bank of Israel directives engaged on a single serialization bug. We told all three at once."
 
-Karen wrote. *Directives 365, 367, 411 engaged on the same incident. The chain is the evidence substrate for all three. INCD Directive 361 §5 not engaged because not nation-state-suspected. Right discrimination per directive scope.*
+Dawn wrote. *Directives 365, 367, 411 engaged on the same incident. The chain is the evidence substrate for all three. INCD Directive 361 §5 not engaged because not nation-state-suspected. Right discrimination per directive scope.*
 
 > **✓ Confirmation #6**
 > INCD coordination procedure under Directive 361 §5. The notification clock is one hour from determination of nation-state suspicion, not from incident detection. Non-suspected incidents are reported in the standard quarterly summary. The April 30 serialization bug went into the Q2 quarterly. The discrimination is determination-of-suspicion, which is the correct structural decoupling — verification-failure does not auto-trigger the INCD clock unless the operational team's triage determines adversary involvement is plausible. Directive 411 §3 30-minute initial-notification clock to Bank of Israel Banking Supervisor was met at 16 minutes; Directive 365 §3 2-hour recovery target was met at 6h 23m total but within the 2-hour first-restore moment; Directive 367 §4 cloud-and-AI logging duties satisfied by the chain itself.
@@ -546,7 +546,7 @@ Chen wrote. *24 of 24 spec §3.5 canonical-encoding vectors PASS. The serializat
 
 ## 🧬 2:00 PM IL — Multi-Region Reconciliation (Pattern A under §10.15)
 
-By 2:00 PM IL the trio had been working for five and a half hours and the wall monitor was a wall of green. Yael called a brief reset — water, espresso for Luis, hot tea for Chen, mint tea for Karen.
+By 2:00 PM IL the trio had been working for five and a half hours and the wall monitor was a wall of green. Yael called a brief reset — water, espresso for Luis, hot tea for Chen, mint tea for Dawn.
 
 Then Luis pulled the multi-region reconciliation block.
 
@@ -569,7 +569,7 @@ Status: PASS
 
 Maya pulled up a side panel showing the rolling p99 replication lag for the prior seven days for Heritage Pacific's AML tenant. The line was flat at around 400 milliseconds with one spike to 4.2 seconds three days ago.
 
-Karen pointed at the spike. "What was that?"
+Dawn pointed at the spike. "What was that?"
 
 "Bynet did a planned network-segment maintenance on a redundant fiber pair. The replication held but the rolling p99 spiked because the path failover took 3.8 seconds. We had pre-coordinated with Bynet — the customer-bank notification went out 72 hours in advance. Bank-of-Israel was notified per the operational-resilience standard."
 
@@ -578,19 +578,19 @@ Luis ran the reconciliation against four other customer-banks' AML tenants. All 
 > **✓ Confirmation #8**
 > Multi-region Pattern A reconciliation under spec §10.15. Five-of-five customer-bank AML tenants PASS cross-region hash agreement. Replication lag rolling p99 at 400 ms for the prior seven days, with one expected spike to 4.2 seconds during a pre-coordinated Bynet fiber-pair maintenance. The bank-19 sanctions-screening replay entries from the April 30 incident are present and reconciled in both regions. Run-locality is enforced; the replication-completion event is a sealed chain event.
 
-Karen wrote. *Pattern A holds at scale. 23 banks, 110 tenants, two regions. The reconciliation is fast and the replication lag is well within spec. The fiber-pair maintenance was a clean operational event. §10.15 Pattern A invariants 1-6 all hold per the day's testing — region-agnostic per-event MAC; SDK per-process region binding for run-locality; single seal region per tenant per `seal_date`; day-boundary at the seal region; replication-loss detection via per-region event-count reconciliation against the `master.cross_region_replication_completed` event; seal-region failover via the December live-test.*
+Dawn wrote. *Pattern A holds at scale. 23 banks, 110 tenants, two regions. The reconciliation is fast and the replication lag is well within spec. The fiber-pair maintenance was a clean operational event. §10.15 Pattern A invariants 1-6 all hold per the day's testing — region-agnostic per-event MAC; SDK per-process region binding for run-locality; single seal region per tenant per `seal_date`; day-boundary at the seal region; replication-loss detection via per-region event-count reconciliation against the `master.cross_region_replication_completed` event; seal-region failover via the December live-test.*
 
-Karen pressed Maya on the Pattern selection rationale. "Pattern A vs Pattern B. Spec §10.15 names both as conformant. Why Pattern A?"
+Dawn pressed Maya on the Pattern selection rationale. "Pattern A vs Pattern B. Spec §10.15 names both as conformant. Why Pattern A?"
 
 Maya: "Pattern A reduces verifier-run count to one per audit period — the seal region's chain — and aggregates multi-region evidence into one seal. The lower-cost option for institutions whose risk posture admits cross-region replication trust. Pattern B preserves per-region cryptographic isolation, which is appropriate for institutions whose regional regulatory regimes mandate in-region key custody. Both Israeli regions are within the same regulatory regime — Bank of Israel governs both, and Directive 367 §2 cloud-localization is satisfied by either pattern as long as data stays in Israeli jurisdiction. We chose Pattern A because the customer-bank audit cost per audit period is lower and the cross-region replication trust shape is acceptable to our customer-bank CISOs. If a customer-bank's CISO ever objects we have the operational tooling to switch a single tenant to Pattern B per spec §10.15 — the Pattern B `key_versions` per-subset cross-check at §7 step 11 plus the `covers_received_at_min` / `covers_received_at_max` partition fields per §10.10.2."
 
-Karen wrote. *Pattern A is the choice; Pattern B is the operationally-available alternative. The team has read both invariant lists. CC8.1 names the choice and the rationale.*
+Dawn wrote. *Pattern A is the choice; Pattern B is the operationally-available alternative. The team has read both invariant lists. CC8.1 names the choice and the rationale.*
 
-Karen asked Maya about the failover posture. "The Be'er Sheva region. If Bynet Petach Tikva goes offline — power, fiber, regional event — what happens to the daily seal job tonight?"
+Dawn asked Maya about the failover posture. "The Be'er Sheva region. If Bynet Petach Tikva goes offline — power, fiber, regional event — what happens to the daily seal job tonight?"
 
 Maya answered carefully. "The seal job has a regional fallback. The primary region is Bynet Petach Tikva. The fallback is Be'er Sheva. If the primary is unreachable at 02:00 IL, the seal scheduler waits until 02:30 IL for the primary to recover. At 02:30 IL the scheduler fails over to Be'er Sheva. The fallback HSM cluster is the same six PCIe Luna 7000s that hold the standby partitions. Those partitions are kept in sync by HSM-internal replication — Thales-supported feature, not application-level. The fallback seal is signed by the same partition keypairs because the partitions are the same. The customer-bank's verifier sees no fingerprint change."
 
-Karen wrote. *HSM-internal replication for the partitions themselves, not just the chain entries. The fallback seal signs with the same keypairs. The customer-side verification surface is invariant under regional failover.*
+Dawn wrote. *HSM-internal replication for the partitions themselves, not just the chain entries. The fallback seal signs with the same keypairs. The customer-side verification surface is invariant under regional failover.*
 
 "Have you tested the failover live?"
 
@@ -598,32 +598,32 @@ Karen wrote. *HSM-internal replication for the partitions themselves, not just t
 
 Luis pulled the December 4 seal log. The `region` field on every entry from that date showed `il-bs`. The signature was valid. The customer-bank verifier outputs from December 5 were all PASS.
 
-Karen asked Maya about evidentiary-artifact retention. "Spec §10.13. The supporting artifacts you keep alongside the chain — SDK version manifest, source-code hash, HSM configuration, daily seal-job logs, change-management records, verifier output. Per §10.13 they substantiate FRE 901(b)(9) authentication of the process. What's your retention?"
+Dawn asked Maya about evidentiary-artifact retention. "Spec §10.13. The supporting artifacts you keep alongside the chain — SDK version manifest, source-code hash, HSM configuration, daily seal-job logs, change-management records, verifier output. Per §10.13 they substantiate FRE 901(b)(9) authentication of the process. What's your retention?"
 
 Maya answered. "Seven years for the chain entries themselves under FFIEC retention. The §10.13 supporting artifacts go nine years — the chain retention plus a two-year litigation buffer per the institutional posture in our CC8.1. SDK build identifiers are content-addressed via Git commit hash plus the SLSA attestation when available. HSM configuration is documented per IKM generation. Daily seal-job logs include the HSM-signed `signed_at` value per §4.3. Change-management records cover any configuration change to the SDK, ledger, or HSM during the period. Verifier output is preserved for every customer-bank's daily reconciliation."
 
-Karen wrote. *§10.13 evidentiary artifacts retained seven plus two. CC8.1 names the buffer. FRE 901(b)(9) authentication is documented.*
+Dawn wrote. *§10.13 evidentiary artifacts retained seven plus two. CC8.1 names the buffer. FRE 901(b)(9) authentication is documented.*
 
-Karen pulled one more thread. "Spec §10.4 NTP discipline. Application hosts and ledger servers."
+Dawn pulled one more thread. "Spec §10.4 NTP discipline. Application hosts and ledger servers."
 
 Maya: "All NTP-synchronized to `time.cloudflare.com` with `il.pool.ntp.org` as backup. The ledger's receive timestamp is authoritative per §4.2.2 day-boundary semantics. Application-host clock drift is reported by the verifier as a clock-skew anomaly rather than an integrity failure per §10.4."
 
-Karen: "And §10.14 trusted-time. RFC 3161 for the high-stakes disputes."
+Dawn: "And §10.14 trusted-time. RFC 3161 for the high-stakes disputes."
 
 Maya: "Not yet — RFC 3161 trusted-timestamp integration is RECOMMENDED at v1.0 but not required. We follow the spec's NTP discipline floor today. The §10.14 v1.x forward commitment names the pre-MAC vs post-MAC posture choice when the extension lands; we plan pre-MAC binding for the AML-monitoring tenants where regulatory dispute likelihood is highest, and post-MAC for the lower-stakes tenants where hot-path latency budget is tighter."
 
-Karen wrote. *§10.14 not yet engaged. The team has read the v1.x forward commitment and has a posture plan. That is mature engineering.*
+Dawn wrote. *§10.14 not yet engaged. The team has read the v1.x forward commitment and has a posture plan. That is mature engineering.*
 
-Karen one more. "Spec §10.5 fault-injection residual risk. INCD threat model includes capable adversaries. The Luna 7000 cluster — what's your DFA posture?"
+Dawn one more. "Spec §10.5 fault-injection residual risk. INCD threat model includes capable adversaries. The Luna 7000 cluster — what's your DFA posture?"
 
 Eitan answered, having returned to the room. "Luna 7000 is FIPS 140-2 Level 3 plus Common Criteria EAL4+ — Thales publishes a fault-injection-resistance report and we read it before contracting with Bynet. The §10.5 fault-injection residual-risk acceptance is documented in our CC8.1 alongside the institutional posture against the FIA threat class. The FIPS 140-2 Level 3 baseline is the spec-conformance floor; the EAL4+ certification plus Thales's published DFA countermeasures are the elevation we apply because of the INCD threat model. If FIPS 140-3 Level 4 devices became available with documented DFA resistance we would migrate."
 
-Karen wrote. *§10.5 residual-risk acceptance documented. CC8.1 names the elevation above the spec-conformance floor. INCD threat model is engaged at the HSM-product-selection level, not just at the operational level.*
+Dawn wrote. *§10.5 residual-risk acceptance documented. CC8.1 names the elevation above the spec-conformance floor. INCD threat model is engaged at the HSM-product-selection level, not just at the operational level.*
 
 > **✓ Confirmation #8b** *(extends Confirmation #8)*
 > Pattern A failover under spec §10.15 has been live-tested twice. Most recent test in December failed over the daily seal job from Bynet Petach Tikva to Be'er Sheva for a planned maintenance window. The chain entry `region` field correctly recorded `il-bs` for that night's seal. All twenty-three customer-bank verifiers returned PASS the following morning. Zero customer-noticed events. HSM-internal replication keeps the partitions in sync; the fallback seal is signed by the same partition keypairs so the customer-side verification surface is invariant under regional failover.
 
-By 2:50 PM IL the trio had completed the local-only block. Yael caught Karen's eye.
+By 2:50 PM IL the trio had completed the local-only block. Yael caught Dawn's eye.
 
 "Adrienne is on the bridge in forty minutes. Do you want a fifteen-minute breather?"
 
@@ -635,7 +635,7 @@ By 2:50 PM IL the trio had completed the local-only block. Yael caught Karen's e
 
 Tom came on first. He had a coffee in hand and the look of someone who had been awake for ninety minutes already. Mike came on three minutes later, no coffee, freshly showered, ready.
 
-Yael's CISO Eitan rejoined the conference room in person. The wall monitor reformatted to a five-pane bridge — Tom (Tel Aviv conference room), Mike (Boston home office), the local conference room camera (showing Karen, Luis, Chen, Yael, Eitan), a shared screen for whatever the active speaker was running, and a fifth pane that would hold Adrienne when she joined at 3:30.
+Yael's CISO Eitan rejoined the conference room in person. The wall monitor reformatted to a five-pane bridge — Tom (Tel Aviv conference room), Mike (Boston home office), the local conference room camera (showing Dawn, Luis, Chen, Yael, Eitan), a shared screen for whatever the active speaker was running, and a fifth pane that would hold Adrienne when she joined at 3:30.
 
 Tom moderated. "Mike — your scope this afternoon is the API layer. Yael's team has the customer-bank-facing console and the regulator-facing portal. You are running the matrix testing on both. Diana's morning matrix covered the verifier credentials. Yours covers the console UI."
 
@@ -682,9 +682,9 @@ At 3:25 IL Tom said, "Adrienne is five out."
 
 Adrienne Kowalski joined the bridge at 3:32 IL. Charlotte morning. She had a coffee, a notebook, and the composed look of someone who had been Heritage's VP of Vendor Risk for nine years. Her opening was characteristically direct.
 
-"Karen. Yael. Good to see you both. I have one hour. I want to use it well."
+"Dawn. Yael. Good to see you both. I have one hour. I want to use it well."
 
-Karen nodded. "Welcome, Adrienne. We are about ninety minutes into the post-lunch block. The morning was the architecture, the registry, the IAM, the pipeline. The afternoon has been the multi-region reconciliation and the console RBAC. Findings so far — multiple confirmations across spec §1.2 / §1.4 / §10.1 / §10.5 / §10.6 / §10.7 / §10.8 / §10.10 / §10.12 / §10.15 / §10.22 / §10.23 / §10.25 / §10.26, one Nit on cross-language CC8.1 discoverability under §10.17 and §10.18, no partials yet."
+Dawn nodded. "Welcome, Adrienne. We are about ninety minutes into the post-lunch block. The morning was the architecture, the registry, the IAM, the pipeline. The afternoon has been the multi-region reconciliation and the console RBAC. Findings so far — multiple confirmations across spec §1.2 / §1.4 / §10.1 / §10.5 / §10.6 / §10.7 / §10.8 / §10.10 / §10.12 / §10.15 / §10.22 / §10.23 / §10.25 / §10.26, one Nit on cross-language CC8.1 discoverability under §10.17 and §10.18, no partials yet."
 
 "What's the nit?"
 
@@ -692,11 +692,11 @@ Karen nodded. "Welcome, Adrienne. We are about ninety minutes into the post-lunc
 
 Adrienne wrote in her notebook. "Acceptable. Continue."
 
-Karen smiled at the corner of her mouth. *Adrienne is here for one question. She is going to ask it in twelve minutes. The next twelve minutes are her listening.*
+Dawn smiled at the corner of her mouth. *Adrienne is here for one question. She is going to ask it in twelve minutes. The next twelve minutes are her listening.*
 
 For twelve minutes Adrienne listened to the bridge. Mike walked her through the console RBAC. Luis walked her through the seal-job topology. Chen walked her through the registry constraints. Adrienne wrote. She did not interrupt.
 
-At 3:44 IL she put her pen down. "Karen, one question."
+At 3:44 IL she put her pen down. "Dawn, one question."
 
 "Go."
 
@@ -704,9 +704,9 @@ At 3:44 IL she put her pen down. "Karen, one question."
 
 The room went quiet for a beat. The local conference room. Tom's pane in Boston. Mike's pane. Yael's face on the local camera. Eitan's face beside her. Adrienne's pane on the wall monitor.
 
-Karen looked at Yael. Yael nodded — *go ahead, answer*.
+Dawn looked at Yael. Yael nodded — *go ahead, answer*.
 
-Karen turned back to the camera. "Adrienne, that's the right question. Let me unpack it because the answer has three parts."
+Dawn turned back to the camera. "Adrienne, that's the right question. Let me unpack it because the answer has three parts."
 
 She picked up her notebook.
 
@@ -726,13 +726,13 @@ She looked up. "That's the answer I needed to hear. Three parts, three different
 
 Yael spoke for the first time. "Adrienne — that is the framing we use internally. We tell our customer-banks: if NetiVa stops existing tomorrow, the chain you have written for the last 14 months is still readable, verifiable, and presentable to your regulator without our cooperation. That is the contractual property. We engineered for it because three of our customer-banks asked for it during onboarding and we agreed it was the right vendor-risk shape."
 
-Adrienne nodded once. "Good. That is consistent with what your CC8.1 control claims. I wanted to hear it stress-tested by an independent voice. Karen."
+Adrienne nodded once. "Good. That is consistent with what your CC8.1 control claims. I wanted to hear it stress-tested by an independent voice. Dawn."
 
 "Yes."
 
 "Continue."
 
-> **🔍 Karen's note (internal):**
+> **🔍 Dawn's note (internal):**
 > *Adrienne came to the bridge with one question. She listened for twelve minutes to know it was the right time to ask it. Then she asked it. Yael nodded for me to answer. The answer was three parts and the third part is the load-bearing one — the chain is a property of the data Heritage has already received, not a service NetiVa renders. That is the right vendor-risk shape and it is what makes a 30-day notice renewal cycle defensible to the OCC. This is why the pivot at 3:45 happened. Adrienne is now reading the day differently. She is reading it as a vendor-risk decision support document, not just a technical confirmation document. The two readings are compatible but the second one needs the first one to be sound. Spec §10.24 entity succession would also engage if NetiVa were acquired or merged — `chain.entity_succession` event under §10.2 with dual signatures from the from-entity authorized signer and the to-entity authorized signer per the §10.17 signatory schema, both bound under the seal of the transfer-day per §4.3 sign_payload v1.0b. Acquirer's counsel cites §10.24 as a normative section in representation. The chain stays under the same `(tenant_id, run_id)` keying across the succession unless the institution explicitly renames `tenant_id`. Heritage's verifier credential continues to validate without re-keying. That is how the chain composes with corporate-transaction risk on the vendor side — a property the vendor-management committee can score against the OCC's vendor-management framework directly.*
 
 ---
@@ -741,7 +741,7 @@ Adrienne nodded once. "Good. That is consistent with what your CC8.1 control cla
 
 The bridge had been running for ninety minutes. Adrienne was settled in. Tom was moderating. The team was in rhythm.
 
-Karen pulled the next block. "Yael — HSM custody. We are doing the deep-dive at the colocation tomorrow. But the procedural side I want to walk through now."
+Dawn pulled the next block. "Yael — HSM custody. We are doing the deep-dive at the colocation tomorrow. But the procedural side I want to walk through now."
 
 Yael pulled up the dual-control HSM custody runbook on the wall. The English version. Twelve pages. Procedure for partition PIN reset, IKM rotation (an event that has happened twice in 14 months, both for routine 365-day rotation under spec §10.10 with the day-after seal recording `key_versions = [old, new]`), customer-bank-driven partition wipe (has happened once — a customer terminated their NetiVa contract last quarter and the partition wipe was executed under their CISO's direct observation at the colocation; this would now also surface as a `chain.entity_succession` event under spec §10.24 if it had been an entity acquisition rather than a contract termination), and the physical key-ceremony attendance log.
 
@@ -749,13 +749,13 @@ Luis asked, "The customer who terminated — what was the unwind shape?"
 
 Yael answered without pausing. "A Singapore-listed bank chose to bring AML in-house. Sixty-day notice. They received their tenant chains in full — 18 months of model-decision history — exported as a sealed archive bound to their public key. Their CISO came to the colocation. Their partition was wiped under his direct observation. Bynet's on-site engineer signed the wipe ceremony. The customer was issued a final attestation chain entry — `chain.partition_wiped`, an operational event per spec §10.2 — signed by the outgoing partition keypair before the wipe. The customer's verifier validated the attestation entry from their own infrastructure under §10.12 exit code 0. The wipe was clean. The customer's regulator in Singapore (MAS) received our standard exit attestation packet and signed off ninety days later. Cross-vendor model handover discipline under §10.21 did not engage on this path — the customer brought AML in-house rather than handing the model to another vendor — but if they had handed it over, the `audit.model_handover.*` attribute family per §10.21 would have applied with `audit.model_handover.contract_id`, `contract_version`, and `contract_hash_sha256` per the Round-17 M&A-G2 contract-binding rule."
 
-Karen wrote. *Customer-driven exit unwind. Partition wipe under customer-CISO observation. Final attestation chain entry signed before the wipe. The customer keeps the chain history they have already accumulated. That is consistent with the answer Karen gave Adrienne about the chain being a property of data the customer has already received.*
+Dawn wrote. *Customer-driven exit unwind. Partition wipe under customer-CISO observation. Final attestation chain entry signed before the wipe. The customer keeps the chain history they have already accumulated. That is consistent with the answer Dawn gave Adrienne about the chain being a property of data the customer has already received.*
 
-Karen read the physical key-ceremony attendance section. "Yael — walk me through the attendance log specifically."
+Dawn read the physical key-ceremony attendance section. "Yael — walk me through the attendance log specifically."
 
 Yael paused. "Yes. The attendance log is a paper document. Both signatories — the customer-bank CISO and the NetiVa CISO — sign in ink at the colocation at the start of the ceremony and at the end. The Bynet on-site engineer signs as a witness. The document is scanned to PDF after the ceremony and stored in our compliance vault. The original is held by Bynet for three years per our contract with them."
 
-Karen wrote. *Paper document. Scanned. Stored in PDF. Not chain-coupled.*
+Dawn wrote. *Paper document. Scanned. Stored in PDF. Not chain-coupled.*
 
 She looked up. "The attendance log is not in the chain."
 
@@ -769,7 +769,7 @@ Yael was quiet for a moment. Then: "That is fair. The chain claims dual-control.
 
 "We could write a `chain.partition_ceremony_attended` operational event under §10.2. The event would carry the customer-bank ID, the partition handle, the timestamp, the named signatories, and a SHA-256 hash of the scanned PDF. The PDF itself stays in the compliance vault. The event in the chain is an attestation that the ceremony occurred, who was present, and a binding hash to the paper evidence. That makes the attendance evidence chain-coupled at the integrity level — if the PDF is later modified, the hash mismatch is detectable. The paper-original-with-Bynet remains as the dispute-resolution record."
 
-Karen nodded. "That is exactly the right shape. The paper-and-PDF stays. The chain adds an attestation event with a binding hash. The audit-evidence trail for the control the chain depends on becomes chain-coupled."
+Dawn nodded. "That is exactly the right shape. The paper-and-PDF stays. The chain adds an attestation event with a binding hash. The audit-evidence trail for the control the chain depends on becomes chain-coupled."
 
 Eitan asked, "ETA on implementing this?"
 
@@ -777,33 +777,33 @@ Yael answered. "The event schema is one sprint. The integration into the ceremon
 
 > **⚠️ Finding-002 (Partial at engagement time; closed-by-spec at the §10.17 normative level — the institution remediates against the spec text the engagement helped produce)**
 >
-> **Engagement-time finding (the Partial as raised on Day 1).** HSM physical key-ceremony attendance log is documented dual-control with paper-and-ink signatures from both signatories (customer-bank CISO and NetiVa CISO) plus a witness signature from the Bynet on-site engineer. The document is scanned to PDF after the ceremony, stored in NetiVa's compliance vault, and the original is held by Bynet for three years. The attendance log was not chain-coupled at the time of the engagement. The chain's claim that no NetiVa role can retrieve a customer's IKM rests on the dual-control partition PIN, and the audit-evidence trail for the dual-control attendance was in a paper-and-PDF medium with different integrity properties than the chain itself. Karen and Yael agreed on a 60-day fix shape: write a `chain.partition_ceremony_attended` operational event carrying customer-bank ID, partition handle, timestamp, signatories, and SHA-256 hash of the scanned PDF; keep the paper-and-PDF as dispute-resolution evidence.
+> **Engagement-time finding (the Partial as raised on Day 1).** HSM physical key-ceremony attendance log is documented dual-control with paper-and-ink signatures from both signatories (customer-bank CISO and NetiVa CISO) plus a witness signature from the Bynet on-site engineer. The document is scanned to PDF after the ceremony, stored in NetiVa's compliance vault, and the original is held by Bynet for three years. The attendance log was not chain-coupled at the time of the engagement. The chain's claim that no NetiVa role can retrieve a customer's IKM rests on the dual-control partition PIN, and the audit-evidence trail for the dual-control attendance was in a paper-and-PDF medium with different integrity properties than the chain itself. Dawn and Yael agreed on a 60-day fix shape: write a `chain.partition_ceremony_attended` operational event carrying customer-bank ID, partition handle, timestamp, signatories, and SHA-256 hash of the scanned PDF; keep the paper-and-PDF as dispute-resolution evidence.
 >
-> **Closed-by-spec restructuring (post-engagement).** This finding looked like an institution-side gap when Karen surfaced it on Day 1. It was. The spec's Wave-6 second errata (per the §12 change-log entry naming the NetiVa Tel Aviv engagement explicitly as the source) folded the exact fix Karen recommended into normative spec text as **§10.17 HSM partition ceremony attestation (normative)**. The spec now mandates exactly the chain-coupled attestation Karen proposed. The Partial as raised was not a finding the institution discovered after this engagement — it was a finding the engagement produced and the spec amended in response.
+> **Closed-by-spec restructuring (post-engagement).** This finding looked like an institution-side gap when Dawn surfaced it on Day 1. It was. The spec's Wave-6 second errata (per the §12 change-log entry naming the NetiVa Tel Aviv engagement explicitly as the source) folded the exact fix Dawn recommended into normative spec text as **§10.17 HSM partition ceremony attestation (normative)**. The spec now mandates exactly the chain-coupled attestation Dawn proposed. The Partial as raised was not a finding the institution discovered after this engagement — it was a finding the engagement produced and the spec amended in response.
 >
 > **What §10.17 now requires.** Institutions operating an HSM partition under dual-control or witnessed-control procedures (per §10.5) MUST emit `chain.partition_ceremony_attended` for partition creation, partition wipe, IKM rotation, partition-PIN reset, controlling-person rotation, and any ceremony the institution's CC8.1 names as a load-bearing dual-control event. The event schema names `ceremony_type`, `partition_handle`, optional `customer_bank_id` for multi-tenant SaaS vendors per §10.1, REQUIRED `ceremony_started_at_utc` and `ceremony_completed_at_utc` ISO 8601 timestamps, REQUIRED `signatories` array with `role` + `name` + `entity_affiliation` per Round-17 M&A-P1, REQUIRED `witness` (separate party from signatories), REQUIRED `attendance_pdf_sha256` (lowercase hex, 64 chars) of the scanned attendance-log PDF, optional `attendance_pdf_holder` naming the party retaining the original document, optional `partition_pin_change` boolean. RECOMMENDED at v1.0b: `hsm_attestation_token_b64` (HSM-emitted attestation token bound to the ceremony, candidate-normative for v1.x per Round-17 NIST-P3) — Thales SafeNet HSMs expose ceremony-bound attestation tokens through their attestation API and NetiVa's Luna 7000 cluster supports the token; emitting it now makes NetiVa's chains v1.0b-conformant and v1.x-forward-compatible in the same wire form. Composition with §10.5 HSM custody preserved: paper-and-PDF stays as the dispute-resolution record for ink-signed authenticity (handwriting analysis, witness deposition, traditional document forensics); the chain event is the integrity-bound attestation that the ceremony occurred at the recorded time with the recorded signatories. A discrepancy between the paper and the chain is a control failure surfaced through audit-procedures P-6 (anomaly review).
 >
 > **Severity (post-spec).** Now a control-completeness item against normative §10.17 text — institutions whose CC8.1 does not name `chain.partition_ceremony_attended` emission for the in-scope ceremonies are non-conformant under §10.17. NetiVa's 60-day commitment lands them on the right side of the post-spec normative bar before the Q4 IKM rotation cycle. **Fix:** as previously specified, plus the HSM attestation token RECOMMENDED at v1.0b — NetiVa's Luna 7000 cluster supports the token, so emitting it costs nothing and produces v1.x-forward-compatible chains. **ETA:** 60 days. Yael accepts.
 
-Adrienne had been listening to the partial discussion in real time. She wrote in her notebook for a moment. Then she said, "Karen — that partial goes in the report with the ticket number. I want to track the closure independently. NetiVa, you'll provide the ticket number."
+Adrienne had been listening to the partial discussion in real time. She wrote in her notebook for a moment. Then she said, "Dawn — that partial goes in the report with the ticket number. I want to track the closure independently. NetiVa, you'll provide the ticket number."
 
 "Yes."
 
-"Karen — does the partial change your overall posture on Heritage's vendor-management certification?"
+"Dawn — does the partial change your overall posture on Heritage's vendor-management certification?"
 
-Karen thought about it for a beat. "No. The partial is a documentation-medium gap. The control itself — dual-control on the partition PIN — is structurally enforced by the HSM. The attendance log documents that the ceremonies happened correctly. Both signatories were physically present. The Bynet witness signature confirms it. The chain-coupling is an integrity-medium upgrade for the audit-evidence trail. It is not a question of whether the control works. It is a question of whether the audit evidence for the control sits in the same integrity medium as everything else the chain claims. The 60-day fix closes that. The vendor-management certification, in my read, is sound — with the partial documented and tracked."
+Dawn thought about it for a beat. "No. The partial is a documentation-medium gap. The control itself — dual-control on the partition PIN — is structurally enforced by the HSM. The attendance log documents that the ceremonies happened correctly. Both signatories were physically present. The Bynet witness signature confirms it. The chain-coupling is an integrity-medium upgrade for the audit-evidence trail. It is not a question of whether the control works. It is a question of whether the audit evidence for the control sits in the same integrity medium as everything else the chain claims. The 60-day fix closes that. The vendor-management certification, in my read, is sound — with the partial documented and tracked."
 
 Adrienne wrote. "Acceptable. Continue."
 
 The team worked through three more blocks — the regulator-facing portal scope partitioning (Heritage's regulator credentials were tested live; the OCC-scope credential could see only Heritage's tenants and could not even see other US customer-banks' tenants — eight more confirmation matrix cells, all clean), the spec §10.12 cross-tenant verifier refusal in adversarial concurrency (Luis ran twenty-five simultaneous wrong-credential queries; all twenty-five refused at the credential check with `Status: ACCESS_REFUSED, exit code 1`), and Chen's final pull on the §3.5 canonical-encoding regression suite for the prior 14 days (zero violations). Diana ran one additional pull on the redaction posture: NetiVa's KYC-enrichment chain entries carry `audit.redaction.*` attributes per spec §10.22 — `policy_id`, `policy_version`, `redacted_field_paths`, `redaction_method`, and `disposition = "redacted_at_sdk"` (the conformant pre-MAC posture per §10.22's posture statement). Diana confirmed by sampling ten Heritage Pacific KYC entries: the consumer-side PII (Israeli teudat zehut national ID where relevant, US SSN for Heritage's US consumers, names, addresses) was redacted at the SDK boundary before MAC computation; the captured JSON IS the redacted form per §10.22. Israeli PPL Amendment 13 treats AI inference logs as sensitive personal information (זיכרון רגיש) — the §10.22 pre-MAC redaction is the operational posture that satisfies PPL-A13 and GDPR Article 5(1)(c) data minimization simultaneously for Heritage's UK and EU consumers.
 
-Karen pulled one more thread on the SaaS-edge connector posture under §10.16. "NetiVa's AML scoring runs in-process — the SDK runs inside your application's process, not behind a SaaS-platform mirror. Spec §10.16 doesn't engage on your shape. But Heritage Pacific's upstream Salesforce CRM is a SaaS-edge surface for some of their customer-onboarding KYC flows. When you ingest from Heritage's Salesforce, you're operating a §10.16 mirror connector against Heritage's CRM."
+Dawn pulled one more thread on the SaaS-edge connector posture under §10.16. "NetiVa's AML scoring runs in-process — the SDK runs inside your application's process, not behind a SaaS-platform mirror. Spec §10.16 doesn't engage on your shape. But Heritage Pacific's upstream Salesforce CRM is a SaaS-edge surface for some of their customer-onboarding KYC flows. When you ingest from Heritage's Salesforce, you're operating a §10.16 mirror connector against Heritage's CRM."
 
 Yael nodded. "We are. The four-number bound from §10.16 is in our CC8.1 control description for the Salesforce mirror — median lag 12 seconds, 95th-percentile lag SLO 60 seconds over the rolling 30-day window, alerting threshold 90 seconds (1.5× the SLO, within the 2× upper bound), connector-outage RTO 5 minutes. The `connector.lag_observation` event under §10.2 fires every 60 seconds during steady-state operation; `connector.outage` fires when the connector fails to replicate. Imprecise wording would be a non-conformance per §10.16's normative severity-classification clause — we name the four numbers by quantity in CC8.1, no `near real-time` adjective anywhere in the runbook."
 
-Karen wrote. *§10.16 SaaS-edge connector engaged on Heritage's Salesforce-CRM mirror. Four numbers named, alerting threshold within the 1×–2× envelope. Wave-6 first errata severity-classification clause applies — imprecise wording is non-conformance, not Nit.*
+Dawn wrote. *§10.16 SaaS-edge connector engaged on Heritage's Salesforce-CRM mirror. Four numbers named, alerting threshold within the 1×–2× envelope. Wave-6 first errata severity-classification clause applies — imprecise wording is non-conformance, not Nit.*
 
-Karen also asked about the chain-coverage map under §10.19. "Heritage's CC8.1 will document where the chain reaches and where it does not. Your in-process AML scoring is chain-instrumented institutional. The Salesforce CRM is third-party SaaS under contractual mirror access. The Bynet colocation is third-party infrastructure under contractual inspection. The customer-bank's own retail consumer-account systems are out of NetiVa's scope. The map names each boundary."
+Dawn also asked about the chain-coverage map under §10.19. "Heritage's CC8.1 will document where the chain reaches and where it does not. Your in-process AML scoring is chain-instrumented institutional. The Salesforce CRM is third-party SaaS under contractual mirror access. The Bynet colocation is third-party infrastructure under contractual inspection. The customer-bank's own retail consumer-account systems are out of NetiVa's scope. The map names each boundary."
 
 Yael: "We have it. Version-stamped per Round-17 M&A-P3. `coverage_map_version`, `effective_utc`, `coverage_map_sha256`. Re-emitted monthly on the chain via `chain.coverage_map_published` so an 18-month-lookback auditor finds at least one anchor in any sampled month. The acquisition-due-diligence shape is operational even though we have no acquisition pending — we engineered for it because two of our customer-banks asked. External evidentiary artifacts at the boundaries — the customer-bank's regulator filings, third-party SOC 2 reports we rely on, Bynet's annual physical-security attestations — are hash-anchored via `audit.external_artifact.*` per §10.19 with `kind`, `identifier`, `sha256`, `received_at_utc`, `source_party`, and `evidentiary_role`."
 
@@ -811,7 +811,7 @@ Mike pulled one more block — the consumer-correlation index for adverse-action
 
 Cross-border transfer attribution under §4.4 was the next block. Heritage Pacific's transactions flow US → Israel for AML scoring (data crosses jurisdiction at ingest) and Israel → US for the AML score response (data crosses back). PPL Amendment 13 (effective August 2025) treats AI inference logs as sensitive personal information (זיכרון רגיש) — same classification as biometric or genetic data — and prohibits transfer outside Israel without explicit Privacy Protection Authority approval. Bank of Israel Directive 367 §2 requires AI-decision logs and the data feeding AI decisions remain in Israeli jurisdiction unless the bank obtains explicit Bank of Israel approval. NetiVa's posture: the chain entries for Heritage's tenants are stamped with the `audit.cross_border_transfer.*` attribute family per §4.4 and §10.21 cross-border-transfer composition — `contract_id` (the data-processing addendum NetiVa signed with Heritage), `contract_version`, `contract_hash_sha256` of the canonicalized contract bytes, `source_jurisdiction = "US"`, `destination_jurisdiction = "IL"`, `lawful_basis_type = "schrems_ii_scc_module_2_with_supplementary_measures"` for the US-to-IL leg under GDPR Article 46 SCCs (the UK Tier-1 #2's transfers cross from UK to IL under UK Data Protection Act 2018 + UK SCCs). For the EU customer-banks the lawful basis is GDPR Article 6(1)(f) legitimate interests tied to EU AI Act Article 12 logging obligations. The Israeli PPA approval for the cross-border transfer to Israel is named in the contract registered under `contract_id` and the SHA-256 hash binds the chain entry to the contract version in force at the moment the transfer occurred. The cryptographic linkage advances the audit posture from chain-plus-contract-binder (procedural — the auditor trusts that the contract binder describes what was in force) to chain-plus-bound-contract (cryptographic — the chain proves which contract version was in force at each transfer).
 
-Karen wrote. *Cross-border transfer attribution stamped at the chain-entry level. Each leg has source / destination / lawful basis / contract hash. GDPR Schrems II handled. PPL-A13 sensitive-information classification handled. Directive 367 §2 cloud localization handled. The chain is the audit-evidence substrate for three privacy regimes simultaneously.*
+Dawn wrote. *Cross-border transfer attribution stamped at the chain-entry level. Each leg has source / destination / lawful basis / contract hash. GDPR Schrems II handled. PPL-A13 sensitive-information classification handled. Directive 367 §2 cloud localization handled. The chain is the audit-evidence substrate for three privacy regimes simultaneously.*
 
 Tom kept the bridge moving. Mike rotated out at 5:00 IL because Boston was at 10:00 AM ET and he had a separate engagement starting. Diana came back online at 5:15 to close out her morning's IAM scope with a final review.
 
@@ -825,7 +825,7 @@ Yael set the conference room up for the debrief. The wall monitor showed all eig
 
 Yael's team — Yael, Eitan, Maya — sat at the local table.
 
-Karen walked to the whiteboard and picked up the marker.
+Dawn walked to the whiteboard and picked up the marker.
 
 "Day 1 close. Twenty confirmations, one Partial-at-engagement-time (closed-by-spec at §10.17), one Nit-at-engagement-time (now a §10.18 control-completeness item). I will read the list."
 
@@ -883,7 +883,7 @@ Adrienne spoke first. "From Heritage's vendor-management standpoint, this Day 1 
 
 Yael answered. "Adrienne — thank you for the question at 3:45. The partial would have been raised regardless. Your framing made the closure conversation tighter."
 
-Tom moderated. "Day 2 is the colocation. Karen, the trio is in the building at what time tomorrow?"
+Tom moderated. "Day 2 is the colocation. Dawn, the trio is in the building at what time tomorrow?"
 
 "Yael's team picks us up at the hotel at 7:00. We're at Bynet Petach Tikva by 7:45. The IKM registry deep-dive starts at 8:00 IL. The HSM custody walk is at 11:00. Lunch at the cafeteria there. Afternoon is the IKM rotation tabletop. The bridge for the remote team opens at 2:30 IL because Boston wakes earlier on Wednesdays for our standing 7:30 AM ET review block."
 
@@ -891,7 +891,7 @@ Tom moderated. "Day 2 is the colocation. Karen, the trio is in the building at w
 
 "Cross-border data-flow walk in the morning. INCD tabletop with Avishai in the afternoon."
 
-Diana asked from her pane, "Karen — anything we should pre-read tonight for Day 2?"
+Diana asked from her pane, "Dawn — anything we should pre-read tonight for Day 2?"
 
 "Yael will send the Bynet site procedures and the HSM custody runbook in English by 8 PM IL. That is 1 PM ET. Read it before you sleep tonight if you can."
 
@@ -899,13 +899,13 @@ Yael nodded. "It will be in your inbox by 8."
 
 Tom closed the bridge. "Day 1 debrief is closed. Sixteen people on this engagement across two time zones, twenty confirmations, one Partial closed-by-spec at §10.17, one Nit closed against §10.18 at the time of report filing. Day 2 starts at 8 AM IL local."
 
-The bridge dropped. The remote panes went dark one by one. The local conference room held — Yael, Eitan, Maya, Karen, Luis, Chen.
+The bridge dropped. The remote panes went dark one by one. The local conference room held — Yael, Eitan, Maya, Dawn, Luis, Chen.
 
 Yael stood up. "Dinner. The three of you. There is a place on Lilienblum Street that does seabass and we will not talk about TesseraSeal."
 
-Karen smiled. "Accepted."
+Dawn smiled. "Accepted."
 
-> **🔍 Karen's note (internal):**
+> **🔍 Dawn's note (internal):**
 > *It never is. But under the INCD threat model, even when it is — you stress it harder.*
 >
 > *Today the chain held under stress. Twenty-three customer-banks. One hundred and ten tenants. Two regions. Fourteen months of operation. One real verification-failure incident handled correctly. Twenty confirmations against the v1.0b spec body, one Partial-closed-by-spec at §10.17 (the engagement is in the spec change-log as the source of the section), one Nit closed against §10.18 cross-referencing.*
@@ -920,7 +920,7 @@ Karen smiled. "Accepted."
 
 ## ✅ vs ✅ — What They Expected vs What They Found
 
-### ✅ What Karen's Team Expected Walking In
+### ✅ What Dawn's Team Expected Walking In
 
 | Item | Expectation |
 |---|---|
@@ -953,7 +953,7 @@ Karen smiled. "Accepted."
 | Bilingual documentation discoverability — Hebrew-only operational runbooks | Find the gap |
 | HSM custody dual-control — partition PIN ceremonies, attendance evidence | Walk the medium chain |
 
-### ✅ What Karen's Team Found (Day 1)
+### ✅ What Dawn's Team Found (Day 1)
 
 | Item | Outcome |
 |---|---|
@@ -986,11 +986,11 @@ Karen smiled. "Accepted."
 
 NetiVa Intelligence Ltd. demonstrates multi-tenant cryptographic isolation under a threat model that assumes capable nation-state adversaries are continuously present in the operating environment. The structural properties — per-customer-bank HSM partitioning per spec §10.5, per-bank IKM with HKDF tenant binding per §4.1 with §10.6 32-byte minimum and §10.6.1 RNG provenance, route-layer RBAC on the customer-bank-facing console, cross-tenant verifier refusal at the credential check per §10.12, run-locality enforcement under §10.15 with SDK per-process region binding, compile-time software-key adapter exclusion per §10.7, constant-time fingerprint and MAC comparison per §10.8, IKM-retention coupling per §10.9, IKM-rotation across the seal boundary under §10.10, redaction discipline pre-MAC at the SDK boundary per §10.22, consumer-correlation index integrity per §10.23, and verifier distribution discipline per §10.26 — hold under matrix testing, adversarial concurrency, and live operational load. The §1.4 compositional-security argument is intact: three independent authentication layers compose to a 128-bit composite security level under NIST SP 800-175B, with the §1.2 fourth-class SDK-process compromise scenario (Adversary F) bounded by host-hardening and out-of-band agent monitoring. The April 30 verification-failure incident — a serialization bug rather than an adversary event — was caught by the operational verifier, paged the right people in the right time zones within 90 seconds, closed in 6 hours 23 minutes within Bank of Israel Directive 365 §3 2-hour first-restore plus extended remediation, the Directive 411 §3 30-minute initial-notification clock met at 16 minutes, and the eleven affected entries were replayed under §10.25 single-writer-per-run discipline with proper `parent_event_id` references and remain alongside the originals in the chain per §10.3 append-only enforcement. The 14-month operational record shows zero false-pages on the daily seal job and zero spec §3.5 canonical-encoding violations in the prior 14 days.
 
-Two findings carried over from Day 1: one Partial-at-engagement-time (the HSM physical key-ceremony attendance log was paper-and-PDF, not chain-coupled) and one Nit-at-engagement-time (the Hebrew internal-ops runbook was not cross-referenced from the English CC8.1). Both findings have a closed-by-spec restructuring after this engagement. The Wave-6 second errata folded the engagement's recommendations into normative spec text: **§10.17 HSM partition ceremony attestation** now mandates exactly the chain-coupled attestation Karen recommended on Day 1 — a `chain.partition_ceremony_attended` operational event under §10.2 carrying ceremony type, partition handle, optional customer-bank ID, ISO 8601 timestamps, signatories array (with Round-17 M&A-P1 `entity_affiliation` field), witness object, SHA-256 of the scanned attendance-log PDF, and the RECOMMENDED `hsm_attestation_token_b64` for v1.0b conformance. **§10.17's cross-language CC8.1 discoverability** clause and the broader **§10.18 CC8.1 and runbook cross-referencing** rule together codify the Nit fix Karen wrote up on Day 1 — multi-tenant SaaS vendors per §10.1 serving customers in multiple jurisdictions must cross-reference local-language operational runbooks from the customer-language CC8.1 by title, table-of-contents structure, and named ceremony-procedure sections; runbook sections must cross-reference the spec section number from which their requirement derives. The institution now remediates against the normative text the engagement helped produce. NetiVa's 60-day commitment for the chain-coupled attendance event lands them on the right side of the post-spec normative bar before the Q4 IKM rotation cycle. The 4-hour CC8.1 + Hebrew-runbook cross-reference fix lands them on the §10.18 bar before report filing.
+Two findings carried over from Day 1: one Partial-at-engagement-time (the HSM physical key-ceremony attendance log was paper-and-PDF, not chain-coupled) and one Nit-at-engagement-time (the Hebrew internal-ops runbook was not cross-referenced from the English CC8.1). Both findings have a closed-by-spec restructuring after this engagement. The Wave-6 second errata folded the engagement's recommendations into normative spec text: **§10.17 HSM partition ceremony attestation** now mandates exactly the chain-coupled attestation Dawn recommended on Day 1 — a `chain.partition_ceremony_attended` operational event under §10.2 carrying ceremony type, partition handle, optional customer-bank ID, ISO 8601 timestamps, signatories array (with Round-17 M&A-P1 `entity_affiliation` field), witness object, SHA-256 of the scanned attendance-log PDF, and the RECOMMENDED `hsm_attestation_token_b64` for v1.0b conformance. **§10.17's cross-language CC8.1 discoverability** clause and the broader **§10.18 CC8.1 and runbook cross-referencing** rule together codify the Nit fix Dawn wrote up on Day 1 — multi-tenant SaaS vendors per §10.1 serving customers in multiple jurisdictions must cross-reference local-language operational runbooks from the customer-language CC8.1 by title, table-of-contents structure, and named ceremony-procedure sections; runbook sections must cross-reference the spec section number from which their requirement derives. The institution now remediates against the normative text the engagement helped produce. NetiVa's 60-day commitment for the chain-coupled attendance event lands them on the right side of the post-spec normative bar before the Q4 IKM rotation cycle. The 4-hour CC8.1 + Hebrew-runbook cross-reference fix lands them on the §10.18 bar before report filing.
 
 Heritage Pacific Bank's vendor-risk question — *"What does it cost me to back out if NetiVa fails an INCD-coordinated incident-response in production?"* — is answered by the structural property that the chain is a property of the data Heritage has already received, not a service NetiVa renders on a continuous basis. Heritage's verifier credential, run from Heritage's own infrastructure, can validate every entry written before any incident. The operational cost of substitution is real and 90-to-180-day; the audit-evidence cost is bounded by the chain custody Heritage already holds. That answer supports a 30-day-notice renewal posture under Heritage's vendor-management framework and is OCC-acceptable. Adrienne's reading of the day shifted at 3:45 IL from technical confirmation to vendor-risk decision support, and the rest of the afternoon — the partial, the regulator-portal matrix, the adversarial concurrency, the canonical-encoding regression, the §10.16 SaaS-edge mirror connector for Heritage's Salesforce, the §10.19 chain-coverage map version-stamping, the §10.22 redaction sampling, the §10.23 consumer-correlation index reconstruction, the cross-border attribution under §4.4 — was read against that frame.
 
-Day 1 carried the architecture-and-isolation posture. Day 2 will deepen the HSM custody question at the Bynet colocation: the partition cage walk, the IKM-registry deep-dive against the production HSMs (rather than the staging mirror), the IKM rotation tabletop where Karen's team will probe the rotation procedure under spec §10.10's hourly cadence (NetiVa's daily cadence is the conformance posture today; Bank of Israel Directive 365 §3's 2-hour-recovery target may push them to hourly cadence per the Bank of Israel overlay's Pattern A read of §3.2). Day 3 will walk the cross-border data-flow under §4.4 and §10.21 cross-vendor composition, and the INCD tabletop with Avishai will probe the chain's posture against spec §1.2's fourth-class SDK-process compromise scenario — the residual class an SDK-host root would need to land before any forward-only forgery becomes possible. The chain's value at that scenario is the 14-month forward-only window for past entries, the daily Merkle seal as the deletion catch under §4.2, and the HSM-rooted root signature under §4.3 sign_payload v1.0b as the third compositional layer the attacker would need to break — which the §10.5 FIPS 140-2 Level 3 custody plus the §10.5 EAL4+ elevation NetiVa applies forecloses at the obvious online attack surface.
+Day 1 carried the architecture-and-isolation posture. Day 2 will deepen the HSM custody question at the Bynet colocation: the partition cage walk, the IKM-registry deep-dive against the production HSMs (rather than the staging mirror), the IKM rotation tabletop where Dawn's team will probe the rotation procedure under spec §10.10's hourly cadence (NetiVa's daily cadence is the conformance posture today; Bank of Israel Directive 365 §3's 2-hour-recovery target may push them to hourly cadence per the Bank of Israel overlay's Pattern A read of §3.2). Day 3 will walk the cross-border data-flow under §4.4 and §10.21 cross-vendor composition, and the INCD tabletop with Avishai will probe the chain's posture against spec §1.2's fourth-class SDK-process compromise scenario — the residual class an SDK-host root would need to land before any forward-only forgery becomes possible. The chain's value at that scenario is the 14-month forward-only window for past entries, the daily Merkle seal as the deletion catch under §4.2, and the HSM-rooted root signature under §4.3 sign_payload v1.0b as the third compositional layer the attacker would need to break — which the §10.5 FIPS 140-2 Level 3 custody plus the §10.5 EAL4+ elevation NetiVa applies forecloses at the obvious online attack surface.
 
 Day 2 is the colocation. Day 3 is the cross-border walk and the INCD tabletop. The chain has held the architecture, the isolation, and the disaster-recovery posture under Day 1's stress. The next two days stress the custody and the coordination.
 

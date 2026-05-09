@@ -26,7 +26,7 @@ The OT side — Siemens PLCs, Rockwell ControlLogix, GE Proficy historian, Plex 
 
 There is no SaaS-edge mirror connector in scope today — Dynamics 365 holds CRM data inside Microsoft's tenant but Stelvio has not yet stood up a §10.16 mirror connector that streams Dynamics CDC events into the chain-instrumented store. That means the §10.16 quantified-lag discipline (median, 95th-percentile SLO, alerting threshold, RTO) is not engaged and there is no CC8.1 wording to test against the §10.16 forbidden-phrase list (`"near real-time"`, `"low-latency"`, etc., per §10.16 normative). Phase 4 brings Dynamics under chain-instrumentation; whichever mirror pattern Phase 4 selects, the four-number requirement enters scope at that point per §10.16, and the engagement team will hold the Phase 4 CC8.1 wording to the §10.16 severity-classification clause — imprecise lag wording is **never** a Nit, MUST be classified as non-conformance, and MUST NOT be downgraded to a documentation observation. Stelvio's CC8.1 today does not contain the wording because the connector does not exist yet.
 
-The team showed up knowing this. Maria Costanza, Stelvio's Director of Internal Audit, had told Karen on the prep call: "I want you to find what I already know is broken. I need the report so I can take it to the CFO Friday."
+The team showed up knowing this. Maria Costanza, Stelvio's Director of Internal Audit, had told Dawn on the prep call: "I want you to find what I already know is broken. I need the report so I can take it to the CFO Friday."
 
 This is the diary of that day.
 
@@ -34,7 +34,7 @@ This is the diary of that day.
 
 ## Audit Team
 
-- **Karen** — Lead Auditor (governance and narrative)
+- **Dawn** — Lead Auditor (governance and narrative)
 - **Raj** — Database specialist
 - **Elena** — CRM systems
 - **Mike** — Application and API layer
@@ -57,18 +57,18 @@ In the time since, Maria has run the §10.1 weekly fingerprint reconciliation ev
 
 The systems on the §10.19 map's "institutional systems not yet chain-instrumented" column are the same systems the prior assessor named in the original gap report, plus a few that didn't make the original report because the original scope was AI-only. Maria's Phase 2 / Phase 3 / Phase 4 plan is what closes the rest of the gap. Today's audit will find what's still on the unchained side and document the remediation path.
 
-> **🔍 Karen's note (internal — pre-engagement):**
+> **🔍 Dawn's note (internal — pre-engagement):**
 > *Maria did the work in advance. The chain-coverage map per §10.19 is the rare artifact that shows up in a prep call rather than as a finding-driven ask. She also operates §10.17 partition-ceremony attestation, §10.1 weekly fingerprint reconciliation, §10.10 rotation-crossing-seal-boundary discipline, and §10.18 runbook cross-referencing across the AI side. The CFO ask Friday is the Phase 2 line item. Today's report has to make Phase 2 sound like a low-risk extension of what already works.*
 
 ---
 
 ## 🌅 8:30 AM — Kickoff and the Drive In
 
-Karen rode in with Raj from the hotel. Forty minutes south on US-41, then east toward the lake. The mill stack was visible from the highway, white plume at a 45-degree lean in the wind.
+Dawn rode in with Raj from the hotel. Forty minutes south on US-41, then east toward the lake. The mill stack was visible from the highway, white plume at a 45-degree lean in the wind.
 
 Raj was on his second coffee. "What are we expecting today?"
 
-Karen watched the stack come closer. "Today, I want to know what a manufacturing company with the means but not the time looks like."
+Dawn watched the stack come closer. "Today, I want to know what a manufacturing company with the means but not the time looks like."
 
 "Versus?"
 
@@ -84,11 +84,11 @@ Karen watched the stack come closer. "Today, I want to know what a manufacturing
 
 "And today is —"
 
-"Today is partial again. But the seam is in a different place." Karen drained her cup. "Mercator's seam was AI imaging versus claims. Stelvio's seam is AI versus OT versus IT business systems. Three zones, not two."
+"Today is partial again. But the seam is in a different place." Dawn drained her cup. "Mercator's seam was AI imaging versus claims. Stelvio's seam is AI versus OT versus IT business systems. Three zones, not two."
 
 Raj nodded. "What's the recurring line you keep saying?"
 
-Karen looked at him sideways. "It never is."
+Dawn looked at him sideways. "It never is."
 
 "That's the one."
 
@@ -104,18 +104,18 @@ Maria met them at the badge desk. Polo shirt, steel-toed boots, the kind of hand
 
 The team kitted up. Maria walked them to the conference room — glass-walled, with a window onto the rolling mill floor itself, two stories below. The mill ran. Slabs the color of sunrise moved on the rollers. The room vibrated faintly through the chair legs.
 
-> **🔍 Karen's note (internal):**
+> **🔍 Dawn's note (internal):**
 > *Family-owned, third generation. No active divestiture, no joint venture, no parent-spinoff in the rolling 18-month window. §10.24 entity succession does not engage today; if a JV with the aerospace customer or a divestiture of the medical-device feed materialized, the `chain.entity_succession` operational event with `dual_signatures`, `from_entity_lei`, `to_entity_lei`, `effective_utc`, and `kind` (per §10.24 schema) is the procedure I would expect to see — bound under the transfer-day's seal per §4.3 v1.0b. Note for the report: §10.24 is dormant here, but the §10.19 map already accommodates it because the `chain.coverage_map_published` re-emission cadence per §10.2 anchors lookback alignment across any future succession boundary.*
 
 Maria set the agenda on the screen.
 
 "Three zones today. AI side first. Then OT. Then IT business. The AI side is on TesseraSeal under v1.0b. The OT side is not. The IT business side is not. I am going to be straight with all of you: I know where the gaps are. The §10.19 chain-coverage map names every system on this site by its chain-instrumented status; I posted the map version effective last quarter and the `chain.coverage_map_published` operational event per §10.2 anchors it. I am not going to argue with your findings. I want them documented so I can take them to my CFO Friday and ask for Phase 2 funding. Phase 2 is OT historian. Phase 3 is MES and ERP. We have the means. We have not had the time."
 
-Karen smiled. "That's the most useful kickoff I've heard this month."
+Dawn smiled. "That's the most useful kickoff I've heard this month."
 
 Maria did not smile back, but her shoulders dropped a half-inch. "Let's start on the floor."
 
-> **🔍 Karen's note (internal):**
+> **🔍 Dawn's note (internal):**
 > *"It never is. But sometimes part of it is."*
 >
 > *Calibrate. Three zones. The AI zone passes. The other two don't. The interesting question is not whether they don't pass — Maria already knows. The interesting question is what the customer-facing language looks like when one zone supports CMMC 2.0 Level 2 and the other two will need 12 to 18 months to catch up. Maria's already published the §10.19 map; the rollout posture column is what the CFO is going to read.*
@@ -138,9 +138,9 @@ Maria pulled up the §10.19 map document on the wall screen. The document had fi
 | Bureau Veritas third-party inspection (steel-mill audit reports) | NO | NO (third party) | yes (audit-services contract) | Bureau Veritas signed PDFs, retained per Stelvio CC8.1 | hash-anchor under §10.19 `audit.external_artifact.*` family from Phase 3 |
 | CBP Container Examination Station notices (when applicable) | NO | NO (regulator-side) | n/a | CBP-issued PDF notices retained per CBP records-retention | hash-anchor under §10.19 `audit.external_artifact.*` family when applicable |
 
-Karen read the table. The table answered exactly the five questions §10.19 normates the map to answer for each system: is it chain-instrumented; is it the institution's or a third party's; is it under institutional contractual access for inspection; what evidentiary substitute exists where the chain does not reach; what is the institution's posture at that boundary. Every cell was filled. Every substitute description was honest — including the substitute weaknesses ("paper shift logs and operator memory" for Wonderware HMI; "circular audit buffer with operator-clearable history" for Plex MES; "no integrity check on retrieved messages" for Exchange).
+Dawn read the table. The table answered exactly the five questions §10.19 normates the map to answer for each system: is it chain-instrumented; is it the institution's or a third party's; is it under institutional contractual access for inspection; what evidentiary substitute exists where the chain does not reach; what is the institution's posture at that boundary. Every cell was filled. Every substitute description was honest — including the substitute weaknesses ("paper shift logs and operator memory" for Wonderware HMI; "circular audit buffer with operator-clearable history" for Plex MES; "no integrity check on retrieved messages" for Exchange).
 
-Karen wrote: *§10.19 chain-coverage map is fully populated and honest. Substitute descriptions name the weakness rather than papering over it. The map is version-stamped (`coverage_map_version="stelvio-cov-2026-q1"`, `effective_utc=2026-01-15T00:00:00Z`, `coverage_map_sha256="a8f3...d4e1"`) per §10.19 Round-17 M&A-P3 normative; the `chain.coverage_map_published` event per §10.2 anchors the lookback alignment. The map is the audit's organizing document.*
+Dawn wrote: *§10.19 chain-coverage map is fully populated and honest. Substitute descriptions name the weakness rather than papering over it. The map is version-stamped (`coverage_map_version="stelvio-cov-2026-q1"`, `effective_utc=2026-01-15T00:00:00Z`, `coverage_map_sha256="a8f3...d4e1"`) per §10.19 Round-17 M&A-P3 normative; the `chain.coverage_map_published` event per §10.2 anchors the lookback alignment. The map is the audit's organizing document.*
 
 ---
 
@@ -160,7 +160,7 @@ He filtered to `service.name = qc-vision` and the last five minutes. A row popul
 
 "There." He pointed at one. "Bar ID 2026-04-09-RM02-1147, classified 14 seconds ago. Defect class: surface_inclusion. Confidence 0.94. Routing: rework. Operator override: none."
 
-Karen leaned in to read the row. "And the source image?"
+Dawn leaned in to read the row. "And the source image?"
 
 "Hashed in the chain entry. The JPEG itself sits in S3 — referenced by the hash. If anyone tampers with the JPEG, the hash mismatches and the verifier fails. The hash binds the input, and the chain entry's MAC binds the hash — per §5 the canonical bytes the MAC covers include the `audit.*` payload, so the image SHA-256 reference is integrity-bound the same way any other application content is."
 
@@ -184,7 +184,7 @@ Reason: chain integrity verified, HMAC recomputed,
         against public key qc-prod-2026-q1
 ```
 
-Mike turned the laptop. Karen read the output. Maria read it over Karen's shoulder.
+Mike turned the laptop. Dawn read the output. Maria read it over Dawn's shoulder.
 
 "Twelve steps, four seconds, on a corporate VPN over a 4G hotspot." Mike snapped the laptop shut against the wind. "That's the thing working. The twelve steps are §7's ordered procedure — the format-version pre-flight, the HKDF-inputs digest check, the genesis-hash check, the tenant-id character-class check, per-entry binding, per-entry format, the structural walk, IKM lookup, fingerprint check before any MAC compute, MAC recompute, Merkle recomputation, signature verification. The verifier under `--strict` runs all of them per §10.12 exit-code contract. Exit 0 here means PASS."
 
@@ -193,11 +193,11 @@ Mike turned the laptop. Karen read the output. Maria read it over Karen's should
 
 Maria walked them along the catwalk to a second camera near the cooling bed. "Same setup at the cooling-bed inspection. And one more upstream of the finishing stand. Three cameras, one model, one chain."
 
-Karen wrote in her notebook: *Three cameras, one chain, one tenant, one service. Cardinality is small, behavior is consistent. §3 tenant_id stays single across the QC vision service; the service.name binding distinguishes the cameras at the OTLP Resource layer per §4.4.3. Single-site mfg, single seal region — §10.15 multi-region pattern selection is dormant; Stelvio is neither Pattern A (active-active with seal-region pinning) nor Pattern B (per-region tenant_id) because there is one region. The `ffiec.chain.region` attribute per §4.4 is therefore unnecessary; SDK per-process region binding (§4.4 SDK-side enforcement) collapses to one process for one region for one tenant.*
+Dawn wrote in her notebook: *Three cameras, one chain, one tenant, one service. Cardinality is small, behavior is consistent. §3 tenant_id stays single across the QC vision service; the service.name binding distinguishes the cameras at the OTLP Resource layer per §4.4.3. Single-site mfg, single seal region — §10.15 multi-region pattern selection is dormant; Stelvio is neither Pattern A (active-active with seal-region pinning) nor Pattern B (per-region tenant_id) because there is one region. The `ffiec.chain.region` attribute per §4.4 is therefore unnecessary; SDK per-process region binding (§4.4 SDK-side enforcement) collapses to one process for one region for one tenant.*
 
 Down the catwalk, in a glass-walled control booth, an operator was looking at a Wonderware HMI screen. He tapped a touch panel. A bar's routing changed from "ship" to "rework."
 
-Karen watched. "What just happened?"
+Dawn watched. "What just happened?"
 
 Maria shifted. "Operator override. He doesn't trust the AI's call. He thinks the bar is fine for ship."
 
@@ -209,16 +209,16 @@ Maria shifted. "Operator override. He doesn't trust the AI's call. He thinks the
 
 Maria hesitated for one heartbeat. "The HMI doesn't have an audit log. The override is logged because the QC vision service captures it on receipt. If the operator changed something on the HMI that didn't go through the QC vision path — a setpoint, an alarm threshold — there's no record. The §10.19 map names Wonderware HMI under 'institutional systems not yet chain-instrumented' with the Phase 3 rollout posture and an evidentiary substitute that's currently 'paper shift logs and operator memory.' The map names the substitute even when the substitute is weak — that's the discoverability the spec section requires."
 
-Karen wrote: *HMI -> QC vision link is captured in chain via §4.4 parent-linkage. HMI as a primary surface is not. §10.19 names the gap. Watch this.*
+Dawn wrote: *HMI -> QC vision link is captured in chain via §4.4 parent-linkage. HMI as a primary surface is not. §10.19 names the gap. Watch this.*
 
 > **⚠️ Surprise #1 (Partial — bounded by §10.19 chain-coverage map disclosure)**
 > The Wonderware HMI on the mill floor has no audit log. Override actions that pass through the QC vision service are captured because the service captures them and chains them to the parent classification per §4.4 (`parent_run_id` / `parent_seq`). Override actions that do not — setpoint changes, alarm acknowledgments, recipe selections — are unrecorded. The chain captures what crosses the AI service boundary. It does not capture what stays on the HMI. The §10.19 chain-coverage map names this as 'not chain-instrumented, Phase 3 rollout posture, evidentiary substitute weak.' That is the right disclosure shape per §10.19; the gap is real but the institution has documented it the way the spec section requires.
 
-Maria caught the look between Karen and Mike. "Phase 3 includes HMI instrumentation. We're not there yet. The map version that ships when Phase 3 lands updates `coverage_map_version` and emits a fresh `chain.coverage_map_published` per §10.2 so the lookback alignment stays coherent."
+Maria caught the look between Dawn and Mike. "Phase 3 includes HMI instrumentation. We're not there yet. The map version that ships when Phase 3 lands updates `coverage_map_version` and emits a fresh `chain.coverage_map_published` per §10.2 so the lookback alignment stays coherent."
 
 "Noted."
 
-They came back inside. Maria handed off PPE and walked them down to a smaller conference room with no view of the floor. The roar fell to a hum. Karen pulled up a chair and clicked her pen.
+They came back inside. Maria handed off PPE and walked them down to a smaller conference room with no view of the floor. The roar fell to a hum. Dawn pulled up a chair and clicked her pen.
 
 "Let's split. Raj — historian and AI ledger. Diana — IAM, both sides. Mike and Chen — pipelines and the AI services. Elena — Dynamics. Luis — logs and ops. Tom — sit with Maria, work the QMS evidence retrieval. Reconvene at noon."
 
@@ -429,7 +429,7 @@ Diana wrote: *`SAP_ALL` x 2 prod-support engineers. Four uses in 90 days for "em
 >
 > *Elena: "So if a customer-dispute investigation needed to know what was in `Opportunity.proposedsolution` six months ago, what's the answer?"*
 >
-> *Devon (the IT business engineer): "Backups. We have nightly database snapshots. Restoring a six-months-ago backup gives the field's value at that snapshot's timestamp, but not the change history between snapshots. Same shape Karen named at the diary baseline two weeks ago — backups, not version history."*
+> *Devon (the IT business engineer): "Backups. We have nightly database snapshots. Restoring a six-months-ago backup gives the field's value at that snapshot's timestamp, but not the change history between snapshots. Same shape Dawn named at the diary baseline two weeks ago — backups, not version history."*
 >
 > *"And email retention if the discussion happened over email?"*
 >
@@ -457,9 +457,9 @@ She wrote at the bottom of the page: *The chain is not magic. Where it is wired 
 
 ## 🧪 12:00 PM — Lunch (But Not Really)
 
-The catering came up to the conference room — sandwiches, fruit, coffee. Karen and Tom took a corner. The rest of the team ate at the table or talked through findings between bites.
+The catering came up to the conference room — sandwiches, fruit, coffee. Dawn and Tom took a corner. The rest of the team ate at the table or talked through findings between bites.
 
-Karen unwrapped a turkey. "Tom. The reporting frame."
+Dawn unwrapped a turkey. "Tom. The reporting frame."
 
 Tom set his fork down. "Same finding language for the OT side as for the diary baseline?"
 
@@ -475,7 +475,7 @@ Tom set his fork down. "Same finding language for the OT side as for the diary b
 
 "One severity scale. Different remediation timelines, but one scale."
 
-Karen took a bite. Chewed. Looked at the mill through the window.
+Dawn took a bite. Chewed. Looked at the mill through the window.
 
 "What about the AI side?"
 
@@ -497,7 +497,7 @@ Tom nodded slowly. "That's a clean line."
 
 They ate the rest of lunch in silence, watching slabs move on the rollers below.
 
-After a few minutes Karen put her sandwich down. "The Phase 2 conversation is going to be where the report does or doesn't pay for itself. I want to walk through the §4.4.6 connector_source family one more time before the afternoon session."
+After a few minutes Dawn put her sandwich down. "The Phase 2 conversation is going to be where the report does or doesn't pay for itself. I want to walk through the §4.4.6 connector_source family one more time before the afternoon session."
 
 Tom flipped his notebook open. "Go."
 
@@ -519,7 +519,7 @@ Tom underlined his note. "And if the Phase 2 runbook says `'low-latency mirror'`
 
 "Each Phase 2 runbook section that touches §10.16 or §4.4.6 names the spec section number at the section heading or footnote. SOC 2 engagement teams test for it. Skipping the cross-reference is a §10.18 Nit, not a control failure, but it breaks the discoverability path."
 
-Karen took the last bite of her sandwich. "Phase 2 is technically tractable. Phase 3 is the harder one — MES and HMI bring people into the loop and that's where institutional culture lives. Phase 4 is mostly operational discipline on systems that are already there but unchained. The CFO pays for Phase 2 because the technology is the credibility argument; he pays for Phase 3 because Phase 2 worked and the pattern repeats. Maria knows this. The report has to make Phase 2 sound like a low-risk extension of what already works, not a new system."
+Dawn took the last bite of her sandwich. "Phase 2 is technically tractable. Phase 3 is the harder one — MES and HMI bring people into the loop and that's where institutional culture lives. Phase 4 is mostly operational discipline on systems that are already there but unchained. The CFO pays for Phase 2 because the technology is the credibility argument; he pays for Phase 3 because Phase 2 worked and the pattern repeats. Maria knows this. The report has to make Phase 2 sound like a low-risk extension of what already works, not a new system."
 
 Tom closed the notebook. "Got it. Same outline tomorrow?"
 
@@ -602,7 +602,7 @@ Mike re-verified. PASS. Four seconds.
 > **✓ Confirmation #4**
 > Live inference -> chain entry latency observed at ~200 ms. Verifier latency observed at ~4 seconds for any single entry. Twelve verification steps including format-version pre-flight (§7 step 1), HKDF-inputs digest check (§7 step 2), genesis-hash check (§7 step 3), tenant-id character-class check (§7 step 3a per §3 character class), per-entry binding (§7 step 4), structural walk (§7 step 6), IKM lookup before fingerprint check before MAC compute (§7 steps 7-9), Merkle recomputation (§7 step 10), and signature verification with `sign_payload_version` dispatch (§7 step 11 — Stelvio's seals carry `sign_payload_version="v1.0b"` so the verifier reconstructed the 12-line form binding `key_versions_canon` and `kms_handle_uris_digest`). Stelvio operates this pipeline on production hardware in a noisy production environment. It works.
 
-> **🔍 Karen's note — the §7 12-step walk deep dive:**
+> **🔍 Dawn's note — the §7 12-step walk deep dive:**
 >
 > *Mike just produced a chain entry at the catwalk and re-verified it in four seconds. The four seconds is twelve §7 steps in normative order. Walking the steps from the verifier-output line backwards into the spec:*
 >
@@ -867,7 +867,7 @@ He kept going. "Trace forward into MES — the rework work order is in Plex. Cre
 
 Mike rehashed the JPEG. Compared to the chain entry hash. "Match. No tamper. Per §6 storage discipline, the chain-stamp fields are preserved verbatim — `prev_hash`, `payload_hash`, `key_version`, `key_fingerprint`, `format_version`, `mac_computed_at_utc`, `kms_handle_uri` — and S3 object lock with compliance-mode retention prevents bypass even by storage-account root. Same pattern as Northbridge."
 
-Karen wrote: *Reconciliation 1 — full trace. AI clean. MES clean for this work order. Image not tampered with. §6 storage discipline holds.*
+Dawn wrote: *Reconciliation 1 — full trace. AI clean. MES clean for this work order. Image not tampered with. §6 storage discipline holds.*
 
 ### 2026-03-25-RM02-2204
 
@@ -881,7 +881,7 @@ Chen: "Verifier — PASS. Image SHA-256 in the chain entry. JPEG in S3 — match
 
 "Plex shows the rework. Closed cleanly. Material yield reroute logged in MES. The reroute itself isn't in the chain — it's a Plex-only event — but the trigger is in the chain. Per §10.19 chain-coverage map, the Plex side is named under not-chain-instrumented Phase 3; the trigger crosses the chain boundary cleanly, the downstream Plex events fall outside the chain integrity claim per §1.2 (a)/(b)."
 
-Karen wrote: *Reconciliation 2 — full trace. AI clean. Override captured with parent linkage per §4.4. MES has the reroute but the reroute itself is unchained per §10.19.*
+Dawn wrote: *Reconciliation 2 — full trace. AI clean. Override captured with parent linkage per §4.4. MES has the reroute but the reroute itself is unchained per §10.19.*
 
 ### 2026-04-02-RM02-0883
 
@@ -908,7 +908,7 @@ Maria leaned in. "Westmark's QE team called yesterday. They want AI provenance e
 
 Tom pulled out a notebook. "What we can send them: the chain entry per §4.4 attribute table, the verifier output per §7's three-line normative format (`Status: PASS`, `Step: 12`, `Reason: ...`), the public key for the seal period per §4.2 schema's `public_key_id` resolution, and the daily seal record per §4.2. They can re-verify on their end with the standalone verifier per §10.26 — Cosign-signed binary, reproducible build, downloaded from the reference verifier's GitHub Releases page. They get cryptographic confirmation that the classification we provided to them is the classification we recorded at the camera, that the image in S3 matches the hash, and that nothing has been tampered with after capture."
 
-"What we cannot send them," Karen said, "is evidence of the trace before the camera. The bar's prior process — heat treat, rolling, cooling — is in the historian, the MES, and the PLC logs. Those are not chained. Those are not authenticatable in the same way. §1.2 epistemic scope is the language we use in the cover letter — the chain proves (a) what the AI said and (b) that the record wasn't tampered after capture; the chain does not prove (c) the bar's pre-capture history is what we say it is. Westmark's FDA reviewer reads the line, sees what the chain attests and what it doesn't, and Westmark layers their own evidence on the upstream side."
+"What we cannot send them," Dawn said, "is evidence of the trace before the camera. The bar's prior process — heat treat, rolling, cooling — is in the historian, the MES, and the PLC logs. Those are not chained. Those are not authenticatable in the same way. §1.2 epistemic scope is the language we use in the cover letter — the chain proves (a) what the AI said and (b) that the record wasn't tampered after capture; the chain does not prove (c) the bar's pre-capture history is what we say it is. Westmark's FDA reviewer reads the line, sees what the chain attests and what it doesn't, and Westmark layers their own evidence on the upstream side."
 
 Maria nodded. "Document where the line is in the cover letter. Use §1.2 verbatim if it helps."
 
@@ -924,7 +924,7 @@ The reconciliation test took 22 minutes. The team took five.
 
 ## 🧷 3:30 PM — Working Through the Operational Events
 
-Before the 3:45 sit-down, Karen and Tom did a quick walk-through of the §10.2 operational events Stelvio emits. Maria pulled the events query for the past 30 days into a side panel.
+Before the 3:45 sit-down, Dawn and Tom did a quick walk-through of the §10.2 operational events Stelvio emits. Maria pulled the events query for the past 30 days into a side panel.
 
 The event taxonomy on Stelvio's chain matched §10.2 closely. Maria scrolled through the list:
 
@@ -950,19 +950,19 @@ Tom: "That's a clean ledger of operational evidence."
 
 Maria: "It is. We don't curate it; the events emit when the underlying conditions trigger. The §10.2 schema is the institution's contract with the SOC engagement and the FFIEC examiner. Audit procedures P-3 (control-completeness sample), P-6 (anomaly review), P-33 (routing event coupling), P-38 (cross-region replication-completeness — dormant for us), and P-57 (entity-succession completeness — dormant for us) all sample against this event stream. The events are retained at least as long as the chain events they relate to per §10.2 normative, which for Stelvio means 7 years minimum."
 
-Karen wrote: *§10.2 operational events all emit on schedule. Audit procedures sample against the event stream; institution's CC8.1 names the cadence. No anomalies in the past 30-day window beyond the documented HSM transient and the Q1-to-Q2 IKM rotation. §10.2 is the load-bearing evidence layer the §10.19 chain-coverage map's rollout posture column rests on top of.*
+Dawn wrote: *§10.2 operational events all emit on schedule. Audit procedures sample against the event stream; institution's CC8.1 names the cadence. No anomalies in the past 30-day window beyond the documented HSM transient and the Q1-to-Q2 IKM rotation. §10.2 is the load-bearing evidence layer the §10.19 chain-coverage map's rollout posture column rests on top of.*
 
 ---
 
 ## 😬 3:45 PM — The Friction Builds
 
-Maria had pulled in three engineers for a sit-down with the team — two from OT, one from IT business. Karen wanted to confirm findings face-to-face before the debrief.
+Maria had pulled in three engineers for a sit-down with the team — two from OT, one from IT business. Dawn wanted to confirm findings face-to-face before the debrief.
 
 The OT lead, Rick, spoke first. He had been a millwright before he was an engineer. He did not have time for theory.
 
 "Mill floor uptime is 99.7%. We don't have time to instrument every PLC. Every minute we are not rolling steel is a minute we are losing money. Last year we shipped 1.2 million tons. That's 41,000 tons an hour during run time. We don't take the line down for an audit log."
 
-Karen heard him out. "Rick, I'm not going to argue uptime."
+Dawn heard him out. "Rick, I'm not going to argue uptime."
 
 "Good."
 
@@ -978,7 +978,7 @@ The IT business engineer, Devon, spoke next. He was pragmatic.
 
 "We have a roadmap. Phase 2 OT. Phase 3 MES and ERP. Dynamics is — honestly, Dynamics is probably Phase 4. I'll be honest with you, the SAP `SAP_ALL` problem on the prod-support engineers is something I keep raising. We have an HR-level disagreement about whether we can revoke `SAP_ALL` from those two without breaking the on-call rotation."
 
-Karen wrote: *Phase 4 dependency. Document it but don't elevate it above the OT findings. §10.19 map's Phase 4 column is where it lands.*
+Dawn wrote: *Phase 4 dependency. Document it but don't elevate it above the OT findings. §10.19 map's Phase 4 column is where it lands.*
 
 The other OT engineer, Sam, who had been quiet, finally spoke.
 
@@ -990,9 +990,9 @@ The room turned.
 
 Maria didn't say anything. She had clearly heard this before.
 
-Karen wrote: *Plex audit log clear — disclosed by engineer in the room. Process gap, not malicious. Phase 3 includes audit log retention enforcement. Document. The chain-coverage map's evidentiary-substitute column for Plex already names the substitute as weak; the engineer's disclosure today is consistent with the §10.19 documented posture rather than a surprise that contradicts it.*
+Dawn wrote: *Plex audit log clear — disclosed by engineer in the room. Process gap, not malicious. Phase 3 includes audit log retention enforcement. Document. The chain-coverage map's evidentiary-substitute column for Plex already names the substitute as weak; the engineer's disclosure today is consistent with the §10.19 documented posture rather than a surprise that contradicts it.*
 
-Karen had a follow-up question for Sam. "When Phase 3 lands, the Plex audit log moves from 'configurable retention with operator-clearable history' to 'chain-instrumented per §10.3 plus §10.13 evidentiary-artifacts retention.' What does that look like operationally for someone in your role?"
+Dawn had a follow-up question for Sam. "When Phase 3 lands, the Plex audit log moves from 'configurable retention with operator-clearable history' to 'chain-instrumented per §10.3 plus §10.13 evidentiary-artifacts retention.' What does that look like operationally for someone in your role?"
 
 Sam thought about it. "The clearing path goes away. There's no UI control for the engineer to clear the audit log because the audit log is being mirrored into the chain-instrumented store as it's written. The disk space concern doesn't apply to the chain-instrumented copy because the chain operates under a different retention regime — §10.13 names the SDK version manifest, source-code hash, HSM configuration, daily seal-job logs, change-management records, and verifier output as the evidentiary-artifacts retention. The chain entries for Plex events would inherit the same chain-data retention period. Disk space becomes a chain-storage concern, not a Plex-server concern."
 
@@ -1000,18 +1000,18 @@ Sam thought about it. "The clearing path goes away. There's no UI control for th
 
 "Yes. Phase 3 brings Plex events through a mirror-connector pattern — the connector subscribes to Plex's change events, replicates each into the chain-instrumented store, and emits chain entries from there. `audit.connector_source.system = "plex-mes-cdc"`, `replay_id` from Plex's change-tracking token, `commit_timestamp` from Plex's commit clock, `commit_user` from the Plex user identity. The stable `run_id` per §4.4.6 derives from a stable Plex-side identifier — the work-order ID for work-order events, the part number for part-master events, depending on the event class. Phase 3's CC8.1 will name the four §10.16 numbers (median lag, 95th-percentile SLO, alerting threshold, RTO) before the connector ships, same way Phase 2's will."
 
-Karen wrote: *Phase 3 Plex chain instrumentation pattern matches Phase 2 historian pattern by analogy. §4.4.6 + §10.16 + §10.13 + §10.3 + §10.18. The clearing path goes away because the chain-instrumented copy is independent of the Plex server's local audit-log buffer. Sam's perspective is constructive — engineer disclosure plus understanding of the remediation path is the right shape for a Phase 3 commit.*
+Dawn wrote: *Phase 3 Plex chain instrumentation pattern matches Phase 2 historian pattern by analogy. §4.4.6 + §10.16 + §10.13 + §10.3 + §10.18. The clearing path goes away because the chain-instrumented copy is independent of the Plex server's local audit-log buffer. Sam's perspective is constructive — engineer disclosure plus understanding of the remediation path is the right shape for a Phase 3 commit.*
 
 > **⚠️ Surprise #4 follow-up (closed by Phase 3 design)**
 > The Plex MES audit-log clearing of six months ago is named honestly under §10.19 as the substitute weakness. Phase 3 closes the clearing path by chain-instrumenting the Plex change events through the §4.4.6 + §10.16 mirror-connector pattern. The chain-instrumented copy is governed by §10.13 evidentiary-artifacts retention rather than by Plex's local audit-log buffer; an engineer cannot clear the chain-instrumented copy because the chain-instrumented store enforces append-only per §10.3. The disclosure today is consistent with the §10.19 documented posture; the design path that closes it is named in Phase 3.
 
 The friction in the room was not between auditors and engineers. It was between OT culture and IT culture. OT measured uptime. IT measured availability. Both measured incidents. Neither had been measuring "could we reconstruct what happened from the records 90 days from now." Maria had been the only person measuring that, and she had been measuring it alone.
 
-Karen looked across the table. "Maria, we're going to write this up so it supports your CFO ask. Phase 2 in 12 months and Phase 3 in 18. The AI side you already have demonstrates that the technology works in your environment. The §10.19 chain-coverage map you've already published is the one-page artifact that names which systems are in scope, which are in rollout, and the evidentiary substitutes the institution operates at every boundary. That is the strongest single argument for funding the next two phases."
+Dawn looked across the table. "Maria, we're going to write this up so it supports your CFO ask. Phase 2 in 12 months and Phase 3 in 18. The AI side you already have demonstrates that the technology works in your environment. The §10.19 chain-coverage map you've already published is the one-page artifact that names which systems are in scope, which are in rollout, and the evidentiary substitutes the institution operates at every boundary. That is the strongest single argument for funding the next two phases."
 
 Maria nodded. "That is what I needed to hear."
 
-The friction subsided. The engineers left. Karen closed the door.
+The friction subsided. The engineers left. Dawn closed the door.
 
 ---
 
@@ -1021,17 +1021,17 @@ Maria came back in. She had a printed email in her hand.
 
 "Westmark Medical. Yesterday at 4:42 PM. Their QE manager — Jen Halverson. She's asking for AI provenance evidence on the QC classifications for the heats they cited in their April 7 FDA submission."
 
-She handed the email to Karen. Karen read it.
+She handed the email to Dawn. Dawn read it.
 
 "What is she asking for, specifically?"
 
 "Anything that proves the QC vision classification we sent them is what we said it is. She wrote — let me find the line —" Maria turned the email and pointed. "Here. 'We need to demonstrate to FDA that the classification data cited in our design verification has not been altered between Stelvio's QC system and our document.'"
 
-Karen read the line twice. "That's a clean ask. And it maps cleanly to §1.2 (a) and (b) — what the AI said at time T, and that the record wasn't tampered after capture. That's exactly what the chain proves."
+Dawn read the line twice. "That's a clean ask. And it maps cleanly to §1.2 (a) and (b) — what the AI said at time T, and that the record wasn't tampered after capture. That's exactly what the chain proves."
 
 "What can I send them?"
 
-Karen took a breath. The team gathered.
+Dawn took a breath. The team gathered.
 
 "Send them four things. The chain entry per §4.4 — full payload, including the image SHA-256 hash, the model ID, the model version, the classification, the confidence, the routing, the chain HMAC, and the `audit.deployment.intent=production` plus `audit.deployment.policy_version` from §4.4.2 so the MRM-policy version that governed the decision is visible. The verifier output per §7's three-line normative format showing `Status: PASS`, `Step: 12`, `Reason: ...` — exit code 0 per §10.12 CLI exit-code contract. The public key — qc-prod-2026-q1, the same one in the verifier output, resolved through the seal record's `public_key_id` per §4.2 schema. The daily seal record per §4.2 — the Ed25519 signature for the date in question, with the Merkle root, the `sign_payload_version=v1.0b` so they know to reconstruct the 12-line form per §4.3, the `cadence=daily`, the `dev_mode=false` so they can confirm production posture per §10.7."
 
@@ -1063,7 +1063,7 @@ Mike walked the room through what Westmark's QE team would actually do.
 
 "Step five — Westmark cites the verification result in their FDA design-history-file, attaching Stelvio's chain entry and the verifier output and naming the spec sections that ground each evidentiary claim — §1.2 for the epistemic-scope frame, §4.4 for the chain entry's attribute structure, §7 for the verifier procedure, §4.2 for the seal-record form, §10.26 for the verifier distribution discipline. The FDA reviewer reads the citations against the published spec on Stelvio's GitHub. The spec is the binding contract; Stelvio's deployment is one conformant realization."
 
-Karen watched Mike walk through it. "You know what's good about this?"
+Dawn watched Mike walk through it. "You know what's good about this?"
 
 "What."
 
@@ -1073,7 +1073,7 @@ Tom nodded. "And that's the §10.26 design intent in spec language. Examiners, i
 
 Maria wrote it down. "I want this in the cover letter — the five steps Westmark walks. Not as instructions, as the framing of why the evidence is independently evaluable. The FDA reviewer reads what the chain proves and what process Westmark used to confirm it."
 
-Karen agreed. "Five steps in the cover letter. §10.26 + §5.1 + §7 witness mode + §1.2 epistemic scope + §4.4 attribute table — that's the citation set that grounds every step."
+Dawn agreed. "Five steps in the cover letter. §10.26 + §5.1 + §7 witness mode + §1.2 epistemic scope + §4.4 attribute table — that's the citation set that grounds every step."
 
 "Public key publication URL?"
 
@@ -1081,7 +1081,7 @@ Maria pulled up TesseraSeal. "Here — the public key publication endpoint. We e
 
 Mike looked at the URL. "TLS-pinned. Per §5.1 transport encryption — TLS 1.3 minimum, server-authenticated TLS as the floor; the §5.1 sunset clause says TLS 1.2 sunsets on 2028-01-01, and Stelvio's already on 1.3. Per the §5.1 discovery-and-policy-endpoints clause, this kind of public-key registry endpoint inherits the same transport-security floor as OTLP transport. Good."
 
-Karen wrote in her notebook: *Customer ask — fully serviceable on the AI side. Cover letter draft to be reviewed Friday morning before Maria sends. Document the line per §1.2 verbatim. Westmark fetches the verifier per §10.26 distribution discipline; no Stelvio-side trust required.*
+Dawn wrote in her notebook: *Customer ask — fully serviceable on the AI side. Cover letter draft to be reviewed Friday morning before Maria sends. Document the line per §1.2 verbatim. Westmark fetches the verifier per §10.26 distribution discipline; no Stelvio-side trust required.*
 
 > **✓ Confirmation #7**
 > Westmark's request for AI provenance evidence on the QC classifications is fully serviceable on the AI side. Stelvio can supply chain entry per §4.4, verifier output per §7, public key per §4.2 schema's `public_key_id`, and daily seal record per §4.2 for any classification on a chained service. Westmark can independently fetch the public key from a published endpoint per §5.1 discovery-endpoint floor and compare. Westmark can independently fetch the open-source `herald-verify` binary per §10.26 reference-verifier distribution and run it on their own laptop. The provenance line — what Stelvio can attest and what they cannot — is articulable in two paragraphs using §1.2 epistemic-scope language verbatim. §10.23 consumer-correlation index integrity does not engage — Stelvio's medical-device customer relationship is B2B per heat number (heat 18-RM02-0883), not per consumer; CFPB Civil Investigative Demand-style retrieval is a consumer-facing decision-class concern, not a manufacturing concern. The QC classifications are keyed by `(tenant_id, run_id, seq)` per §3 / §4.1 plus the heat number under `audit.*` namespace; the heat-number index is the institution-internal retrieval substrate and is governed by Stelvio's CC8.1 storage controls rather than by §10.23. §10.14 trusted-time integration is informative-only at v1.0 — Stelvio uses NTP discipline per §10.4 as the timestamp foundation; the institution's IT witness testifies to NTP synchronization (audit procedure P-7 verification) as the foundation for timestamp reliability if Westmark's FDA reviewer asks. RFC 3161 trusted-timestamp tokens are RECOMMENDED but not REQUIRED for v1.0; Stelvio has not adopted them and the cover letter does not need to mention them.
@@ -1132,7 +1132,7 @@ Tom wrote in his notebook. "Good answer. I'll put it in the report's executive s
 
 The team reconvened in the conference room. Coffee was cold. The mill was still rolling. The wind had shifted and the stack plume now leaned the other way.
 
-Karen stood at the whiteboard. Three columns.
+Dawn stood at the whiteboard. Three columns.
 
 | Zone | Status |
 |---|---|
@@ -1144,7 +1144,7 @@ Karen stood at the whiteboard. Three columns.
 
 Maria stood with her arms crossed, listening.
 
-"AI side." Karen pointed. "TesseraSeal under FFIEC chain-of-custody v1.0b. Mature. Verifiable. Seven confirmations — chain integrity per §4.1 / §4.2 / §4.3, append-only ledger behavior per §10.3 plus §6 storage with the §1.4 compositional security argument operational, credential rotation under chain with §10.10 seal-boundary handling and §10.1 weekly fingerprint reconciliation, live inference-to-chain latency under 200 ms with §4.4.2 deployment-intent capture, three-of-three reconciliations PASS per §7 12-step procedure, predictive-maintenance model lineage per §10.21 with §10.20 retention floor at 540 days, and customer-evidence ask fully serviceable using §1.2 epistemic-scope language verbatim. The AI side passes CMMC 2.0 Level 2 for the in-scope subset. AS 9100D for the AI-decisioned QC classifications passes. ITAR §125 screening evidence is auditable. The §10.19 chain-coverage map's 'chain-instrumented institutional systems' column lists every AI service with tenant_id and service.name binding. This is the strongest part of your posture and it is the model for the other two zones."
+"AI side." Dawn pointed. "TesseraSeal under FFIEC chain-of-custody v1.0b. Mature. Verifiable. Seven confirmations — chain integrity per §4.1 / §4.2 / §4.3, append-only ledger behavior per §10.3 plus §6 storage with the §1.4 compositional security argument operational, credential rotation under chain with §10.10 seal-boundary handling and §10.1 weekly fingerprint reconciliation, live inference-to-chain latency under 200 ms with §4.4.2 deployment-intent capture, three-of-three reconciliations PASS per §7 12-step procedure, predictive-maintenance model lineage per §10.21 with §10.20 retention floor at 540 days, and customer-evidence ask fully serviceable using §1.2 epistemic-scope language verbatim. The AI side passes CMMC 2.0 Level 2 for the in-scope subset. AS 9100D for the AI-decisioned QC classifications passes. ITAR §125 screening evidence is auditable. The §10.19 chain-coverage map's 'chain-instrumented institutional systems' column lists every AI service with tenant_id and service.name binding. This is the strongest part of your posture and it is the model for the other two zones."
 
 She moved to the OT column.
 
@@ -1160,7 +1160,7 @@ Maria nodded. "Phase 4 is realistic for Dynamics. We don't have the appetite to 
 
 "Will do."
 
-Karen moved back to center.
+Dawn moved back to center.
 
 "Five observations to close."
 
@@ -1188,21 +1188,21 @@ Mike held up his phone. "Took a video. Verifier PASS in four seconds, on the cat
 
 "Sent."
 
-Karen closed her notebook. "We'll have the report Thursday. You'll have it before the Friday review."
+Dawn closed her notebook. "We'll have the report Thursday. You'll have it before the Friday review."
 
 Maria's shoulders dropped that half-inch again. "Thank you."
 
 The team packed up. Raj and Luis loaded the boxes of evidence into the rental SUV. Diana and Elena said goodbye to Maria at the badge desk. Mike and Chen took one last look at the rolling line on the way out.
 
-Karen walked out last. She turned at the door and looked back at the conference room window — at the slabs moving on the rollers two stories below, the stack plume in the wind, the catwalk where four hours earlier Mike had run the verifier and gotten PASS in four seconds.
+Dawn walked out last. She turned at the door and looked back at the conference room window — at the slabs moving on the rollers two stories below, the stack plume in the wind, the catwalk where four hours earlier Mike had run the verifier and gotten PASS in four seconds.
 
 She thought about the report's organizing argument. The §10.19 chain-coverage map was the one-page artifact that named the seam. The §1.2 epistemic-scope language was the language the cover letter would use to describe what the chain proves and doesn't prove. The §7 12-step procedure was the verifier's normative form; the §10.26 distribution discipline was what made the verification independently evaluable; the §4.3 v1.0b 12-line `sign_payload` was what closed the silent-rewrite paths the v1.0a form left open. Each spec section did its job. Stelvio's chain operates the way the spec normates, and the way the spec normates is the way the spec proves what it claims to prove and is honest about what it doesn't.
 
 She thought about Maria's day. Maria had spent 14 months building the AI side of the chain because a prior assessor had named the gap and the CFO had funded the closure. She had spent 12 months publishing the §10.19 chain-coverage map quarterly so the boundaries were discoverable rather than discovered-per-finding. She had spent six months drafting the Phase 2 / Phase 3 / Phase 4 roadmap so the unfunded portions had names and timelines. She had spent the past week answering Westmark's QE manager's questions in a way that anticipated the FDA reviewer's read. Today she presented all of that to the audit team in three hours and let the team confirm what she already knew. Tomorrow she presents it to the CFO. The CFO funds Phase 2 because Phase 1 worked. Phase 1 worked because the spec said how to make it work and Maria followed the spec. The argument is plain.
 
-Karen pulled the door closed behind her.
+Dawn pulled the door closed behind her.
 
-> **🔍 Karen's note (internal):**
+> **🔍 Dawn's note (internal):**
 > *It never is. But sometimes part of it is.*
 >
 > *Today, a third of it was. The right third. The third that decides. And the §10.19 chain-coverage map is what made the other two-thirds discoverable rather than discovered-per-finding. Maria did the work in advance. We confirmed it.*
@@ -1221,7 +1221,7 @@ Stelvio's shape is between Mercator and Northbridge. The seam is in a different 
 
 What's different is the unchained portion's size and the rollout maturity. Mercator's unchained portion is "claims processing" — a single business-domain seam; Stelvio's is three zones (OT, IT business, plus the unchained subset of the AI side at the input boundary which Phase 2 closes). Northbridge's unchained portion is essentially zero. Stelvio is on the trajectory toward Northbridge's posture but is currently at Mercator's stage with a different seam shape.
 
-> **🔍 Karen's note (internal):**
+> **🔍 Dawn's note (internal):**
 > *Three audits in three weeks, three different shapes. The shape is what the report describes. The shape determines the remediation timeline. The shape determines the language the customer-facing writing uses. The shape is what §10.19 documents on a single page; the shape is what §1.2 epistemic scope describes in two paragraphs. We don't have to invent the language; the spec named it normatively. Our job is to walk Maria's posture against the spec, observe whether it conforms, and write the result up in the language the spec uses. That's all.*
 
 ---

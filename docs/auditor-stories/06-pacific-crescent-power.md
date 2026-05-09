@@ -20,9 +20,9 @@ Everything else at Pacific Crescent runs the way utilities have always run.
 
 The OT side — GE iFIX SCADA on Windows Server 2016, OSIsoft PI historian, Itron OpenWay AMI head-end on version 5.2 — is not internet-connected. NERC CIP-005 requires that. But "air-gapped from the internet" is not the same as "integrity-controlled," and that's a distinction the regulators are starting to write into their guidance. The customer-side stack — a customized Oracle CIS, an outage-management system, Salesforce CRM — runs on the IT business network. Different mutability shape. Same mutability problem.
 
-Esme Yamashita, Pacific Crescent's Chief Compliance Officer, came over from BPA two years ago. She spent two years on a NERC standards drafting team for CIP-013, which makes her one of the few people in the room who has read the FFIEC chain-of-custody v1.0b spec end-to-end alongside the NERC supply-chain standards. She knows what a NERC auditor will look for, and she knows what they will quietly skip. She doesn't oversell. On the prep call she told Karen: "We need a map. NERC CIP-007 is the area where the regulators are going to push hardest in the next two years. They're starting to ask AI questions. Tell me what we already have and where the gaps will land. And give me the chain-coverage map per spec §10.19 so the WECC auditor and the PHMSA inspector see the same picture."
+Esme Yamashita, Pacific Crescent's Chief Compliance Officer, came over from BPA two years ago. She spent two years on a NERC standards drafting team for CIP-013, which makes her one of the few people in the room who has read the FFIEC chain-of-custody v1.0b spec end-to-end alongside the NERC supply-chain standards. She knows what a NERC auditor will look for, and she knows what they will quietly skip. She doesn't oversell. On the prep call she told Dawn: "We need a map. NERC CIP-007 is the area where the regulators are going to push hardest in the next two years. They're starting to ask AI questions. Tell me what we already have and where the gaps will land. And give me the chain-coverage map per spec §10.19 so the WECC auditor and the PHMSA inspector see the same picture."
 
-By the time the team arrived at Pacific Crescent, they had seen TesseraSeal hold up under banking, healthcare, BaaS multi-tenancy, industrial three-tier, and biopharma. Northbridge had been the cleanest engagement of the cycle — one §10.16 non-conformance, the chain otherwise held byte-for-byte across forty-three citations. Five engagements later Karen had stopped expecting it to repeat. Utility was a new regulatory composition — NERC CIP, FERC Order 887 — but the chain primitive was familiar. The new question wasn't whether the chain held; it was whether NERC CIP-002 through CIP-014 composed with the spec. Particularly the BES Cyber System scope boundary under CIP-002 categorization and the OT/IT integration shape — SCADA, EMS, and OMS mirrors — under CIP-005 and CIP-007. That was the composition the team was here to test.
+By the time the team arrived at Pacific Crescent, they had seen TesseraSeal hold up under banking, healthcare, BaaS multi-tenancy, industrial three-tier, and biopharma. Northbridge had been the cleanest engagement of the cycle — one §10.16 non-conformance, the chain otherwise held byte-for-byte across forty-three citations. Five engagements later Dawn had stopped expecting it to repeat. Utility was a new regulatory composition — NERC CIP, FERC Order 887 — but the chain primitive was familiar. The new question wasn't whether the chain held; it was whether NERC CIP-002 through CIP-014 composed with the spec. Particularly the BES Cyber System scope boundary under CIP-002 categorization and the OT/IT integration shape — SCADA, EMS, and OMS mirrors — under CIP-005 and CIP-007. That was the composition the team was here to test.
 
 This is the diary of that day.
 
@@ -30,7 +30,7 @@ This is the diary of that day.
 
 ## Audit Team
 
-- **Karen** — Lead Auditor (governance and narrative)
+- **Dawn** — Lead Auditor (governance and narrative)
 - **Raj** — Database specialist
 - **Elena** — CRM systems
 - **Mike** — Application and API layer
@@ -45,13 +45,13 @@ Client-side liaison: **Esme Yamashita**, Chief Compliance Officer, Pacific Cresc
 
 ## 🌅 8:30 AM — Kickoff and the Drive In
 
-Karen rode in with Tom from the airport hotel. Twenty minutes north on I-5, then off at the river. The Pacific Crescent control center sat on a low rise overlooking the Willamette, glass and concrete, fenced with the kind of fence that meant something. NERC-CIP-classified facility. They saw the badge readers from the parking lot.
+Dawn rode in with Tom from the airport hotel. Twenty minutes north on I-5, then off at the river. The Pacific Crescent control center sat on a low rise overlooking the Willamette, glass and concrete, fenced with the kind of fence that meant something. NERC-CIP-classified facility. They saw the badge readers from the parking lot.
 
-Tom drove. Karen drank coffee.
+Tom drove. Dawn drank coffee.
 
 "Five engagements in five weeks." Tom merged across two lanes. "What's the through-line at this point?"
 
-Karen watched the river. "Northbridge was the gold standard. Banking. TesseraSeal in everything. We ran out of things to find by 3 PM. Forty-three citations across the report, one §10.16 non-conformance on a Salesforce mirror, and a §10.17 partition-ceremony posture that was already running clean."
+Dawn watched the river. "Northbridge was the gold standard. Banking. TesseraSeal in everything. We ran out of things to find by 3 PM. Forty-three citations across the report, one §10.16 non-conformance on a Salesforce mirror, and a §10.17 partition-ceremony posture that was already running clean."
 
 "Mercator."
 
@@ -73,7 +73,7 @@ Tom checked the GPS. Five minutes out.
 
 "And today?"
 
-Karen put her cup down. "Pacific Crescent has 3.1 million customers and a fleet of pipelines. The legacy gaps here are not just compliance findings."
+Dawn put her cup down. "Pacific Crescent has 3.1 million customers and a fleet of pipelines. The legacy gaps here are not just compliance findings."
 
 "What are they."
 
@@ -91,7 +91,7 @@ Tom didn't say anything for a while.
 
 They pulled into the visitor lot at 8:24.
 
-Esme met them at the badge desk. Mid-forties, dark blazer, the kind of badge clipped to her lapel that had three different access levels printed on it. She shook Karen's hand once, firmly, and Tom's the same way.
+Esme met them at the badge desk. Mid-forties, dark blazer, the kind of badge clipped to her lapel that had three different access levels printed on it. She shook Dawn's hand once, firmly, and Tom's the same way.
 
 "You'll go through three checkpoints to get to the operations floor. The control center itself is CIP-categorized. Phones in the locker. Laptops registered at the second checkpoint. We have a clean room beside the control floor where you can work — same network segment as corporate but with read-only feeds from the OT side. The HSM and the AI ledger are reachable from the clean room. SCADA and the historian are not — you'll see those over a screen-share from one of my engineers."
 
@@ -99,7 +99,7 @@ Esme met them at the badge desk. Mid-forties, dark blazer, the kind of badge cli
 
 "I want to be straight with you about scope before we start." Esme walked them toward the first checkpoint as she spoke. "The leak-detection AI is in scope under NERC CIP-007 because it touches a BES Cyber Asset adjacent to gas-electric tie-points, and it's in scope under PHMSA because it's a pipeline-safety system. The PI historian is in scope under CIP. The AMI head-end is in scope. The OMS is partly in scope — work orders that touch BES assets are in. The CIS and the Salesforce CRM are out of scope under NERC but very much in scope for the PUC. We're going to look at all of it because that's how I think about the program. The report can split scope however you need it to."
 
-Karen nodded. "That's how we'd write it anyway. And that lines up with spec §10.19 — the chain-coverage map enumerates chain-instrumented institutional systems, not-yet-instrumented institutional systems, third-party-with-inspection, and third-party-without-inspection. Four categories. Your scope split maps cleanly."
+Dawn nodded. "That's how we'd write it anyway. And that lines up with spec §10.19 — the chain-coverage map enumerates chain-instrumented institutional systems, not-yet-instrumented institutional systems, third-party-with-inspection, and third-party-without-inspection. Four categories. Your scope split maps cleanly."
 
 "That's the document I want at the end of today."
 
@@ -107,7 +107,7 @@ Karen nodded. "That's how we'd write it anyway. And that lines up with spec §10
 
 The team kitted up. Phones in lockers. Laptops registered. Three badge taps later, they were on the operations floor.
 
-> **🔍 Karen's note (internal):**
+> **🔍 Dawn's note (internal):**
 > *It never is. The closer the AI sits to a public-safety decision, the more the chain matters. The further the historian sits from the AI, the more the chain doesn't reach.*
 >
 > *Calibrate. The AI side will pass. The OT side won't. The customer-billing side won't. But the consequence axis is different from Stelvio's. Stelvio's worst case was money. Pacific Crescent's worst case is people. Document accordingly. The §1.2 epistemic-scope language is the controlled vocabulary the report needs.*
@@ -132,13 +132,13 @@ Mike looked at the screen. "What's the confidence on it?"
 
 "If it climbs above 0.4 in the next ten minutes, the queue holds it for me to action. If it drops back to baseline for three readings in a row, the model writes it off and the prediction archives."
 
-Karen turned to Esme. "Action means dispatch?"
+Dawn turned to Esme. "Action means dispatch?"
 
 "Action means decision. Marcus gets four buttons — dispatch crew, monitor, dismiss, escalate-to-supervisor. Whatever he picks, that decision lands in the chain along with the model's prediction."
 
 Mike opened his laptop, balanced it on the edge of Marcus's station, and pulled up TesseraSeal. He filtered to `service.name = pipeline-leak-detection` and the last five minutes.
 
-The Powell-44 entry was sitting at the top of the list. Confidence 0.31. No dispatcher action yet. The chain entry referenced a methane sensor ID, a weather snapshot hash, a soil-saturation model output hash, and a prediction. Mike tilted the laptop so Karen could see the per-entry stamp — `chain_kind = "audit"` per §3 enumeration, `format_version = "v1"`, `key_version = 4`, `key_fingerprint` 16 raw bytes per §4.1, `kms_handle_uri = "thales-luna:partition=pacific-crescent-leak-prod"`, `gen_ai.request.model` and `gen_ai.response.model` both populated per §4.4 normative requirement and §7 step 12a.
+The Powell-44 entry was sitting at the top of the list. Confidence 0.31. No dispatcher action yet. The chain entry referenced a methane sensor ID, a weather snapshot hash, a soil-saturation model output hash, and a prediction. Mike tilted the laptop so Dawn could see the per-entry stamp — `chain_kind = "audit"` per §3 enumeration, `format_version = "v1"`, `key_version = 4`, `key_fingerprint` 16 raw bytes per §4.1, `kms_handle_uri = "thales-luna:partition=pacific-crescent-leak-prod"`, `gen_ai.request.model` and `gen_ai.response.model` both populated per §4.4 normative requirement and §7 step 12a.
 
 Marcus glanced at the screen. The reading dropped to 0.9 ppm above background. Then 0.6. Then back to baseline.
 
@@ -150,7 +150,7 @@ A new chain entry hit Mike's screen.
 
 "There it is." Mike tilted the laptop. "Decision entry. References the prediction entry via `parent_run_id` and `parent_seq` per §4.4. Dispatcher ID, reason code, timestamp, model_id, model_version. The dispatcher decision is the child; the model prediction is the parent. Same parent-linkage discipline §10.11 uses for translation entries."
 
-Karen leaned in. "Run the verifier on it."
+Dawn leaned in. "Run the verifier on it."
 
 Mike copied the entry ID into his terminal:
 
@@ -178,7 +178,7 @@ Esme nodded once. "That's what it was procured to do."
 > **✓ Confirmation #1 — chain integrity at the AI boundary**
 > The leak-detection chain is live on the operations floor and producing verifiable entries within ~200 ms of each prediction or dispatcher decision. Mike re-verified a real-time dismissal in four seconds standing at a working dispatcher station, the §7 12-step procedure returning PASS with §10.12 exit code 0. Reason codes are captured. Inputs are hashed under the per-event MAC per §4.1. The infrastructure is real and observable on the production line. Per spec §1.4 compositional security, the three independent authentication layers — per-event HMAC, daily Merkle seal, HSM-rooted Ed25519 signature — each add an independent integrity property; the demonstrated PASS exercises all three layers.
 
-Karen wrote in her notebook: *AI dashboard live. Dispatcher decisions sealed with reason codes. Inputs hashed. Verifier runs against the operations clean-room network in four seconds. §7 12-step path exercised. §10.12 exit-code contract honored. §4.4.2 deployment-intent attribute family in scope — confirm `intent` value during database review.*
+Dawn wrote in her notebook: *AI dashboard live. Dispatcher decisions sealed with reason codes. Inputs hashed. Verifier runs against the operations clean-room network in four seconds. §7 12-step path exercised. §10.12 exit-code contract honored. §4.4.2 deployment-intent attribute family in scope — confirm `intent` value during database review.*
 
 She walked over to the wall screen — the gas-distribution map. Twelve hundred miles of distribution pipe. Several thousand methane sensors. The dashboard rendered every active prediction as a small dot. Three dots glowed amber. Most of the map was green.
 
@@ -194,11 +194,11 @@ Esme answered. "On a normal day, four to six thousand inferences. About a hundre
 
 "There was no chain before. We started chained from day one. The vendor required it for the contract."
 
-Karen wrote: *Chained from day one. 1.6M inferences. ~240 dispatches. ~80 true positives. Two would have escalated. Public-safety value already demonstrable. §10.13 evidentiary-artifacts retention will care about the SDK-version manifest and HSM-config history across the nine-month window.*
+Dawn wrote: *Chained from day one. 1.6M inferences. ~240 dispatches. ~80 true positives. Two would have escalated. Public-safety value already demonstrable. §10.13 evidentiary-artifacts retention will care about the SDK-version manifest and HSM-config history across the nine-month window.*
 
 Esme led them off the operations floor and back through two of the three checkpoints to the clean room. Coffee. Whiteboard. Network jacks.
 
-Karen pulled up a chair.
+Dawn pulled up a chair.
 
 "Let's split. Raj — historian and AI ledger. Diana — IAM, all three sides. Mike and Chen — pipelines and the AI service. Elena — CIS and Salesforce, with the §10.16 SaaS-edge connector lens. Luis — logs and ops, with the §10.26 reference-verifier-distribution lens. Tom — sit with Esme, work the NERC CIP and PHMSA mappings into the §10.19 chain-coverage map. Reconvene at noon."
 
@@ -459,13 +459,13 @@ Diana wrote a half-page summary in her workbook. The customer side wasn't pretty
 
 ---
 
-## 🧪 12:00 PM — Lunch (Karen and Tom in the cafeteria)
+## 🧪 12:00 PM — Lunch (Dawn and Tom in the cafeteria)
 
-The cafeteria sat on the second floor with a view east toward Mount Hood, white today against a flat blue sky. Karen and Tom found a corner table. The rest of the team was scattered — Diana and Mike on a sandwich run, Raj and Chen working through their morning notes.
+The cafeteria sat on the second floor with a view east toward Mount Hood, white today against a flat blue sky. Dawn and Tom found a corner table. The rest of the team was scattered — Diana and Mike on a sandwich run, Raj and Chen working through their morning notes.
 
 Tom unwrapped a sandwich. "How are we framing this."
 
-Karen had a salad and a notebook open. "Three tiers. AI side passes. OT side mostly fails. Customer-billing side is a different audit. Per §10.19 chain-coverage map, the three tiers map to three categories — chain-instrumented institutional systems, institutional systems not yet chain-instrumented, and out-of-scope systems with named substitutes."
+Dawn had a salad and a notebook open. "Three tiers. AI side passes. OT side mostly fails. Customer-billing side is a different audit. Per §10.19 chain-coverage map, the three tiers map to three categories — chain-instrumented institutional systems, institutional systems not yet chain-instrumented, and out-of-scope systems with named substitutes."
 
 "NERC won't care about the customer side."
 
@@ -481,7 +481,7 @@ Tom nodded. "So the report has to split scope."
 
 Tom took a bite of his sandwich. "What's the public-safety angle."
 
-Karen looked at her notebook. "If a leak alert is dismissed and a week later a house explodes, what evidence do we have that the dismissal was reasonable at the time. The chain entry of the dismissal. The AI's confidence and inputs at that moment. The dispatcher's reason code. The dispatcher's identity. The model_id and version per §4.4 normative `gen_ai.request.model` and `gen_ai.response.model` requirement. All of that is in the chain, sealed daily under §4.2/§4.3 with the v1.0b 12-line `sign_payload` form. Per §1.2 the chain proves the AI said X at time T and the record was not tampered with after capture; that's what we get to hand the regulator."
+Dawn looked at her notebook. "If a leak alert is dismissed and a week later a house explodes, what evidence do we have that the dismissal was reasonable at the time. The chain entry of the dismissal. The AI's confidence and inputs at that moment. The dispatcher's reason code. The dispatcher's identity. The model_id and version per §4.4 normative `gen_ai.request.model` and `gen_ai.response.model` requirement. All of that is in the chain, sealed daily under §4.2/§4.3 with the v1.0b 12-line `sign_payload` form. Per §1.2 the chain proves the AI said X at time T and the record was not tampered with after capture; that's what we get to hand the regulator."
 
 "And if the inputs were tampered with upstream of the chain?"
 
@@ -491,7 +491,7 @@ Tom finished his sandwich. "That's the line."
 
 "That's the line. Esme already knows it. We're going to write it down so her CEO knows it and her PUC commissioners know it and her insurance carrier knows it. And the §1.2 language is the controlled vocabulary — it lets every reader land on the same understanding without re-deriving it."
 
-Karen closed her notebook.
+Dawn closed her notebook.
 
 ---
 
@@ -530,7 +530,7 @@ Reason: chain integrity verified, HMAC recomputed,
         against public key leak-prod-2026-q1
 ```
 
-Mike turned the laptop toward Karen and Esme. "Live alert, dispatched, sealed, verified. Twelve steps, four seconds, on the clean-room network. The §7 verifier procedure exercised end-to-end on a real-time entry — JCS pre-flight self-test (Round-17 NIST-P2 amendment), file-header pre-flight, per-event walk through structural / IKM-lookup / fingerprint / MAC-recompute, per-day Merkle and signature, GenAI completeness check at step 12a since the entry carries `gen_ai.*` attributes."
+Mike turned the laptop toward Dawn and Esme. "Live alert, dispatched, sealed, verified. Twelve steps, four seconds, on the clean-room network. The §7 verifier procedure exercised end-to-end on a real-time entry — JCS pre-flight self-test (Round-17 NIST-P2 amendment), file-header pre-flight, per-event walk through structural / IKM-lookup / fingerprint / MAC-recompute, per-day Merkle and signature, GenAI completeness check at step 12a since the entry carries `gen_ai.*` attributes."
 
 Esme nodded once. She didn't say anything but her shoulders dropped a half-inch.
 
@@ -544,7 +544,7 @@ Esme's phone rang. She stepped two paces away to take it. The team heard her say
 
 She came back. "PUC liaison. They get a courtesy notice on every dispatch that escalates to crew on site. Standard."
 
-Karen wrote in her notebook: *Live alert from prediction to crew on site to confirmed real leak in 22 minutes. Chain captured the AI's call and the dispatcher's decision. Field crew finding will land in chain via follow-up entry once crew leader logs it. The §4.4 `parent_run_id` / `parent_seq` discipline will link the follow-up to the original prediction the same way §10.11 binds an ECOA translation to its parent decision.*
+Dawn wrote in her notebook: *Live alert from prediction to crew on site to confirmed real leak in 22 minutes. Chain captured the AI's call and the dispatcher's decision. Field crew finding will land in chain via follow-up entry once crew leader logs it. The §4.4 `parent_run_id` / `parent_seq` discipline will link the follow-up to the original prediction the same way §10.11 binds an ECOA translation to its parent decision.*
 
 Mike asked Esme: "When does the field finding hit the chain?"
 
@@ -554,7 +554,7 @@ Mike asked Esme: "When does the field finding hit the chain?"
 
 "Today probably six to eight hours from now. Sometimes longer if it's a complex repair."
 
-Karen wrote: *Follow-up entry mechanism exists. Crew leader closes OMS work order. OMS pushes outcome to AI service. AI service writes follow-up chain entry referencing original prediction via `parent_run_id` / `parent_seq`. Sealed that night under v1.0b 12-line `sign_payload` per §4.3. Late-binding flag per §4.4 / §4.2.2 if the follow-up arrives after the day's seal closes — handled mechanically by the verifier as PASS-with-anomaly per §7 late-binding-entry-reporting.*
+Dawn wrote: *Follow-up entry mechanism exists. Crew leader closes OMS work order. OMS pushes outcome to AI service. AI service writes follow-up chain entry referencing original prediction via `parent_run_id` / `parent_seq`. Sealed that night under v1.0b 12-line `sign_payload` per §4.3. Late-binding flag per §4.4 / §4.2.2 if the follow-up arrives after the day's seal closes — handled mechanically by the verifier as PASS-with-anomaly per §7 late-binding-entry-reporting.*
 
 > **✓ Confirmation #4 — live alert end-to-end with §7 PASS**
 > A live, real alert observed end-to-end on the operations floor: AI prediction at 0.78 confidence, dispatcher action with reason code, work order auto-opened in OMS, crew on site within 22 minutes, confirmed real leak. Chain captured the prediction and the dispatcher decision in real time, verifier returned PASS in four seconds for the dispatch entry — §7 12-step procedure, exit code 0 per §10.12. Follow-up chain entry mechanism exists for the field-crew outcome and will land in tonight's seal under §4.3 v1.0b 12-line `sign_payload` form. Late-binding handling via §4.4.`ffiec.chain.late_binding` and §4.2.2 day-boundary semantics is mechanical — the late-binding entry's `received_at` exceeds the seal-time of the day it was captured under, so it lands in the next day's seal with `late_binding_count` incremented and the verifier reports it as PASS-with-anomaly rather than as an integrity violation.
@@ -573,7 +573,7 @@ methane sensor -> cellular AMI feed -> PI historian -> AI ingestion adapter -> l
 
 He pointed. "Here is where the chain begins." He tapped *leak-detection service*. "Everything to the left of that arrow is unauthenticated."
 
-Karen read the diagram. "The methane sensor itself. It just emits a value over the cellular link?"
+Dawn read the diagram. "The methane sensor itself. It just emits a value over the cellular link?"
 
 "It emits a value. The value goes to the AMI feed, which writes it into PI, which the AI ingestion adapter reads. There's no signature on the sensor's emission. There's no signature when PI receives it. The first cryptographic operation in the path is the chain entry the AI service writes after it has already trusted the PI value. Per §4.1 'where this primitive lives' — inside the application process running the SDK, on the bank's host. The MAC is computed at the moment of event capture, before the event leaves the host. Pacific Crescent's host is the leak-detection service; everything to the left of that host is outside §4.1 protection."
 
@@ -587,7 +587,7 @@ Karen read the diagram. "The methane sensor itself. It just emits a value over t
 
 Chen wrote in the corner of the whiteboard: *Trust boundary = first cryptographic operation. Pacific Crescent's first cryptographic operation is at the AI service. Everything upstream is trust-by-policy. §1.2 epistemic-scope language — the chain proves (a) what the AI said at time T and (b) that the record was not tampered with after capture. The chain does NOT prove (c) factual accuracy of the AI's input or output. Upstream-input authenticity falls under (c).*
 
-Karen wrote in her notebook: *Sensor-to-AI path is unauthenticated for the first three hops. Documented as a Phase 2 remediation: hash the value at the sensor side, carry the hash forward through PI, verify at AI ingestion. Itron OpenWay 5.4 enables it natively for the AMI portion. PI Server has integrity-extension options that Pacific Crescent has not turned on. Once the chain extends leftward, §1.2's "what the chain proves" reaches the sensor — closer to the public-safety question than the current AI-service boundary allows. The §10.19 map will redraw at that point — PI moves from "not yet chain-instrumented" to "chain-instrumented institutional system."*
+Dawn wrote in her notebook: *Sensor-to-AI path is unauthenticated for the first three hops. Documented as a Phase 2 remediation: hash the value at the sensor side, carry the hash forward through PI, verify at AI ingestion. Itron OpenWay 5.4 enables it natively for the AMI portion. PI Server has integrity-extension options that Pacific Crescent has not turned on. Once the chain extends leftward, §1.2's "what the chain proves" reaches the sensor — closer to the public-safety question than the current AI-service boundary allows. The §10.19 map will redraw at that point — PI moves from "not yet chain-instrumented" to "chain-instrumented institutional system."*
 
 > **⚠️ Surprise #6 — sensor-to-AI path unauthenticated**
 > The data path from methane sensor to AI ingestion is unauthenticated for the first three hops. The chain begins at the leak-detection service, which means the chain captures what the AI saw, not what the sensor actually measured. If the PI historian were tampered with — by one of the three engineers with override authority — the AI's chain entry would faithfully record the tampered value. The chain would verify PASS (the §7 procedure has nothing to compare against upstream of the chain's first cryptographic operation). The forensic trail would not detect the tamper. Per spec §1.2 epistemic-scope, this is exactly what the chain does not prove (the chain proves what the AI said, not whether what the AI said was true). Per §10.19 chain-coverage map, the sensor / AMI / PI hops belong in the "institutional systems not yet chain-instrumented" category with the rollout posture (Phase 2 — AMI 5.4, PI integrity extension) and the evidentiary substitute (PI's rolling audit log + AMI's override log) named.
@@ -615,7 +615,7 @@ Mike asked Esme about the training-data retention floor. Per §10.20 normative p
 
 Mike confirmed: per Round-17 M&A-P2, the `audit.model_handover.training_shard_manifest_sha256` field is also populated — Schneider published a canonical sorted list of training-shard hashes (newline-joined ASCII, no trailing newline) alongside the model card, and the SHA-256 over that manifest is bound on the handover chain entry. A post-close auditor can recompute the manifest from the surviving shards and confirm the provider delivered what was committed. Closes the deal-window-lookback gap.
 
-Karen wrote: *§10.21 cross-vendor model-handover conformant — full attribute family populated including Round-17 M&A-G2 contract-binding triple and Round-17 M&A-P2 training-shard manifest hash. §10.20 training-data retention floor (1825 days) exceeds the deployment-window-plus-buffer requirement.*
+Dawn wrote: *§10.21 cross-vendor model-handover conformant — full attribute family populated including Round-17 M&A-G2 contract-binding triple and Round-17 M&A-P2 training-shard manifest hash. §10.20 training-data retention floor (1825 days) exceeds the deployment-window-plus-buffer requirement.*
 
 Mike turned to the wire-form discipline. The OTLP path between the leak-detection SDK and the TesseraSeal ledger ran over OTLP/gRPC with TLS 1.3 — per §5.1 transport encryption, "transport encryption MUST be applied between the SDK and the ledger" (the spec's normative wire-encryption posture). The Resource attributes on every OTLP request carried `ffiec.chain.spec = "v1.0"`, `service.name = "pipeline-leak-detection"`, `service.version = "0.13.0"` (the Vidimus SDK build), `ffiec.chain.posture = "ffiec"` (FFIEC-conformance posture per §4.1.2, not vendor-flag mode), `ffiec.chain.format_version = "v1"` per §4.4.3 OTLP transport identification. The gRPC metadata carried `ffiec-chain-spec: v1.0` and `ffiec-chain-posture: ffiec` per §4.4.3 RECOMMENDED out-of-band signals; receiver dispatch happens once per OTLP request before per-entry decode, and the metadata cross-checks against the Resource attributes on body decode.
 
@@ -632,7 +632,7 @@ Mike checked one more thing — the per-event canonical bytes. Per §5 wire form
 > **✓ Confirmation #6b — wire-form, transport, redaction, and vendor-handover discipline**
 > §10.21 cross-vendor model-handover schema is conformant on the leak-detection model — all required attributes populated including Round-17 M&A-G2 contract-binding triple (`contract_id`, `contract_version`, `contract_hash_sha256`) and Round-17 M&A-P2 training-shard manifest hash. §10.20 training-data retention floor (1825 days) exceeds the deployment-window-plus-investigation-buffer requirement and is bound on the handover entry. §5 wire format conformant via RFC 8785 JCS canonicalization with the §5 exclusion-rule list of chain-stamp fields. §5.1 transport encryption applied via TLS 1.3 between SDK and TesseraSeal ledger. §4.4.3 OTLP transport identification conformant — all five required Resource attributes set; recommended gRPC metadata mirrors. §4.4.4 severity-for-chain-of-custody-traffic conformant — collector exempts chain pipeline from severity filters; receiver stamps `SeverityNumber` in the `9..20` range with `SeverityText = "OTLP"`. §10.22 redaction discipline — no redaction occurring on the leak-detection chain; absence of `audit.redaction.*` is conformant; CEII redaction happens on derived audience-facing artifacts, not on chain entries, preserving the §5.2 best-evidence captured-JSON content-bearing form. §6 storage discipline conformant — chain entries persisted byte-for-byte to fsync'd Postgres before `payload_hash` is disclosed in any way (per §4.1 construction-location requirement).
 
-Karen wrote in her notebook: *§10.21 / §10.20 / §5 / §5.1 / §5.2 / §6 / §4.4.3 / §4.4.4 / §10.22 — wire-form and vendor-handover side of the chain is clean. Phase 2 / Phase 3 work is all upstream of the SDK or downstream of the OMS, not on the chain itself. The chain is doing what the spec says it should do.*
+Dawn wrote in her notebook: *§10.21 / §10.20 / §5 / §5.1 / §5.2 / §6 / §4.4.3 / §4.4.4 / §10.22 — wire-form and vendor-handover side of the chain is clean. Phase 2 / Phase 3 work is all upstream of the SDK or downstream of the OMS, not on the chain itself. The chain is doing what the spec says it should do.*
 
 ---
 
@@ -642,7 +642,7 @@ Esme had two questions she'd been holding for the right moment.
 
 "Two future scenarios. One: Pacific Crescent is in early conversation with a Northwest peer about a possible merger. Not signed, not announced, but the boards are talking. If that closes, our chain history under `tenant_id = pacific-crescent` carries forward — what's the spec say?"
 
-Karen answered. "Spec §10.24 entity succession. When the chain operating under `(tenant_id, run_id)` keying experiences a legal-entity change of operator — merger, acquisition, divestiture, rename, subsidiary transfer — the institution emits a `chain.entity_succession` operational event under §10.2 marking the legal-entity transition. The chain itself stays under the same `(tenant_id, run_id)` keying — the succession event is the integrity-bound record of the legal-entity change, not a re-keying. Chain entries from before the succession remain verifiable under the original entity's binding; chain entries after the succession bind under the successor entity's signature on the transfer-day seal. The event schema carries `from_entity_legal_name`, `to_entity_legal_name`, RECOMMENDED `from_entity_lei` and `to_entity_lei` (the 20-character LEI per RFC 9101 / ISO 17442), `effective_utc`, `kind`, optional `regulator_filing_id` (FERC merger filing ID for utility M&A), and `dual_signatures` per the §10.17 signatory schema with the `entity_affiliation` field discriminating from-entity and to-entity signers. The companion document `docs/m-and-a-handoff.md` is normative-supplement and provides the operational shape for merger / acquisition / divestiture / spin-off scenarios anchored against §10.24."
+Dawn answered. "Spec §10.24 entity succession. When the chain operating under `(tenant_id, run_id)` keying experiences a legal-entity change of operator — merger, acquisition, divestiture, rename, subsidiary transfer — the institution emits a `chain.entity_succession` operational event under §10.2 marking the legal-entity transition. The chain itself stays under the same `(tenant_id, run_id)` keying — the succession event is the integrity-bound record of the legal-entity change, not a re-keying. Chain entries from before the succession remain verifiable under the original entity's binding; chain entries after the succession bind under the successor entity's signature on the transfer-day seal. The event schema carries `from_entity_legal_name`, `to_entity_legal_name`, RECOMMENDED `from_entity_lei` and `to_entity_lei` (the 20-character LEI per RFC 9101 / ISO 17442), `effective_utc`, `kind`, optional `regulator_filing_id` (FERC merger filing ID for utility M&A), and `dual_signatures` per the §10.17 signatory schema with the `entity_affiliation` field discriminating from-entity and to-entity signers. The companion document `docs/m-and-a-handoff.md` is normative-supplement and provides the operational shape for merger / acquisition / divestiture / spin-off scenarios anchored against §10.24."
 
 "And the `tenant_id` itself?"
 
@@ -658,14 +658,14 @@ Esme wrote it down. "Question two. We have a hot/cold DR posture on the leak-det
 
 Esme wrote it down. "Phase 5 conversation if we ever flip to active-active. Or if the merger lands."
 
-Karen wrote: *§10.24 entity succession framework documented for the prospective merger. §10.15 multi-region pattern selection deferred to a Phase 5 conversation. Both are normative spec text Pacific Crescent's CC8.1 author can cite on the day either scenario lands.*
+Dawn wrote: *§10.24 entity succession framework documented for the prospective merger. §10.15 multi-region pattern selection deferred to a Phase 5 conversation. Both are normative spec text Pacific Crescent's CC8.1 author can cite on the day either scenario lands.*
 
 > **✓ Confirmation #6c — succession and multi-region forward-readiness**
 > §10.24 entity-succession framework documented. The companion `docs/m-and-a-handoff.md` is normative-supplement; the `chain.entity_succession` operational event under §10.2 carries the dual-signature attestation per §10.17 schema with `entity_affiliation` discriminating from-entity and to-entity signers. The chain history under `tenant_id = pacific-crescent` carries forward across a merger boundary with chain integrity preserved per §4.1 HKDF binding. §10.15 multi-region resilience patterns named for a future active-active Phase 5 conversation; Pattern A vs Pattern B selection is institution-side under the risk-tolerance statement, with §10.15 invariant 5 reconciliation via `master.cross_region_replication_completed` under §10.2 as the load-bearing evidence on the active-active path.
 
 Esme had one more question. "DR rejoin. We have a 90-mile cold-failover site at the BPA facility. Today it's receive-only — replicates the chain artifacts but doesn't emit. If a regional event takes the operations control center offline and we have to spin up the cold side hot — what does the spec say?"
 
-Karen answered. "Spec §10.25 run resume and chain-tail acquisition. Once a run is opened with `(tenant_id, run_id)`, the SDK must acquire the run's chain tail before emitting the next entry, regardless of whether the run is fresh, in-process, or being resumed across a process boundary. The chain tail is the triple `(latest_seq, latest_payload_hash, key_version)` plus optional metadata. Three-place tail acquisition — in-memory state, local persistence sidecar, or ledger query (the rejoin path). When local persistence is permanently lost — disk corruption, container disposal, region failover without state replication — the SDK must query the ledger's chain-tail endpoint before emitting the next entry under the affected run. The rejoin mechanism must NOT degrade silently to genesis if the ledger is unreachable. If the ledger is unreachable AND local persistence is missing, the SDK must refuse to emit until the tail is acquired or until an operator explicitly authorizes a fresh genesis under a NEW `run_id`. A fresh genesis under the SAME `run_id` is non-conformant; the §4.4 genesis-block uniqueness rule plus the ledger's ingestion cross-check catch the resulting fork at the ledger layer. Single-writer-per-run rule — file-locked or row-locked sidecar prevents two SDK processes from racing for the same run identifier. Ledger ingestion cross-check rejects a batch whose `prev_hash` doesn't match the run's known tail with a normative reason string."
+Dawn answered. "Spec §10.25 run resume and chain-tail acquisition. Once a run is opened with `(tenant_id, run_id)`, the SDK must acquire the run's chain tail before emitting the next entry, regardless of whether the run is fresh, in-process, or being resumed across a process boundary. The chain tail is the triple `(latest_seq, latest_payload_hash, key_version)` plus optional metadata. Three-place tail acquisition — in-memory state, local persistence sidecar, or ledger query (the rejoin path). When local persistence is permanently lost — disk corruption, container disposal, region failover without state replication — the SDK must query the ledger's chain-tail endpoint before emitting the next entry under the affected run. The rejoin mechanism must NOT degrade silently to genesis if the ledger is unreachable. If the ledger is unreachable AND local persistence is missing, the SDK must refuse to emit until the tail is acquired or until an operator explicitly authorizes a fresh genesis under a NEW `run_id`. A fresh genesis under the SAME `run_id` is non-conformant; the §4.4 genesis-block uniqueness rule plus the ledger's ingestion cross-check catch the resulting fork at the ledger layer. Single-writer-per-run rule — file-locked or row-locked sidecar prevents two SDK processes from racing for the same run identifier. Ledger ingestion cross-check rejects a batch whose `prev_hash` doesn't match the run's known tail with a normative reason string."
 
 "And the cold-side ledger?"
 
@@ -673,7 +673,7 @@ Karen answered. "Spec §10.25 run resume and chain-tail acquisition. Once a run 
 
 Esme wrote it down. "Documented in our DR runbook today by component, but not cross-referenced to §10.25. That's a §10.18 cross-referencing Nit on the DR runbook the same shape as Luis's earlier finding on the dispatcher-application runbook."
 
-Karen wrote: *§10.25 run resume and chain-tail acquisition discipline documented; §10.18 cross-referencing Nit on the DR runbook (does not cite §10.25 / §4.4 genesis-block uniqueness / §4.4 ingestion cross-check). Combined with Luis's dispatcher-application runbook Nit — two §10.18 cross-referencing fixes total, both five-line additions.*
+Dawn wrote: *§10.25 run resume and chain-tail acquisition discipline documented; §10.18 cross-referencing Nit on the DR runbook (does not cite §10.25 / §4.4 genesis-block uniqueness / §4.4 ingestion cross-check). Combined with Luis's dispatcher-application runbook Nit — two §10.18 cross-referencing fixes total, both five-line additions.*
 
 Then Esme asked the consumer-correlation question.
 
@@ -685,7 +685,7 @@ Then Esme asked the consumer-correlation question.
 
 "Yes. The §10.23 attribute schema (`consumer_index.consumer_id_hash`, `consumer_index.run_id`, `consumer_index.seq`, `consumer_index.relationship`) is institution-side as long as your CC8.1 names the canonicalization of the consumer identifier — typical: the lowercased premise address normalized to USPS canonicalization. Phase 4 work item if a PUC consumer-keyed retrieval question becomes recurrent."
 
-Karen wrote: *§10.23 consumer-correlation index by analogy — Phase 4 if PUC consumer-keyed retrieval becomes recurrent. Not load-bearing today.*
+Dawn wrote: *§10.23 consumer-correlation index by analogy — Phase 4 if PUC consumer-keyed retrieval becomes recurrent. Not load-bearing today.*
 
 ---
 
@@ -782,7 +782,7 @@ The team wrote it on the whiteboard.
 | 3 (86 days old) | PASS | PASS | PASS | PASS — within OMS | UNPROVABLE — past PI 60-day retention |
 | 4 (169 days old) | PASS | PASS | PASS | UNPROVABLE — paper transcription gap | UNPROVABLE — past PI 60-day retention |
 
-Karen looked at the whiteboard.
+Dawn looked at the whiteboard.
 
 "4 out of 4 AI-side PASS. 2 out of 4 trace back cleanly to the source sensor data. 4 out of 4 trace forward to the dispatcher decision. 2 out of 4 trace forward to a confirmed field-crew finding that we'd be willing to put in front of an investigator without a caveat. The chain works for the recent past. The legacy systems erode it as time goes on. Per §1.2 epistemic-scope, the chain's claims are bounded — what falls outside the bound is exactly what we're documenting. Not as integrity gaps, but as scope gaps. The §10.19 chain-coverage map will name them as such."
 
@@ -810,7 +810,7 @@ Esme had pulled in three OT engineering staff at the start of the 3:00 PM sessio
 
 Hugh spoke first. "I want to push back on the framing. You're describing GE iFIX like it's broken. iFIX is a NERC CIP-compliant HMI deployed in compliance with our CIP-007 controls. The audit log captures the INSERT. That's the standard."
 
-Karen put her pen down. "Hugh, I hear you. We're not writing iFIX up as broken. We're writing it up as a system whose audit semantics are INSERT-only, which means a subsequent UPDATE to an operator note doesn't generate a record. That's a finding about the audit shape, not about iFIX as a product. Per spec §10.3, append-only enforcement applies at both the application level (no UPDATE / DELETE statements on audit-bearing tables) and the database role level (UPDATE / DELETE / TRUNCATE permissions revoked). iFIX violates both because the product itself UPDATEs the alarm-ack note in place. The finding language is precise about that — we're naming the product behavior, not the operator's deployment."
+Dawn put her pen down. "Hugh, I hear you. We're not writing iFIX up as broken. We're writing it up as a system whose audit semantics are INSERT-only, which means a subsequent UPDATE to an operator note doesn't generate a record. That's a finding about the audit shape, not about iFIX as a product. Per spec §10.3, append-only enforcement applies at both the application level (no UPDATE / DELETE statements on audit-bearing tables) and the database role level (UPDATE / DELETE / TRUNCATE permissions revoked). iFIX violates both because the product itself UPDATEs the alarm-ack note in place. The finding language is precise about that — we're naming the product behavior, not the operator's deployment."
 
 "Auditors always make the same finding. It doesn't lead anywhere. The product doesn't support UPDATE auditing without a third-party add-on."
 
@@ -830,13 +830,13 @@ Pavithra and Hugh both looked at Esme. The friction in the room shifted by a qua
 
 Aaron was the quietest of the three. He spoke last. "The 60-day PI retention. I didn't set that. I inherited it from the previous PI admin. When I came on, I asked about extending it. The disk volume isn't sized for 18 months of audit trail at our sensor density."
 
-Karen wrote: *PI 60-day retention disclosed by current admin as inherited. Disk sizing constraint. Phase 2 includes disk re-sizing on the historian server. Per §10.13 evidentiary-artifacts retention, the chain-data retention period plus litigation-hold extensions sets the floor; PI's current 60 days is well below the §10.13 standard and below the NERC CIP-008-6 / CIP-009-6 3-year minimum. The disk-sizing remediation is operational, not chain-architectural — extending PI to 18 months brings PI's substitute window inside §10.13's retention contract.*
+Dawn wrote: *PI 60-day retention disclosed by current admin as inherited. Disk sizing constraint. Phase 2 includes disk re-sizing on the historian server. Per §10.13 evidentiary-artifacts retention, the chain-data retention period plus litigation-hold extensions sets the floor; PI's current 60 days is well below the §10.13 standard and below the NERC CIP-008-6 / CIP-009-6 3-year minimum. The disk-sizing remediation is operational, not chain-architectural — extending PI to 18 months brings PI's substitute window inside §10.13's retention contract.*
 
 "Aaron, that's a clean disclosure. We'll write it that way. The finding will be on the retention shape and the sizing constraint, not on you personally. And the §10.19 map names this as the substitute Pacific Crescent already operates while Phase 2 closes the gap."
 
-The friction in the room subsided. The three engineers didn't relax exactly, but they stopped pushing back. Esme had defused it with one sentence and Karen had received the disclosures cleanly.
+The friction in the room subsided. The three engineers didn't relax exactly, but they stopped pushing back. Esme had defused it with one sentence and Dawn had received the disclosures cleanly.
 
-Karen made a note in the margin: *NERC engineers always defensive. Esme manages it well. Disclosures land cleaner because she creates the space for them. The §10.19 chain-coverage map is the artifact that makes a defensive engineer's contribution land as 'here's the substitute we operate' rather than 'here's the gap I'm responsible for.'*
+Dawn made a note in the margin: *NERC engineers always defensive. Esme manages it well. Disclosures land cleaner because she creates the space for them. The §10.19 chain-coverage map is the artifact that makes a defensive engineer's contribution land as 'here's the substitute we operate' rather than 'here's the gap I'm responsible for.'*
 
 ---
 
@@ -844,17 +844,17 @@ Karen made a note in the margin: *NERC engineers always defensive. Esme manages 
 
 Esme had asked the engineers to step out for the last hour. The team was alone in the clean room with her. The afternoon sun was angling through the high windows. She had her elbows on the table and her chin in her hands.
 
-She looked across at Karen.
+She looked across at Dawn.
 
 "Let me ask you a question I've been trying to find a clean answer to for a year."
 
-Karen waited.
+Dawn waited.
 
 "If a leak alert is dismissed and a house explodes a week later, what evidence do we have that the dismissal was reasonable at the time?"
 
 The team went still.
 
-Karen took a long breath. "Sober answer. The chain entry of the dismissal — that gives you the dispatcher's identity, the reason code, the timestamp. The AI's confidence and inputs at that moment — that's in the same chain entry. The model_id and model_version per §4.4 normative `gen_ai.request.model` and `gen_ai.response.model` — also in the chain. The seal record for that day — ties everything to a public key with a known fingerprint via §4.3 v1.0b 12-line `sign_payload` form. Per §1.2 epistemic-scope, the chain proves (a) what the AI said at a specific time and (b) that the record was not tampered with after capture. Both are exactly what your forensic question needs."
+Dawn took a long breath. "Sober answer. The chain entry of the dismissal — that gives you the dispatcher's identity, the reason code, the timestamp. The AI's confidence and inputs at that moment — that's in the same chain entry. The model_id and model_version per §4.4 normative `gen_ai.request.model` and `gen_ai.response.model` — also in the chain. The seal record for that day — ties everything to a public key with a known fingerprint via §4.3 v1.0b 12-line `sign_payload` form. Per §1.2 epistemic-scope, the chain proves (a) what the AI said at a specific time and (b) that the record was not tampered with after capture. Both are exactly what your forensic question needs."
 
 "And that's enough?"
 
@@ -862,7 +862,7 @@ Karen took a long breath. "Sober answer. The chain entry of the dismissal — th
 
 "And if the inputs to the AI were tampered with in the historian?"
 
-Karen paused.
+Dawn paused.
 
 "Then we cannot prove the inputs were tampered with. And we cannot prove they weren't. The historian is your weakest evidence in that scenario. The chain entry will faithfully record the inputs the AI saw. If those inputs were already tampered with when the AI ingested them, the chain reflects the tampered version. The audit trail in PI rolls at 60 days, so going back further, even the question of who-changed-what becomes unanswerable. Per §1.2 epistemic-scope, this falls in the (c) non-claim — the chain does not prove the AI's statement is factually accurate, and 'the input the AI saw matched what the sensor actually emitted' is a factual question about the AI's input. The chain is silent on it by design."
 
@@ -880,7 +880,7 @@ Tom leaned forward. "Esme, the value of doing this assessment now is precisely s
 
 "I know. I'm going to be straight with you — I've been trying to fund Phase 2 for six months. Today's report is the lever I needed."
 
-Karen wrote in her notebook: *Public-safety question. Esme's been preparing for this question for a year. The report has to answer it directly. The line is: chain proves the AI's behavior per §1.2 (a) and (b), chain does not prove the upstream's behavior per §1.2 (c), Phase 2 closes the gap. Document. The §10.13 evidentiary-artifacts retention list is the litigation-foundation backbone — name each artifact and its retention.*
+Dawn wrote in her notebook: *Public-safety question. Esme's been preparing for this question for a year. The report has to answer it directly. The line is: chain proves the AI's behavior per §1.2 (a) and (b), chain does not prove the upstream's behavior per §1.2 (c), Phase 2 closes the gap. Document. The §10.13 evidentiary-artifacts retention list is the litigation-foundation backbone — name each artifact and its retention.*
 
 > **✓ Confirmation #6 — public-safety evidence question answerable from chain alone**
 > The chain provides cryptographic evidence sufficient to demonstrate that an alarm dismissal was made on the inputs and reason recorded, by the dispatcher recorded, at the timestamp recorded. In the public-safety scenario where a regulator, insurance carrier, or litigation discovery process asks how a dismissed alarm was reasoned through, the chain produces a verifiable artifact in seconds. Per §1.2 epistemic-scope, the chain proves (a) what the AI said at a specific time and (b) that the record was not tampered with after capture; per §1.1 Daubert grounding, the institution's expert witness has a concrete answer to each of the four factors (testability under §7, peer review under the FFIEC working-group process, known error rate under §1.1's three-layer compromise model, general acceptance under the NIST-standardized primitives). Per §10.13, the chain output composes with the documentary artifacts (SDK version manifest, SDK source hash, HSM configuration, daily seal-job logs, change-management records, verifier output) that substantiate FRE 901(b)(9) authentication of the process; the institution's IT witness lays foundation from these at deposition without re-engineering the system.
@@ -896,7 +896,7 @@ Luis had spent the afternoon on logs, ops, and the verifier distribution posture
 
 "§10.26 reference-verifier distribution. Pacific Crescent operates the reference verifier off USB media for in-person examiner sessions and from a CIP-categorized internal artifact registry for production verifications. The reference verifier ships in a separate repository from the spec under Apache 2.0, which is normative per §10.26. Per-release artifact discipline is conformant — reproducible builds, Cosign signatures, per-platform binaries (Linux x86_64 + Linux ARM64 are minimum, Pacific Crescent additionally pulls Windows x86_64 for the WECC examiner laptop and macOS ARM64 for the CCO's laptop), SHA-256 + SHA-512 manifests, CycloneDX SBOM. The verification key fingerprint is named in CC8.1 and the institution's posture matches §10.26 CC8.1 citation discipline — implementation named (the reference verifier), version named (pinned per §11), verification key named."
 
-Karen wrote: *§10.26 verifier distribution conformant. Examiners run binaries off USB. Pacific Crescent matches the §10.26 CC8.1 three-name citation rule.*
+Dawn wrote: *§10.26 verifier distribution conformant. Examiners run binaries off USB. Pacific Crescent matches the §10.26 CC8.1 three-name citation rule.*
 
 "Spec-version pinning per §10.26 is also conformant — the institution cites the verifier version pinned in spec §11 References for v1.0b. Later verifier releases that maintain back-compat are acceptable; the pinned version is the floor."
 
@@ -904,19 +904,19 @@ Luis's second finding was on §10.18 CC8.1 cross-referencing.
 
 "The runbooks support the chain-of-custody program but the cross-referencing is uneven. The seal-job runbook names §4.2 / §4.3 by section number — clean. The HSM partition-ceremony runbook names §10.5 and §10.17 — clean. The IKM-rotation runbook names §10.10 — clean. The dispatcher-application runbook does NOT cite a spec section, which per §10.18 is a Nit — the runbook describes the chain integration without naming §4.4 / §4.4.1 / §4.4.2 / §4.4.6, so a SOC-engagement reviewer reading the runbook needs to map across by content. Five-line addition closes it."
 
-Karen wrote: *§10.18 CC8.1 cross-referencing — Nit on dispatcher-application runbook. Five-line fix.*
+Dawn wrote: *§10.18 CC8.1 cross-referencing — Nit on dispatcher-application runbook. Five-line fix.*
 
 Luis's third finding was on §10.17.
 
 "The HSM partition-ceremony attestation under §10.17 is being emitted — `chain.partition_ceremony_attended` operational events for partition creation and IKM rotation, with `ceremony_type`, `partition_handle`, `ceremony_started_at_utc`, `ceremony_completed_at_utc`, `signatories` array, `witness`, `attendance_pdf_sha256`. The signatory `entity_affiliation` field per Round-17 M&A-P1 is populated. The `attendance_pdf_holder` field is also present (Pacific Crescent retains the original attendance log in its compliance vault). The `hsm_attestation_token_b64` field is RECOMMENDED at v1.0b and Pacific Crescent emits it — Thales Luna exposes ceremony-bound attestation tokens through its attestation API, and the verification path is named in CC8.1. Conformant."
 
-Karen wrote: *§10.17 partition-ceremony attestation conformant — `chain.partition_ceremony_attended` events emitted with all required fields including the RECOMMENDED `hsm_attestation_token_b64`. Pacific Crescent ahead of the v1.0b posture.*
+Dawn wrote: *§10.17 partition-ceremony attestation conformant — `chain.partition_ceremony_attended` events emitted with all required fields including the RECOMMENDED `hsm_attestation_token_b64`. Pacific Crescent ahead of the v1.0b posture.*
 
 Luis's observation was on §10.4 trusted-time.
 
 "§10.14 trusted-time integration is RECOMMENDED but NOT REQUIRED for v1.0 conformance. Pacific Crescent is interesting because they have PMU-grade time synchronization on the BES side — IRIG-B from a GPS-disciplined master clock — that they could use as a NTP discipline upgrade. Per §10.4, NTP-synchronized application hosts and ledger servers are SHOULD; Pacific Crescent's existing PMU-grade time source exceeds the SHOULD bar. Their CC8.1 already names the time source. The §10.14 informative paragraph names RFC 3161 trusted-timestamp integration as a candidate v1.x extension; until that lands, NTP discipline (or PMU-grade equivalent) is the v1.0 timestamp foundation."
 
-Karen wrote: *§10.4 NTP synchronization conformant via PMU-grade GPS-disciplined master clock — exceeds SHOULD bar. §10.14 trusted-time integration RECOMMENDED, candidate v1.x extension. Note for the CFO: the time-discipline investment pays off on the chain side without a separate integration.*
+Dawn wrote: *§10.4 NTP synchronization conformant via PMU-grade GPS-disciplined master clock — exceeds SHOULD bar. §10.14 trusted-time integration RECOMMENDED, candidate v1.x extension. Note for the CFO: the time-discipline investment pays off on the chain side without a separate integration.*
 
 > **✓ Confirmation #7 — verifier distribution and CC8.1 hygiene**
 > The §10.26 reference-verifier distribution posture is conformant — repository separation, per-release reproducible builds, Cosign signatures, per-platform binaries, SHA-256 / SHA-512 manifests, CycloneDX SBOM, spec-version pinning per §11, three-name CC8.1 citation discipline (implementation, version, verification key). The §10.17 HSM partition-ceremony attestation is conformant including the v1.0b RECOMMENDED `hsm_attestation_token_b64` field. The §10.4 NTP discipline is exceeded by PMU-grade time synchronization. One §10.18 CC8.1 cross-referencing Nit on the dispatcher-application runbook (does not cite §4.4 / §4.4.1 / §4.4.2 / §4.4.6 by section number); five-line fix.
@@ -927,7 +927,7 @@ Karen wrote: *§10.4 NTP synchronization conformant via PMU-grade GPS-discipline
 
 The team reconvened in the clean room. Esme stayed. Coffee was cold. Mount Hood had moved into the late-afternoon haze.
 
-Karen stood at the whiteboard. Three columns.
+Dawn stood at the whiteboard. Three columns.
 
 | Tier | Status |
 |---|---|
@@ -939,7 +939,7 @@ Karen stood at the whiteboard. Three columns.
 
 Esme stood with her arms crossed, listening.
 
-"AI side." Karen pointed. "TesseraSeal. Seven confirmations — chain integrity verified across nine months and 1.6 million inferences (§7 12-step procedure, §10.12 exit code contract), append-only ledger behavior under direct DB mutation attempt (§10.3), credential rotation under chain (eight rotations sampled, all PASS, §10.10 rotation discipline), live alert observed end-to-end on the operations floor with verifier PASS in four seconds (§4.4 / §4.4.2 / §10.11-style parent-linkage), four-of-four reconciliations PASS on the AI side, the public-safety evidence question answerable in two paragraphs (§1.2 / §1.1 / §10.13), and verifier-distribution + CC8.1 hygiene conformant (§10.26 / §10.18 / §10.17 / §10.4). The AI side maps cleanly to NERC CIP-007 for the AI/ML control points and to PHMSA pipeline-integrity expectations for the leak-detection scope. IEC 62443-3-3 SR 6.1, SR 6.2, and SR 7.5 are explicitly satisfied for this service. The single Nit on §10.18 cross-referencing is a five-line fix on the dispatcher-application runbook."
+"AI side." Dawn pointed. "TesseraSeal. Seven confirmations — chain integrity verified across nine months and 1.6 million inferences (§7 12-step procedure, §10.12 exit code contract), append-only ledger behavior under direct DB mutation attempt (§10.3), credential rotation under chain (eight rotations sampled, all PASS, §10.10 rotation discipline), live alert observed end-to-end on the operations floor with verifier PASS in four seconds (§4.4 / §4.4.2 / §10.11-style parent-linkage), four-of-four reconciliations PASS on the AI side, the public-safety evidence question answerable in two paragraphs (§1.2 / §1.1 / §10.13), and verifier-distribution + CC8.1 hygiene conformant (§10.26 / §10.18 / §10.17 / §10.4). The AI side maps cleanly to NERC CIP-007 for the AI/ML control points and to PHMSA pipeline-integrity expectations for the leak-detection scope. IEC 62443-3-3 SR 6.1, SR 6.2, and SR 7.5 are explicitly satisfied for this service. The single Nit on §10.18 cross-referencing is a five-line fix on the dispatcher-application runbook."
 
 She moved to the OT column.
 
@@ -947,7 +947,7 @@ She moved to the OT column.
 
 "Customer-billing side. Three gaps. Salesforce overwrite shape on customer-interaction notes. OMS work-order linkage from field finding to AI prediction is by ID only, not by content hash (Phase 3 closure via §10.19 `audit.external_artifact.*`). CIS audit-trail retention on interaction notes is shorter than on billing records. Four partials around backup-vs-change-history, retention variance across three states' regulators, customer-CRM IAM federation, and a future §10.16 SaaS-edge mirror connector posture should Pacific Crescent ever stand a Salesforce mirror for the leak-detection AI to ingest customer-call data — not load-bearing today, but pre-named in the chain-coverage map so the four-number lag posture (median, 95th-percentile SLO, alerting threshold, RTO) is the entry-fee for that connector if it lands. Phase 4 territory. The CIO's budget conversation."
 
-Karen put the pen down.
+Dawn put the pen down.
 
 "Three observations to close."
 
@@ -969,15 +969,15 @@ Mike held up his phone. "Got it on the laptop. I'll send it tonight."
 
 "Thursday morning. Before your Friday CEO review."
 
-Karen closed her notebook. "We'll send it."
+Dawn closed her notebook. "We'll send it."
 
 Esme's shoulders dropped that half-inch again. She didn't smile but she nodded twice.
 
 The team packed up. Raj and Luis loaded boxes of evidence into the rental SUV. Diana and Elena said goodbye to Esme at the badge desk. Mike and Chen took one last look at the operations floor on the way past — the gas-distribution map glowing green except for two amber dots, both being watched, both at confidence below dispatch threshold.
 
-Karen walked out last. She paused at the badge desk and looked back through the glass at the operations floor. Yolanda was still on shift. The methane sensor readings were still updating every fifteen seconds. The Brentwood crew had finished isolation and were filing the work-order paperwork on a tablet.
+Dawn walked out last. She paused at the badge desk and looked back through the glass at the operations floor. Yolanda was still on shift. The methane sensor readings were still updating every fifteen seconds. The Brentwood crew had finished isolation and were filing the work-order paperwork on a tablet.
 
-> **🔍 Karen's note (internal):**
+> **🔍 Dawn's note (internal):**
 > *It never is. The closer the AI sits to a public-safety decision, the more the chain matters. The further the historian sits from the AI, the more the chain doesn't reach.*
 >
 > *Today the chain reached far enough to dispatch a real crew to a real leak in real time and prove it after the fact. Today the chain did not reach the sensor. Phase 2 closes the gap before the gap closes a neighborhood. The §1.2 epistemic-scope language is the one paragraph that tells the CEO what the chain delivers and what it doesn't. The §10.19 chain-coverage map is the one artifact the WECC auditor and the PHMSA inspector and the WUTC regulator read as the same picture. Two pieces of writing carry the whole report.*

@@ -9,7 +9,7 @@ Northbridge Federal Savings — a regional US bank, ~$45B consolidated assets, O
 
 ## 👥 The Audit Team
 
-- **Karen** — Lead Auditor (governance + narrative)
+- **Dawn** — Lead Auditor (governance + narrative)
 - **Raj** — Database specialist
 - **Elena** — CRM systems
 - **Mike** — Application / API layer
@@ -26,7 +26,7 @@ Northbridge Federal Savings — a regional US bank, ~$45B consolidated assets, O
 
 The team rolled in to the Northbridge engagement room with the look of people who had spent last week somewhere unpleasant.
 
-Karen poured coffee. She stared at the slide on the projector — a clean architecture diagram, every box labeled, every arrow ending at something called "Herald Core ledger." Above the diagram, in modest type: **TesseraSeal — chain-of-custody for customer-data capture.**
+Dawn poured coffee. She stared at the slide on the projector — a clean architecture diagram, every box labeled, every arrow ending at something called "Herald Core ledger." Above the diagram, in modest type: **TesseraSeal — chain-of-custody for customer-data capture.**
 
 She had not heard the name before.
 
@@ -34,11 +34,11 @@ She turned to Raj.
 
 "Last week was a graveyard," she said. "This week, I want to find at least one thing."
 
-Tom looked up. First engagement with Karen.
+Tom looked up. First engagement with Dawn.
 
 "Graveyard?"
 
-Raj answered without looking up from his laptop. "Last week we wrote twelve Gaps and four Material Findings. The bank had been running deferred patches for two years. Every control we touched had been dead for a year. The CAE started crying in the closing meeting. Karen wrote the report from the airport on Friday night."
+Raj answered without looking up from his laptop. "Last week we wrote twelve Gaps and four Material Findings. The bank had been running deferred patches for two years. Every control we touched had been dead for a year. The CAE started crying in the closing meeting. Dawn wrote the report from the airport on Friday night."
 
 Tom: "And 'I want to find at least one thing' means?"
 
@@ -52,17 +52,17 @@ Then, still without looking up: "Bet you a coffee you find a Gap by lunch."
 
 "Bet you two coffees I find a Gap by 10 AM."
 
-*It never is*, Karen thought. *Diagrams are clean until you ask the third question.*
+*It never is*, Dawn thought. *Diagrams are clean until you ask the third question.*
 
 Marcus Tan walked in. Mid-fifties. Pressed shirt. Coffee in his left hand, a thin folder under his right arm.
 
-"Karen. Tom. Welcome to Northbridge."
+"Dawn. Tom. Welcome to Northbridge."
 
 Tom shook his hand. "Marcus."
 
 "You'll see a name on the deck you may not have run into before," Marcus said, gesturing at the slide. "TesseraSeal. We've been on it for eighteen months. It's the chain-of-custody layer behind every customer-data capture path the bank operates. I'd rather walk you through what it is than make you guess from the diagram."
 
-"Go ahead," Karen said.
+"Go ahead," Dawn said.
 
 Marcus stayed standing. He didn't sit. He didn't pull out a deck-of-decks.
 
@@ -74,7 +74,7 @@ He paused.
 
 Tom was writing the names down in his notebook, slowly, in block letters. *TesseraSeal. Vidimus. Herald Core.*
 
-Karen wrote on her notepad: **TesseraSeal — verify claims.**
+Dawn wrote on her notepad: **TesseraSeal — verify claims.**
 
 Underneath: *spec public; verifier OSS; key on TesseraSeal page; ledger append-only.* She underlined "verify."
 
@@ -84,7 +84,7 @@ Raj had been typing the spec URL. He stopped.
 
 Marcus read it off. Raj wrote it down.
 
-Karen had a follow-up while she was on the topic.
+Dawn had a follow-up while she was on the topic.
 
 "You said v1.0a and the verifier is open source. Walk me through the Daubert grounding briefly. If a counterparty challenges the chain in court, what does your expert witness lay foundation on?"
 
@@ -96,7 +96,7 @@ Marcus didn't pause.
 
 "§1.2 names what the chain proves and what it doesn't. Chain proves the AI said X at time T, and the record wasn't tampered after capture. Chain does NOT prove the statement was accurate, the statement complied with policy, or the statement was unbiased. We name the line clearly so witness testimony stays on the integrity foundation, not the truth foundation."
 
-Karen wrote: *§1.1 / §1.2 / §1.3 / §1.4 — Daubert framing is in the spec text, not in vendor marketing.*
+Dawn wrote: *§1.1 / §1.2 / §1.3 / §1.4 — Daubert framing is in the spec text, not in vendor marketing.*
 
 Mike said, "Eighteen months. So this isn't new to you, but it's new to us."
 
@@ -106,13 +106,13 @@ Tom said, "Same drill as the FDIC visit in February, then?"
 
 "Same drill," Marcus said. "I'll route you through the surfaces. SRE on-call is Greg today. Greg has done this before. Verifier credentials are already provisioned for your laptops — read-only, scoped to the TesseraSeal surface."
 
-Karen blinked. "You provisioned us before we asked."
+Dawn blinked. "You provisioned us before we asked."
 
 "The verifier's design is that you don't need our credentials at all. The Ed25519 public key is published on the TesseraSeal page. You can pull a seal record and verify it on a coffee shop wifi if you want. The credentials are just to save you the trouble of typing the tenant ID."
 
 *Hm.*
 
-Karen added a second line under her **TesseraSeal — verify claims** note: *seal verification is unprivileged.*
+Dawn added a second line under her **TesseraSeal — verify claims** note: *seal verification is unprivileged.*
 
 She paused. She added a third line: *check this claim before lunch.*
 
@@ -120,7 +120,7 @@ She paused. She added a third line: *check this claim before lunch.*
 
 Marcus didn't bristle. He clicked to the next slide.
 
-*Most CAEs bristle when I say 'then we'll go look,'* Karen thought. *He didn't. Either he is very tired, or he has nothing to defend. We'll find out which.*
+*Most CAEs bristle when I say 'then we'll go look,'* Dawn thought. *He didn't. Either he is very tired, or he has nothing to defend. We'll find out which.*
 
 *And we'll find out today whether 'TesseraSeal' is a slogan or a system.*
 
@@ -152,7 +152,7 @@ Elena, who had been quietly reading the Salesforce architecture page, looked up.
 
 "Two logs. The connector lag is something we can talk about later if you want."
 
-Karen made a note: *connector lag — come back to this.*
+Dawn made a note: *connector lag — come back to this.*
 
 She glanced at Raj. He was scrolling through a list of what looked like seal records. He didn't appear to be enjoying himself.
 
@@ -186,7 +186,7 @@ Raj said, "I will want to see that."
 
 "After the schema review, sure."
 
-*Two coffees*, Karen thought. *I owe Raj two coffees.*
+*Two coffees*, Dawn thought. *I owe Raj two coffees.*
 
 Elena, who had been listening, leaned forward. "You said the Salesforce mirror lands in the same chain. Same schema?"
 
@@ -346,7 +346,7 @@ Raj wrote *§5 is short on purpose; exclusion list is normative* on his notepad 
 
 "That's §5.2. The captured JSON is the content-bearing form — what the human reads. The canonical bytes are the integrity-bearing form — what the MAC covers. Both are originals under FRE 1001(d). In discovery the institution produces both, names which one answers which question, and lets the canonical bytes carry the MAC verification while the captured JSON carries the human-readable narrative. The chain's §7 procedure is the procedural answer to an FRE 1003 authenticity challenge."
 
-Karen wrote that down. *§5.2 — captured JSON for content, canonical bytes for integrity. Both originals under FRE 1001(d).*
+Dawn wrote that down. *§5.2 — captured JSON for content, canonical bytes for integrity. Both originals under FRE 1001(d).*
 
 "OK," he said. "Now I want to look at the database."
 
@@ -379,7 +379,7 @@ He did the same thing for the HMAC, recomputing it with the per-tenant HKDF-deri
 
 Raj sat back. He took a long drink of coffee.
 
-"Sample size?" Karen asked him quietly.
+"Sample size?" Dawn asked him quietly.
 
 "Fifty thousand entries on the chain walk. One entry recomputed by hand. I'll do another twenty by hand before lunch."
 
@@ -458,7 +458,7 @@ Marcus smiled. "Fair. Let me re-answer. Emergency access to the chain table is n
 >
 > Every IAM grant, revocation, and elevation request lands as a sealed chain entry in the same Herald Core ledger as customer-data events. The auto-revocation worker is chain-driven, not cron-driven. Diana sampled three temporary-admin grants from the past 90 days. Each had a matching revocation entry, each landed within 30 seconds of the 24-hour mark, each was sealed in the daily Merkle root.
 
-Karen's pen paused over the notepad.
+Dawn's pen paused over the notepad.
 
 *It never is*, she thought. *Except apparently this time.*
 
@@ -492,7 +492,7 @@ She added one more line to her notepad before standing up: *the IAM-as-chain pat
 
 The team ordered sandwiches into the engagement room. Nobody left the building.
 
-Karen walked over to where Tom and Marcus were standing by the window, mid-conversation about audit-procedure cross-references.
+Dawn walked over to where Tom and Marcus were standing by the window, mid-conversation about audit-procedure cross-references.
 
 "Tom, what are we at on findings?"
 
@@ -502,7 +502,7 @@ Karen walked over to where Tom and Marcus were standing by the window, mid-conve
 
 "That was my first instinct — it's a Nit. The mirror works. The seal works. The documentation just says 'near real-time' without quantifying it. But Elena pulled the spec back open on it."
 
-Elena slid her laptop around so Karen could see the page. She had §10.16 open. She read the severity-classification paragraph aloud, slowly:
+Elena slid her laptop around so Dawn could see the page. She had §10.16 open. She read the severity-classification paragraph aloud, slowly:
 
 > *"Imprecise lag wording in a runbook or CC8.1 control description is never a Nit. It is a non-conformance and MUST be classified by the engagement team as such. Auditor reports, examiner workpapers, SOC 2 engagement findings, and internal-audit reports MUST NOT downgrade this finding to a Nit, a documentation observation, or a recommendation."*
 
@@ -510,23 +510,23 @@ She closed the laptop halfway.
 
 "It's not a Nit," Elena said. "Per §10.16, it's a non-conformance. The wording IS the testable claim. The runbook doesn't name the four numbers — median, 95th-percentile SLO, alerting threshold, RTO — so there's nothing for me to test the connector against. The mirror could be running at a 90-second 95th-percentile lag or at a 9-second one. Without the runbook naming the bound, I can't tell. That's the violation."
 
-Karen said, "The §10.16 severity-classification clause is normative. We don't have discretion to downgrade it."
+Dawn said, "The §10.16 severity-classification clause is normative. We don't have discretion to downgrade it."
 
 "We don't."
 
-Karen walked to the whiteboard and wrote: *Finding-001 — non-conformance per §10.16.* Underneath, a smaller line: *It never is.*
+Dawn walked to the whiteboard and wrote: *Finding-001 — non-conformance per §10.16.* Underneath, a smaller line: *It never is.*
 
-Karen looked at Marcus. "Your CAE liaison just told my internal-audit liaison we have zero Gaps at noon. We have one non-conformance, and §10.16 says we have to call it that."
+Dawn looked at Marcus. "Your CAE liaison just told my internal-audit liaison we have zero Gaps at noon. We have one non-conformance, and §10.16 says we have to call it that."
 
 Marcus said, "It's noon. There's still time. And I'd rather hear it now than at the readout."
 
-Karen laughed. She actually laughed. She hadn't laughed during a workpaper-week since 2024.
+Dawn laughed. She actually laughed. She hadn't laughed during a workpaper-week since 2024.
 
 She took a sandwich. She sat down. She looked at Raj across the table.
 
 Raj said, "Two coffees."
 
-"Two coffees," Karen agreed.
+"Two coffees," Dawn agreed.
 
 ---
 
@@ -669,11 +669,11 @@ Luis went first. He wanted to know what the Herald Core retention story looked l
 >
 > Log retention is enforced by S3 object lock in compliance mode, not by IAM convention. The storage account has a separate trust boundary from the application account. No principal — including either account root — can delete or mutate sealed chain entries within the retention window.
 
-Luis closed his laptop. He looked at Karen.
+Luis closed his laptop. He looked at Dawn.
 
 "That's the thing the last bank could not show me."
 
-Karen nodded.
+Dawn nodded.
 
 Luis went on. "I want to see one more thing. The CloudWatch retention story for non-Herald operational logs. Application logs, infrastructure logs, the stuff that *isn't* the chain but lives next to it."
 
@@ -779,7 +779,7 @@ He moved the stylus.
 
 "`audit.connector_source.lag_observed_ms=1358` — meaning 1.358 seconds elapsed between Salesforce's commit and the chain entry's MAC computation. That aggregates into the §10.16 `connector.lag_observation` operational event the institution emits on a separate cadence. The 1.358 seconds is well inside the §10.16 lag bound the bank published in CC8.1 per §10.18 cross-referencing."
 
-Karen wrote down: *§4.4.6 — six normative connector_source attributes; §10.16 lag bound published; §10.18 CC8.1 cross-references the bound.*
+Dawn wrote down: *§4.4.6 — six normative connector_source attributes; §10.16 lag bound published; §10.18 CC8.1 cross-references the bound.*
 
 Marcus moved the stylus again.
 
@@ -789,7 +789,7 @@ Marcus moved the stylus again.
 
 "— makes the source unambiguous. `ffiec.chain.tenant_id="northbridge-bank-prod"` plus `service.name="northbridge-sf-mirror"` says: this entry was written by the Salesforce mirror connector running under the production-bank tenant, not by some other Northbridge process. The Wealth subsidiary's connector would write under `northbridge-wealth-prod`. They don't overlap. They can't overlap — the IKM generations are different, so the MACs wouldn't validate cross-tenant."
 
-Karen's pen had not stopped moving. She had a different question.
+Dawn's pen had not stopped moving. She had a different question.
 
 "What if Salesforce silently drops a CDC event? The chain wouldn't see it."
 
@@ -1042,7 +1042,7 @@ Marcus continued.
 
 "On flush — when the SDK ships a batch to the ledger — the ledger does a cross-check. The SDK declares its claimed `prev_hash` for the batch's first entry. The ledger compares against its own last-known `payload_hash` for `(tenant_id, run_id)`. Mismatch, ledger refuses with a named reason. Per §10.25 ledger ingestion cross-check, in concert with the §7 step 6 / step 9 verifier discipline — the spec calls it `expected_prev_hash` discipline because the verifier walks the chain link from the previous entry's `payload_hash`, not from the entry's claimed `prev_hash`. The SDK can't unilaterally claim continuity; the ledger has to agree."
 
-Karen looked up. "What if two connector processes try to write to the same run at once?"
+Dawn looked up. "What if two connector processes try to write to the same run at once?"
 
 "§10.25 single-writer-per-run rule. The SDK uses a cross-platform file lock — `RunWriterLock` in `herald._run_lock` — that fails the second one with a hard refusal, not a best-effort warning. The application layer is responsible for one-process-per-run. The SDK enforces it locally so the second process can't even open the run, and the ledger enforces it remotely because the prev_hash disagreement at flush would surface anyway. Two layers of defense, both named in §10.25."
 
@@ -1075,11 +1075,11 @@ Luis asked the next question.
 
 Luis was nodding. He wrote: *genesis-block anti-spoof — fork shows up in two places.*
 
-Karen asked: "Is the SDK source open?"
+Dawn asked: "Is the SDK source open?"
 
 Marcus said, "Vidimus is Apache 2.0 open source. The state-management code is in `herald/_buffer.py` and `herald/_runtime.py`. Anyone — your team included — can audit the resume logic. The repo is on GitHub."
 
-Karen wrote that down. *SDK is OSS. Resume logic is auditable.*
+Dawn wrote that down. *SDK is OSS. Resume logic is auditable.*
 
 She stared at the line for a moment.
 
@@ -1115,7 +1115,7 @@ Chen paused.
 
 "One," Marcus said. "March 17. A connector retry storm produced duplicate Salesforce mirror events. The deduplication ran inside the chain — every duplicate was captured, every dedup decision was a sealed event. The audit trail of the dedup is in the chain. No data was lost. No data was silently dropped. I have the incident report."
 
-He slid a folder across the table. Karen flipped it open. The incident report referenced 14 sealed chain entries by `entry_id`. She picked one at random and ran the verifier.
+He slid a folder across the table. Dawn flipped it open. The incident report referenced 14 sealed chain entries by `entry_id`. She picked one at random and ran the verifier.
 
 PASS. Step: 12. 1.2 seconds.
 
@@ -1137,7 +1137,7 @@ Chen nodded slowly. "I want that pattern in my notes."
 
 ## 📊 3:00 PM — Reconciliation Test
 
-Karen wanted to do the reconciliation test herself. This was her usual test, the one she always ran on chain-of-custody systems, and it was where most systems folded.
+Dawn wanted to do the reconciliation test herself. This was her usual test, the one she always ran on chain-of-custody systems, and it was where most systems folded.
 
 She picked a sample window — 1,000 customer interactions across a single business day from the prior quarter. She asked Marcus for two things:
 
@@ -1150,7 +1150,7 @@ The diff returned zero.
 
 Not "zero meaningful." Zero. Every event in the operational view had a sealed chain entry. Every sealed chain entry had a corresponding operational event. Timestamps matched within the documented capture latency. Payloads matched byte-for-byte after JCS canonicalization.
 
-Karen ran the diff again with a different sample. 5,000 events this time, randomly selected from across the prior twelve months.
+Dawn ran the diff again with a different sample. 5,000 events this time, randomly selected from across the prior twelve months.
 
 Zero.
 
@@ -1174,13 +1174,13 @@ She looked up at Marcus.
 
 "I told the FDIC. I showed them the chain entries for the disagreement and the reconciliation. They closed the MRA on time."
 
-Karen wrote: *FDIC saw the lag window during MRA close. Closed anyway. The non-conformance I'm about to write is not new information to the regulator — but §10.16 still requires us to classify the runbook wording as non-conformant.*
+Dawn wrote: *FDIC saw the lag window during MRA close. Closed anyway. The non-conformance I'm about to write is not new information to the regulator — but §10.16 still requires us to classify the runbook wording as non-conformant.*
 
 > ### ✓ Confirmation #9 — Operational and chain views reconcile to zero
 >
 > Three independent samples (1,000 events, 5,000 events, and a known-noisy-day sample) reconciled byte-for-byte between the operational system view and the Herald Core chain. Latency offsets were within the documented capture window. Dedup events were visible and traceable.
 
-Karen put her pen down.
+Dawn put her pen down.
 
 "Marcus, when did this go in?"
 
@@ -1190,13 +1190,13 @@ Karen put her pen down.
 
 "The MRA was the trigger. The procurement was already in flight. The MRA accelerated it by about a quarter."
 
-Karen made a note. *NB-prior-MRA closed cleanly. This is the verification revisit. Verification holds.*
+Dawn made a note. *NB-prior-MRA closed cleanly. This is the verification revisit. Verification holds.*
 
 ---
 
 ## 🛡️ 3:20 PM — Silent-Restart Attack Demo
 
-Karen had a question that had been sitting in the back of her notepad since the §10.25 walkthrough. She wanted to ask it directly.
+Dawn had a question that had been sitting in the back of her notepad since the §10.25 walkthrough. She wanted to ask it directly.
 
 "Marcus. Walk me through a specific attack. What stops someone with chain-write access from silently restarting this chain at `seq=1` to hide entries? Pick a privileged engineer at the bank. Pick yourself. You decide yesterday's bad assignment shouldn't exist. Can you re-emit a fresh `seq=1` for the same `(tenant_id, run_id)` and orphan the prior entries?"
 
@@ -1226,7 +1226,7 @@ HeraldComplianceErrorCodes (Herald.Compliance, plugin range 5000+)
   5063  ForkDetected                  — verifier-side, §10.25 fork detection
 ```
 
-Karen wrote on her notepad. *Five-thousand range. Compliance plugin. Stable across point releases per the catalog header.*
+Dawn wrote on her notepad. *Five-thousand range. Compliance plugin. Stable across point releases per the catalog header.*
 
 Then she said: "Demo it."
 
@@ -1234,7 +1234,7 @@ Marcus didn't smile. He nodded at Greg.
 
 "Sandbox tenant," Greg said. "Spinning it up."
 
-The second screen split into three panes — SDK side (Python REPL), sink side (C# log stream), verifier side (PowerShell on Karen's laptop). Greg loaded a small fixture chain into the sandbox, three entries deep.
+The second screen split into three panes — SDK side (Python REPL), sink side (C# log stream), verifier side (PowerShell on Dawn's laptop). Greg loaded a small fixture chain into the sandbox, three entries deep.
 
 He turned to Marcus.
 
@@ -1319,7 +1319,7 @@ He moved to the sink side. He pre-staged a tampered chain file containing a legi
 
 Marcus said: "Layer two — sink refuses at file-open time. The sink reads the existing tail before allowing any write. The §4.4 normative reason string is byte-for-byte the spec's: `genesis already established for (tenant=T, run=R): refusing duplicate genesis`."
 
-He moved to the third pane. Karen pulled the deliberately corrupted chain file off the sandbox — a chain whose 5th entry on disk had `prev_hash = 32 zero bytes` baked into it (constructed by hand for this demo, not produced by the SDK or the sink).
+He moved to the third pane. Dawn pulled the deliberately corrupted chain file off the sandbox — a chain whose 5th entry on disk had `prev_hash = 32 zero bytes` baked into it (constructed by hand for this demo, not produced by the SDK or the sink).
 
 ```
 herald-verify --tenant=sandbox-demo --chain-file=corrupted.chain --strict
@@ -1337,7 +1337,7 @@ Elapsed: 0.3s
 
 Marcus said: "Layer three — verifier refuses on the walk. Same `5060 GenesisFormAtNonGenesisSeq` error code, same §4.4 named reason. The verifier never trusts the writer's claimed `prev_hash` per §7 step 9 `expected_prev_hash` discipline; the genesis-form bytes can't sneak past."
 
-Karen ran the same fixture on her personal laptop using the open-source `herald-verify` she'd already pulled.
+Dawn ran the same fixture on her personal laptop using the open-source `herald-verify` she'd already pulled.
 
 ```
 Status: FAIL
@@ -1364,13 +1364,13 @@ She turned around.
 
 "SDK is the Vidimus team. Sink and verifier are the TesseraSeal team — different repo, different code review process, different release cadence. The spec is the working group. Three different communities; three different change paths. A coordinated tampering would have to fool all three independently. That's the §1.4 compositional security argument made operational."
 
-Karen wrote: *§1.4 compositional security — three independent code paths under three independent ownership models.*
+Dawn wrote: *§1.4 compositional security — three independent code paths under three independent ownership models.*
 
 > ### ✓ Confirmation #10 — Silent-restart attack closed at three independent layers
 >
-> Marcus demonstrated the silent-restart attack class against a sandbox tenant. The Vidimus SDK refused at seed time and at emit time per §4.4 emission-time anti-spoof. The TesseraSeal C# sink refused at file open via `ImmutableAuditFileSink.LoadResumeStateIfFileExists`, raising `HeraldComplianceErrorCode 5061 DuplicateGenesisAttempt` with the §4.4 normative reason string. The TesseraSeal C# verifier refused on a hand-constructed corrupted file, raising `HeraldComplianceErrorCode 5060 GenesisFormAtNonGenesisSeq` per §4.4 + §7 step 6. Karen reproduced the verifier refusal on her personal laptop with the open-source `herald-verify` — same exit code, same normative reason. The §1.4 compositional-security argument is operational: three independent code paths, three independent owning teams, all citing the same spec section.
+> Marcus demonstrated the silent-restart attack class against a sandbox tenant. The Vidimus SDK refused at seed time and at emit time per §4.4 emission-time anti-spoof. The TesseraSeal C# sink refused at file open via `ImmutableAuditFileSink.LoadResumeStateIfFileExists`, raising `HeraldComplianceErrorCode 5061 DuplicateGenesisAttempt` with the §4.4 normative reason string. The TesseraSeal C# verifier refused on a hand-constructed corrupted file, raising `HeraldComplianceErrorCode 5060 GenesisFormAtNonGenesisSeq` per §4.4 + §7 step 6. Dawn reproduced the verifier refusal on her personal laptop with the open-source `herald-verify` — same exit code, same normative reason. The §1.4 compositional-security argument is operational: three independent code paths, three independent owning teams, all citing the same spec section.
 
-Karen sat down.
+Dawn sat down.
 
 *It never is*, she thought. *Except today, the three layers are owned by three different teams, and they all refuse the same attack with the same spec citation.*
 
@@ -1378,7 +1378,7 @@ Karen sat down.
 
 ## 😬 3:45 PM — The Friction Builds (In a New Direction)
 
-Karen wanted to push harder. She had a half-formed sense that something was off — not because she had found anything, but because she hadn't found anything, and her professional instinct was that this was the time things broke.
+Dawn wanted to push harder. She had a half-formed sense that something was off — not because she had found anything, but because she hadn't found anything, and her professional instinct was that this was the time things broke.
 
 "Marcus, can you pull in the SRE on-call? I want to watch a seal happen live."
 
@@ -1409,7 +1409,7 @@ Greg hit two keys. A job kicked off. The team watched the log stream.
 
 Greg said, "Verifier?"
 
-Karen ran:
+Dawn ran:
 
 ```
 herald-verify --tenant=northbridge --seal-id=ce_8b1c... --strict
@@ -1431,7 +1431,7 @@ Greg stood up.
 
 "Anything else?"
 
-"No," Karen said.
+"No," Dawn said.
 
 "Cool."
 
@@ -1453,7 +1453,7 @@ Tom nodded. He wasn't sweating. He was, by his own internal measurement, pleased
 
 ## 🔍 4:30 PM — Final Stress Test
 
-Karen wanted to break it. Not because she thought she could, but because she wanted to know what it felt like to try.
+Dawn wanted to break it. Not because she thought she could, but because she wanted to know what it felt like to try.
 
 "Pick me ten random entries. Across eighteen months. Different event classes. Different regions. Different customers."
 
@@ -1472,7 +1472,7 @@ ce_6d9a31... (2026-01-03, AI advisor, region=us-east-1)
 ce_f04e8b... (2025-11-27, API call, region=us-west-2)
 ```
 
-Karen ran the verifier on each one.
+Dawn ran the verifier on each one.
 
 ```
 herald-verify --entry-id=ce_3a8f1d... --strict
@@ -1493,7 +1493,7 @@ She kept going. She ran all ten.
 
 Ten passes. Average 4 seconds. The longest one was 4.4 seconds (the 2024 entry, which had to walk further back in the chain).
 
-Karen raised an eyebrow. Genuine, not theatrical.
+Dawn raised an eyebrow. Genuine, not theatrical.
 
 She picked an eleventh, off-script. A random entry from the day of a known incident — March 17, 2026, the connector retry storm.
 
@@ -1505,7 +1505,7 @@ PASS. PASS. The verifier handled the key rotation transparently — both entries
 
 > ### ✓ Confirmation #12 — Verifier handles signing-key rotations transparently
 >
-> Quarterly key rotation events are themselves sealed chain entries per §10.10 (rotation crossing the seal boundary). The verifier resolves the correct signing-key fingerprint per entry based on seal-date metadata. Cross-rotation verification works without any operator intervention. Karen sampled both sides of a Q1→Q2 rotation boundary; both passed. Northbridge operates single-algorithm Ed25519 today; §4.3.2 names the dual-algorithm transitional posture for post-quantum migration (Ed25519 co-signed with a NIST PQC algorithm), and the verifier already dispatches on the seal record's `signatures` list when a dual-algorithm seal lands.
+> Quarterly key rotation events are themselves sealed chain entries per §10.10 (rotation crossing the seal boundary). The verifier resolves the correct signing-key fingerprint per entry based on seal-date metadata. Cross-rotation verification works without any operator intervention. Dawn sampled both sides of a Q1→Q2 rotation boundary; both passed. Northbridge operates single-algorithm Ed25519 today; §4.3.2 names the dual-algorithm transitional posture for post-quantum migration (Ed25519 co-signed with a NIST PQC algorithm), and the verifier already dispatches on the seal record's `signatures` list when a dual-algorithm seal lands.
 
 She picked a thirteenth — a deliberately torturous one. An entry from a tenant-binding label that she couldn't find in the public registry.
 
@@ -1521,7 +1521,7 @@ Reason: tenant binding label not resolvable.
         Procedure could not begin.
 ```
 
-Karen looked up.
+Dawn looked up.
 
 "Why exit 1 and not exit 3?"
 
@@ -1533,7 +1533,7 @@ Karen looked up.
 
 "Fair. Show me the test fixture."
 
-Marcus pulled up the spec test vectors. The exit-3 fixture was there. Karen ran the verifier against the fixture.
+Marcus pulled up the spec test vectors. The exit-3 fixture was there. Dawn ran the verifier against the fixture.
 
 ```
 Status: FAIL
@@ -1545,7 +1545,7 @@ Reason: chain anomaly detected. prev_hash mismatch
 
 > ### ✓ Confirmation #13 — Verifier exit codes are meaningfully distinct
 >
-> Exit 0 (PASS), exit 1 (procedure-could-not-begin), exit 2 (procedure-began-and-failed), exit 3 (chain-anomaly) are all reachable and meaningfully distinct. Karen exercised exit 0, exit 1 against a deprecated-tenant entry, and exit 3 against the spec test vector.
+> Exit 0 (PASS), exit 1 (procedure-could-not-begin), exit 2 (procedure-began-and-failed), exit 3 (chain-anomaly) are all reachable and meaningfully distinct. Dawn exercised exit 0, exit 1 against a deprecated-tenant entry, and exit 3 against the spec test vector.
 
 She closed the laptop.
 
@@ -1577,9 +1577,9 @@ She closed her personal laptop.
 
 > ### ✓ Confirmation #14 — Seal verification works with zero Northbridge-side trust
 >
-> Karen ran the standalone verifier on her personal laptop using only the published Ed25519 public-key fingerprint and a seal record pulled from the public TesseraSeal surface. Verification passed in 2.4 seconds. No Northbridge credentials were used at any layer of the verification path. This is the assurance property that makes the system useful to a regulator who has not personally inspected the bank's infrastructure.
+> Dawn ran the standalone verifier on her personal laptop using only the published Ed25519 public-key fingerprint and a seal record pulled from the public TesseraSeal surface. Verification passed in 2.4 seconds. No Northbridge credentials were used at any layer of the verification path. This is the assurance property that makes the system useful to a regulator who has not personally inspected the bank's infrastructure.
 
-Karen wasn't done.
+Dawn wasn't done.
 
 "One more attack. Show me what happens if I claim there are TWO chains for the same `(tenant_id, run_id)`. A fork. I'm a privileged engineer with ledger storage write access; I synthesize a parallel chain file claiming the same run identity. Both files have valid genesis blocks, both pass the per-event MAC, both have a sealed Merkle root. What does the verifier do when it sees them?"
 
@@ -1610,7 +1610,7 @@ Affected:
 Elapsed: 0.4s
 ```
 
-Karen ran the same fixture on her personal laptop with the open-source verifier:
+Dawn ran the same fixture on her personal laptop with the open-source verifier:
 
 ```
 Status: FORK DETECTED
@@ -1625,7 +1625,7 @@ Same exit code. Same §10.25 reason. No Northbridge-side trust required.
 
 Marcus said: "Under non-strict the verifier walks both branches and reports each separately, so the institution's IR program has the data to disambiguate which branch is the legitimate one. Under `--strict` the verifier refuses both — it won't pick a branch on its own. The disambiguation is human work and IR-program work; the verifier just surfaces the fork."
 
-Karen wrote on the whiteboard, under the silent-restart line:
+Dawn wrote on the whiteboard, under the silent-restart line:
 
 ```
 FORK DETECTION — verifier flags duplicate (tenant_id, run_id)
@@ -1634,11 +1634,11 @@ FORK DETECTION — verifier flags duplicate (tenant_id, run_id)
 
 > ### ✓ Confirmation #15 — Verifier detects duplicate (tenant_id, run_id) and refuses to silently pick a branch
 >
-> Marcus pre-staged two chain files for the same `(tenant_id, run_id)` in the sandbox — both internally consistent, both passing the per-event MAC walk in isolation. Karen ran `herald-verify --detect-forks` on the directory; the verifier reported `Status: FORK DETECTED` with `HeraldComplianceErrorCode 5063 ForkDetected` and the §10.25 normative reason `duplicate (tenant_id, run_id) detected: two chain files claim the same run identifier — possible fork or unauthorized duplicate genesis`. Under `--strict` the verifier refused to walk either branch. Karen reproduced the result on her personal laptop with the open-source verifier — same exit code 3, same reason. Fork detection is the verifier's responsibility per §10.25 and is not contingent on any institution-side privilege.
+> Marcus pre-staged two chain files for the same `(tenant_id, run_id)` in the sandbox — both internally consistent, both passing the per-event MAC walk in isolation. Dawn ran `herald-verify --detect-forks` on the directory; the verifier reported `Status: FORK DETECTED` with `HeraldComplianceErrorCode 5063 ForkDetected` and the §10.25 normative reason `duplicate (tenant_id, run_id) detected: two chain files claim the same run identifier — possible fork or unauthorized duplicate genesis`. Under `--strict` the verifier refused to walk either branch. Dawn reproduced the result on her personal laptop with the open-source verifier — same exit code 3, same reason. Fork detection is the verifier's responsibility per §10.25 and is not contingent on any institution-side privilege.
 
 Tom had been watching the standalone-verifier run from the next chair. He had a question.
 
-"How is `herald-verify` distributed?" he said. "Where did Karen pull that binary from? If a future examiner is going to download it cold, what does that path look like?"
+"How is `herald-verify` distributed?" he said. "Where did Dawn pull that binary from? If a future examiner is going to download it cold, what does that path look like?"
 
 Marcus said, "§10.26 — Reference verifier distribution. The spec normates the distribution discipline now, not just the implementation behavior. Separate repo from the spec. `github.com/<vendor>/herald-verify`. Go binary, Apache 2.0, reproducible builds. Each release ships Linux, macOS, and Windows binaries plus a manifest of SHA-256 and SHA-512 hashes, Cosign signatures tied to a published public key — sigstore.dev — a CycloneDX-format SBOM, and a source tarball. An examiner downloads from GitHub Releases, verifies the Cosign signature against the published key, runs the binary. No connection to Northbridge required at any stage."
 
@@ -1650,7 +1650,7 @@ Tom was writing. He underlined something.
 
 *Verifier is OSS, separate repo, Cosign-signed releases.*
 
-Karen asked the question Tom had been about to ask.
+Dawn asked the question Tom had been about to ask.
 
 "Why isn't the verifier in the spec repo? Wouldn't that be simpler — one place, one download?"
 
@@ -1672,7 +1672,7 @@ He pulled up §10.26 on the screen and read the first paragraph aloud.
 
 Tom wrote on his notepad, next to "verifier OSS, separate repo": *§10.26 — distribution discipline is normative; CC8.1 cites implementation + version + verification key.*
 
-Karen nodded slowly. *That's the right separation.*
+Dawn nodded slowly. *That's the right separation.*
 
 She thought about it for another beat.
 
@@ -1686,7 +1686,7 @@ Tom finished writing.
 
 > ### ✓ Confirmation #16 — Verifier is OSS, distributed separately, signed at release
 >
-> `herald-verify` lives in its own GitHub repo, Apache 2.0 licensed, reproducible builds, Cosign-signed releases tied to a published public key. The examiner's trust path is download → cosign-verify → run. No Northbridge-side credential, no spec-repo dependency. The spec at `github.com/ffiec-chain-spec/spec` references the verifier as the reference implementation but does not bundle it. Karen and Tom independently agreed on the rationale for the separation — different licenses, different change cadences, different trust channels, and a clean handover path when the spec transfers to FFIEC's repo.
+> `herald-verify` lives in its own GitHub repo, Apache 2.0 licensed, reproducible builds, Cosign-signed releases tied to a published public key. The examiner's trust path is download → cosign-verify → run. No Northbridge-side credential, no spec-repo dependency. The spec at `github.com/ffiec-chain-spec/spec` references the verifier as the reference implementation but does not bundle it. Dawn and Tom independently agreed on the rationale for the separation — different licenses, different change cadences, different trust channels, and a clean handover path when the spec transfers to FFIEC's repo.
 
 "Tom," she said. "Are we done?"
 
@@ -1698,7 +1698,7 @@ Tom finished writing.
 
 The team gathered in the engagement room. Marcus had stepped out to give them privacy. Tom closed the door.
 
-Karen wrote on the whiteboard.
+Dawn wrote on the whiteboard.
 
 ```
 Gaps:             0
@@ -1747,7 +1747,7 @@ Tom said, "I told Marcus we'd have a draft report to him by end of day tomorrow.
 
 Tom added, "He also asked me whether the report was something he could share with his board's risk committee verbatim or whether he'd need to summarize it. I told him verbatim is fine. The verifier outputs speak for themselves. He was visibly relieved — apparently last quarter's vendor risk review of a different system left them with a 40-page document the committee couldn't follow."
 
-Karen looked at the whiteboard.
+Dawn looked at the whiteboard.
 
 "Last week I wrote a report with twelve Gaps and four Material Findings. This week I'm writing a report with zero Gaps, zero Partials, and one non-conformance. The bank has one outstanding item to remediate before the next engagement cycle, and §10.16 tells us exactly how to classify it."
 
@@ -1757,15 +1757,15 @@ She paused.
 
 Tom nodded.
 
-"One more thing," Karen said. "When the FFIEC examiners come back next year, this report should still be useful to them. I want the workpapers to include the verifier outputs we collected. Marcus already pulled a SOC 2 evidence pack for us — let's reference it as Appendix A. Spec version v1.0a. Public-key fingerprint as of engagement date. Sample entry IDs. Finding-001 with the §10.16 citation, classified as non-conformance, with the remediation deadline written next to it. That's the report."
+"One more thing," Dawn said. "When the FFIEC examiners come back next year, this report should still be useful to them. I want the workpapers to include the verifier outputs we collected. Marcus already pulled a SOC 2 evidence pack for us — let's reference it as Appendix A. Spec version v1.0a. Public-key fingerprint as of engagement date. Sample entry IDs. Finding-001 with the §10.16 citation, classified as non-conformance, with the remediation deadline written next to it. That's the report."
 
-Karen capped her marker.
+Dawn capped her marker.
 
 "One last thing for the workpapers. Tom, I want a paragraph in the cover memo about what 'verification revisit' meant in this engagement. Specifically: the prior-year MRA closed cleanly two quarters ago. This engagement was scoped to confirm the close held. It held. The control environment we examined today is materially the same as the one the MRA close report described. That is what we wrote down. We did not find new control degradation. We did not find drift."
 
 Tom wrote.
 
-"And Karen?"
+"And Dawn?"
 
 "Mm."
 
@@ -1775,7 +1775,7 @@ Tom wrote.
 
 Tom nodded.
 
-Karen capped her marker again, then opened her notepad. She flipped back to the first page.
+Dawn capped her marker again, then opened her notepad. She flipped back to the first page.
 
 "One more thing while we're still in the room."
 
@@ -1791,7 +1791,7 @@ Tom flipped through his notebook. He stopped on a page he'd written at lunch.
 
 Raj said, quietly, "Tessera."
 
-Karen looked over.
+Dawn looked over.
 
 "Roman token of admission," Raj said. "A soldier carried a *tessera frumentaria* to claim grain rations. Tally-stick, signed, proof of identity. The word also covers the small tiles in mosaic work. Token, tile, tally. Plus 'seal' — the cryptographic signature. Token-and-seal evidence system."
 
@@ -1799,7 +1799,7 @@ Marcus had stepped back into the room a few minutes earlier with coffee for the 
 
 He said, calmly, "Marketing chose them. They fit what the product does. Vidimus captures — *we have seen*. TesseraSeal binds the captures into a token-and-seal evidence system. Herald Core is the underlying logging engine — that name is engineering, not marketing. The marketing line is 'TesseraSeal — Powered By Vidimus.' I'm not going to make you repeat it."
 
-Karen looked at the whiteboard. Zero Gaps. Zero Partials. One non-conformance, classified per §10.16. The verifier output Marcus had pulled at 11 AM — exit code 0, 1.2 seconds, 47-line trace. The seal she'd verified on her personal laptop at 4:30 PM — `Status: PASS`, 2.4 seconds, no Northbridge credentials at any layer.
+Dawn looked at the whiteboard. Zero Gaps. Zero Partials. One non-conformance, classified per §10.16. The verifier output Marcus had pulled at 11 AM — exit code 0, 1.2 seconds, 47-line trace. The seal she'd verified on her personal laptop at 4:30 PM — `Status: PASS`, 2.4 seconds, no Northbridge credentials at any layer.
 
 "And we have," she said. "Byte-for-byte. Eight hours of it. The chain captured what the AI said. What the agent did. What IAM granted. What the connector mirrored. *Vidimus* — we have seen — and we did. The seal we recomputed off the public page matched what was published. Tessera plus seal — token-and-seal — and we exercised both halves of it."
 
@@ -1807,7 +1807,7 @@ She wrote one more line on her notepad, under the morning's *TesseraSeal — ver
 
 Tom said, "First time I've heard you say that."
 
-"It never is," Karen said. *Except sometimes the marketing department gets a Latin dictionary and picks the right word.*
+"It never is," Dawn said. *Except sometimes the marketing department gets a Latin dictionary and picks the right word.*
 
 Mike said, "He didn't oversell them. He said marketing chose the names but they fit. He was right."
 
@@ -1821,7 +1821,7 @@ Raj stopped at the door.
 
 "You owe me two coffees."
 
-"I'll buy you four," Karen said. "You earned the headache."
+"I'll buy you four," Dawn said. "You earned the headache."
 
 Raj said, "I didn't have a headache today."
 

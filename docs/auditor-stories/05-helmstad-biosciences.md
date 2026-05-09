@@ -4,7 +4,7 @@
 **Client:** Helmstad BioSciences — mid-size oncology biopharma, Cambridge, MA, ~$1.2B revenue, ~380 employees, two Phase III trials in progress, four Phase II, plus a discovery pipeline
 **Status:** TesseraSeal live on the AI clinical-trial-eligibility screening tool for 4 months. Everything else is legacy.
 **Date:** Tuesday, the week after Atrio
-**Audit team lead:** Karen
+**Audit team lead:** Dawn
 **Client liaison:** Dr. Matti Østergaard, VP of Quality and Regulatory Affairs
 **Trial in scope:** Phase II second-line therapy in metastatic NSCLC, ~280 enrolled patients across 12 sites in the US and EU
 
@@ -18,11 +18,11 @@ The chain itself is the v1.0b wire form — per-event HMAC-SHA-256 chain at capt
 
 Everything else at Helmstad runs on the same plumbing every other mid-size oncology sponsor runs on. Veeva Vault for QMS. A Medidata Rave EDC operated by the CRO. Argus for safety. Salesforce-based CTMS for site management. Email and SharePoint for everyday documents. Two CROs supply the data feeds — a global CRO for the Phase III programs and a specialty oncology CRO for the Phase II work. Where the chain doesn't extend, the regulatory record is built on tooling Helmstad does not own end-to-end. Spec §10.19 calls this surface a chain-coverage map, and Helmstad is supposed to publish one.
 
-Dr. Østergaard knows this. He has prepped for FDA inspections at three prior companies and has read the 483 letters from a half-dozen others. He picked the AI side first because the FDA's draft guidance on AI/ML in drug development told him to, the eligibility tool was the smallest blast radius that mattered, and four months was a realistic timeline. He wants Karen's team to run the BIMO readiness review like the inspector will run it in six weeks. Find the gaps. Name them. He will take the report into his pre-inspection prep meeting and decide which gaps get closed before the inspector arrives and which get explained.
+Dr. Østergaard knows this. He has prepped for FDA inspections at three prior companies and has read the 483 letters from a half-dozen others. He picked the AI side first because the FDA's draft guidance on AI/ML in drug development told him to, the eligibility tool was the smallest blast radius that mattered, and four months was a realistic timeline. He wants Dawn's team to run the BIMO readiness review like the inspector will run it in six weeks. Find the gaps. Name them. He will take the report into his pre-inspection prep meeting and decide which gaps get closed before the inspector arrives and which get explained.
 
 The Daubert grounding for the chain's evidentiary posture — testability of the §7 verification procedure, peer review of the spec, known error rate of the cryptographic primitives, general acceptance under FIPS standards — is in spec §1.1. The epistemic scope is in §1.2: the chain proves what the AI said and that the record was not tampered with after capture; the chain does NOT prove the AI's statement was clinically accurate, that the statement complied with FDA Quality System Regulation, or that the statement was free of bias. For an FDA Bioresearch Monitoring inspector reading 21 CFR Part 11 against the chain, the §1.2 line is load-bearing — the chain is the integrity foundation, not the truth foundation.
 
-This is the fourth audit Karen's team has done in four weeks. Last week was a multi-tenant BaaS platform — forty-seven tenants, fourteen hundred verifier runs, zero failures. The week before that was a specialty steel mill in northwest Indiana with three zones and three different posture grades. The week before that was a top-twenty health system that had sealed exactly one inference path and asked the audit to fund the rest. And the week before that was the gold standard.
+This is the fourth audit Dawn's team has done in four weeks. Last week was a multi-tenant BaaS platform — forty-seven tenants, fourteen hundred verifier runs, zero failures. The week before that was a specialty steel mill in northwest Indiana with three zones and three different posture grades. The week before that was a top-twenty health system that had sealed exactly one inference path and asked the audit to fund the rest. And the week before that was the gold standard.
 
 Today is the third bifurcated audit in four weeks. Different industry. Different inspector. Same shape.
 
@@ -44,7 +44,7 @@ Where the chain reached, the integrity foundation came from FFIEC-grade cryptogr
 
 | Name | Role |
 |---|---|
-| Karen | Lead Auditor — governance and narrative |
+| Dawn | Lead Auditor — governance and narrative |
 | Raj | Database specialist |
 | Elena | CRM systems |
 | Mike | Application / API layer |
@@ -57,23 +57,23 @@ Where the chain reached, the integrity foundation came from FFIEC-grade cryptogr
 
 ### 🌅 8:30 AM — Kickoff
 
-The drive in was twenty-five minutes from the hotel through Cambridge morning traffic. Karen had her coffee in the cup holder and the engagement brief on her tablet.
+The drive in was twenty-five minutes from the hotel through Cambridge morning traffic. Dawn had her coffee in the cup holder and the engagement brief on her tablet.
 
-Karen had stopped expecting another Northbridge. The cleanest engagement she had run in years was now five engagements back, and the team had quietly retired the assumption that it would repeat. Helmstad layered FDA Part 11 strict, clinical-trial-duration retention, and a CRO-supplied predictive model on top of a chain primitive the team had been working with for a month. The expectation on the drive in was *this will not be Northbridge*.
+Dawn had stopped expecting another Northbridge. The cleanest engagement she had run in years was now five engagements back, and the team had quietly retired the assumption that it would repeat. Helmstad layered FDA Part 11 strict, clinical-trial-duration retention, and a CRO-supplied predictive model on top of a chain primitive the team had been working with for a month. The expectation on the drive in was *this will not be Northbridge*.
 
 *Four bifurcated audits in five weeks*, she thought. *Different industries. Same architecture.*
 
-Northbridge had been the gold standard. TesseraSeal everywhere — every credit decision, every wire, every IAM change, every ETL job. The team had spent four days trying to find a gap and found a stale comment in a YAML file. Karen had driven home that day with the report half-written in her head and the rest of it dictated into her phone.
+Northbridge had been the gold standard. TesseraSeal everywhere — every credit decision, every wire, every IAM change, every ETL job. The team had spent four days trying to find a gap and found a stale comment in a YAML file. Dawn had driven home that day with the report half-written in her head and the rest of it dictated into her phone.
 
-Mercator had been the bifurcation introduced. AI imaging on the chain. Claims, billing, and the EHR off the chain. Patricia Okonkwo had asked the audit to draw the line cleanly so she could fund the next phase. The CAE had asked Karen to commit to language that would survive the board read. Karen had given him the language and watched him write it down word for word.
+Mercator had been the bifurcation introduced. AI imaging on the chain. Claims, billing, and the EHR off the chain. Patricia Okonkwo had asked the audit to draw the line cleanly so she could fund the next phase. The CAE had asked Dawn to commit to language that would survive the board read. Dawn had given him the language and watched him write it down word for word.
 
 Stelvio had been the three-zone version. AI vision QC on the chain. OT on the floor. IT business systems in the back office. Maria Costanza had wanted the report to triage the gaps so the CFO could pick which zone to fund first. The audit had made the case for the OT zone. Maria had taken it to the CFO Friday.
 
-Atrio had been last week. A mid-size BaaS platform with forty-seven fintech-tenant programs running on the same TesseraSeal deployment. Multi-tenant chain with per-tenant Merkle roots and a cross-tenant exposure index that the audit had stressed-tested for fourteen hundred verifier runs across two-hundred-and-eighty days of randomly selected dates and not produced a single FAIL. Karen had driven home from Atrio with a quiet confidence she wasn't sure she had felt before. The platform-vendor pattern wasn't theoretical anymore. It worked.
+Atrio had been last week. A mid-size BaaS platform with forty-seven fintech-tenant programs running on the same TesseraSeal deployment. Multi-tenant chain with per-tenant Merkle roots and a cross-tenant exposure index that the audit had stressed-tested for fourteen hundred verifier runs across two-hundred-and-eighty days of randomly selected dates and not produced a single FAIL. Dawn had driven home from Atrio with a quiet confidence she wasn't sure she had felt before. The platform-vendor pattern wasn't theoretical anymore. It worked.
 
 Today was Helmstad. Mid-size oncology biopharma. AI eligibility tool sealed. Everything else legacy. FDA BIMO inspection in six weeks.
 
-*It never is*, Karen thought. *But sometimes the part that's chained is the part that decides, and that's enough — until the FDA inspector asks how the inputs got to the chain.*
+*It never is*, Dawn thought. *But sometimes the part that's chained is the part that decides, and that's enough — until the FDA inspector asks how the inputs got to the chain.*
 
 She elaborated to herself as she pulled into the visitor lot off Kendall Square. The Mercator pattern was the closest precedent. Different regulator, different stakes, but the same architectural shape: AI side sealed, source side legacy, boundary at the vendor handoff. The difference was that the FDA inspector who would walk Helmstad in six weeks was a Bioresearch Monitoring inspector with a checklist that included 21 CFR Part 11, ALCOA+, ICH E6(R3), and the new AI/ML draft guidance. The HIPAA auditor had been the regulator at Mercator. The FDA inspector at Helmstad would ask sharper questions about source-of-truth. *Plaintiff bar versus FDA inspector*, she thought. *Different motivations, similar reads.*
 
@@ -89,13 +89,13 @@ He tapped the system map.
 
 "This is what I want from you. The AI side I am reasonably confident about — it has been live for four months and the engineers have been disciplined. The legacy side I want you to look at the way the FDA inspector will look at it. Find what they will find. Tell me what to fix in the next six weeks and what to explain. I would rather hear it from you in May than from the inspector in June."
 
-Karen put her coffee down. "Thank you for being direct. It saves us a day."
+Dawn put her coffee down. "Thank you for being direct. It saves us a day."
 
 Tom — the visiting team's internal-audit liaison — had been on a call with Helmstad's Chief Quality Officer the day before. He nodded. "We agreed yesterday on the bifurcation framing. The CQO is supportive. He wants the report to come out as one assessment with the AI-side and legacy-side findings drawn in separate sections so the inspector can see the boundary."
 
 "Yes," Dr. Østergaard said. "That is what I want. Two sections. One report."
 
-Karen looked around the table at her team. "Okay. Morning is the AI side. Mike and Chen on point — Helmstad's engineers will walk you through the eligibility classifier. Diana, you will do the IAM split — both sides of the line. The line is what we are mapping. Afternoon is legacy. Raj on Argus and the lab database. Elena on the Salesforce CTMS. Luis on the CRO ingestion pipeline. Chen on the EDC extract handoff. We reconvene at three for the reconciliation test. Five-thirty debrief."
+Dawn looked around the table at her team. "Okay. Morning is the AI side. Mike and Chen on point — Helmstad's engineers will walk you through the eligibility classifier. Diana, you will do the IAM split — both sides of the line. The line is what we are mapping. Afternoon is legacy. Raj on Argus and the lab database. Elena on the Salesforce CTMS. Luis on the CRO ingestion pipeline. Chen on the EDC extract handoff. We reconvene at three for the reconciliation test. Five-thirty debrief."
 
 Dr. Østergaard nodded along. "The eligibility-tool team is expecting Mike and Chen at nine. Dr. Hannah Reisch — the lead clinical informaticist — built most of the chain integration herself with the platform team. She will not waste your time."
 
@@ -488,7 +488,7 @@ Diana wrote that down. *§10.23 Shape 1 — chain-anchored CUEC. Same posture pa
 
 The team gathered in a side conference room with sandwiches from the building's cafeteria. Tom was on the phone with the CQO. Dr. Østergaard had ducked out to a regulatory affairs huddle.
 
-Karen put her sandwich down before she'd taken a bite.
+Dawn put her sandwich down before she'd taken a bite.
 
 "Let's talk about the morning."
 
@@ -500,31 +500,31 @@ Diana: "AI service IAM is sealed under §10.10 rotation discipline. CRC IAM is S
 
 Raj: "I have the full Argus database review after lunch. Going in expecting what Diana described — DBA-mutable audit table, no integrity binding, no reconciliation. Same §10.3 architectural lesson."
 
-Karen: "Okay. Question. ALCOA+ has nine attributes. Walk me through the AI side. Attributable — yes, SSO subject bound under per-event MAC per §4.1. Legible — yes, captured JSON per §5.2 best-evidence posture. Contemporaneous — yes, the chain entry is within 200 ms of the decision; `captured_at` carries nanosecond precision per §4.4. Original — that's where I want to argue. Original on the AI side means the chain entry is the original record of what the model said, with §5.2 naming both the captured JSON (content-bearing form) and the canonical bytes (integrity-bearing form) as originals under FRE 1001(d). But the FDA cares about Original on the inputs. The candidate's lab values, the tumor staging, the prior-therapy history. Where does Original live on the inputs side?"
+Dawn: "Okay. Question. ALCOA+ has nine attributes. Walk me through the AI side. Attributable — yes, SSO subject bound under per-event MAC per §4.1. Legible — yes, captured JSON per §5.2 best-evidence posture. Contemporaneous — yes, the chain entry is within 200 ms of the decision; `captured_at` carries nanosecond precision per §4.4. Original — that's where I want to argue. Original on the AI side means the chain entry is the original record of what the model said, with §5.2 naming both the captured JSON (content-bearing form) and the canonical bytes (integrity-bearing form) as originals under FRE 1001(d). But the FDA cares about Original on the inputs. The candidate's lab values, the tumor staging, the prior-therapy history. Where does Original live on the inputs side?"
 
 The room got quiet for a beat.
 
 Mike: "The chain is the original record of what the AI saw. It is not the original record of what the EHR said before Quintessa touched it."
 
-Karen: "Exactly. Two different definitions of Original. Original-as-input-to-the-model and Original-as-source-of-truth. The chain handles the first cleanly. The CRO handles the second through their SOC 2 and their PGP signature on the SFTP delivery. The FDA inspector is going to ask which Original we are claiming."
+Dawn: "Exactly. Two different definitions of Original. Original-as-input-to-the-model and Original-as-source-of-truth. The chain handles the first cleanly. The CRO handles the second through their SOC 2 and their PGP signature on the SFTP delivery. The FDA inspector is going to ask which Original we are claiming."
 
 Tom, off the phone: "The CQO is asking me what I think the inspector will weight. I told him my read — the inspector will accept the model-side Original because the chain is convincing. They will push on the source-side Original, especially if there is a discrepancy in the trace."
 
 Chen: "There is going to be a discrepancy. There always is. The question is whether we find it before the inspector does."
 
-Karen tapped her pen on the table. "Tom — tell the CQO that the report will frame ALCOA+ as a per-attribute walk-through with the boundary called out for each attribute. Original gets two paragraphs. One for AI-output Original, which the chain handles. One for source-data Original, which Quintessa's SOC 2 handles. We are honest about the boundary."
+Dawn tapped her pen on the table. "Tom — tell the CQO that the report will frame ALCOA+ as a per-attribute walk-through with the boundary called out for each attribute. Original gets two paragraphs. One for AI-output Original, which the chain handles. One for source-data Original, which Quintessa's SOC 2 handles. We are honest about the boundary."
 
 Tom relayed it. He came off the call after a minute. "He is good with that framing."
 
 Diana: "Three more attributes I want to flag. Complete — the AI side is complete on what the chain captures, but the chain does not capture pre-screen exclusions that happen in the CRO's pipeline before the candidate ever reaches our classifier. So Complete on the AI side is complete-for-classified-candidates, not complete-for-all-screened-candidates — and again, §10.19 names that. Consistent — yes for the chain; per-event canonical bytes per RFC 8785 JCS plus chain-stamp preservation per §6 storage rules. Enduring — yes, the daily seal cadence per §4.2.1 and the daily Ed25519 signature on CloudHSM under FIPS 140-2 Level 3 per §10.5 mean the seal endures across rotations and key generations under §10.10. Trusted-time integration per §10.14 is RECOMMENDED but not REQUIRED for v1.0; we run NTP discipline per §10.4 and document it. Available — yes, TesseraSeal retrieval works in four seconds for a 90-day-old entry. We confirmed this morning."
 
-Karen: "Good. Write up the ALCOA+ walk for both sides. Boundary called out per attribute."
+Dawn: "Good. Write up the ALCOA+ walk for both sides. Boundary called out per attribute."
 
 Luis had been quiet. He looked up from his laptop.
 
 "I was reading their CRO ingestion runbook while you were all talking. The runbook section title is `Multi-Tenant Operations` — it doesn't cite spec §10.1, which is a §10.18 cross-referencing nit; I flagged it. The SFTP delivery from Quintessa lands in an S3 bucket. The bucket has versioning enabled and a 7-year retention lock. CloudTrail is enabled. The CloudTrail logs are written to a separate AWS account and the cross-account permissions are configured with an IAM role that the Helmstad SecOps team controls. The cross-account write path looks clean. The S3 bucket itself — the one that holds the Quintessa tarballs — is owned by the Helmstad data-engineering team. They have `s3:PutBucketLogging` permission. Three engineers."
 
-Karen put her sandwich down again.
+Dawn put her sandwich down again.
 
 "Three engineers can disable CloudTrail logging on the ingestion bucket."
 
@@ -534,15 +534,15 @@ Karen put her sandwich down again.
 
 "Yes. The chain catches the tampering at the recorded-hash layer. But the FDA inspector will ask why three engineers can disable CloudTrail at all. That is a separate finding — not a chain integrity finding, but an institutional-control completeness finding the §10.19 chain-coverage map should describe explicitly."
 
-Karen wrote it down. "Good catch. Nit-001 — coverage-map should name the CloudTrail-on-ingestion-bucket dependency under §10.19 category 1 (chain-instrumented institutional systems) with the three-engineer-bypass risk explicit."
+Dawn wrote it down. "Good catch. Nit-001 — coverage-map should name the CloudTrail-on-ingestion-bucket dependency under §10.19 category 1 (chain-instrumented institutional systems) with the three-engineer-bypass risk explicit."
 
 Tom, off the phone again: "The CQO asked one more question. He wants to know — between us — whether this assessment is going to recommend that Helmstad delay the FDA inspection."
 
-Karen looked at him.
+Dawn looked at him.
 
 "That is his question, not mine," Tom said.
 
-"That is a question for Dr. Østergaard," Karen said. "Not for us. Our job is the assessment."
+"That is a question for Dr. Østergaard," Dawn said. "Not for us. Our job is the assessment."
 
 The team finished lunch. Elena had already wandered off at 12:25 with the CTMS admin's calendar invite on her laptop. The rest of them rinsed coffee cups and walked back out to the engineering floor.
 
@@ -786,13 +786,13 @@ She walked back to the conference room. *Same answer. Different industry. Fourth
 
 ### 📊 3:00 PM — The Reconciliation Test
 
-Karen called the team together at 3 PM in the main conference room. Dr. Østergaard was back from his regulatory-affairs huddle. The CQO was on Zoom from the Boston office.
+Dawn called the team together at 3 PM in the main conference room. Dr. Østergaard was back from his regulatory-affairs huddle. The CQO was on Zoom from the Boston office.
 
-"We are going to pick five eligibility decisions at random and trace them end to end," Karen said. "Backwards from the chain entry to the CRO source. Forwards from the chain entry to enrollment and to the trial-visit data. The AI side is the chained side. Both ends are the legacy side. We are testing the boundary."
+"We are going to pick five eligibility decisions at random and trace them end to end," Dawn said. "Backwards from the chain entry to the CRO source. Forwards from the chain entry to enrollment and to the trial-visit data. The AI side is the chained side. Both ends are the legacy side. We are testing the boundary."
 
 Dr. Østergaard nodded. "Pick the five. I will not interfere."
 
-Karen turned to Mike. Mike pulled up the chain database in the conference room's projector and used a deterministic pseudo-random sampler — based on the date, seeded so the choice was reproducible — to select five decisions from the past 60 days. The sampler returned five entry IDs.
+Dawn turned to Mike. Mike pulled up the chain database in the conference room's projector and used a deterministic pseudo-random sampler — based on the date, seeded so the choice was reproducible — to select five decisions from the past 60 days. The sampler returned five entry IDs.
 
 ```
 nsclc-2026-04-02-mgh-00018
@@ -802,7 +802,7 @@ nsclc-2026-04-28-msd-00031
 nsclc-2026-05-03-stanford-00027
 ```
 
-"Run the verifier on all five," Karen said.
+"Run the verifier on all five," Dawn said.
 
 Mike ran the verifier on all five. Four seconds each. Five PASS results. Five times twelve verification steps each. Sixty steps. All clean. The §7 step 12a `gen_ai_model_identifier_missing` check fired and passed on each of the five — every entry carried both `gen_ai.request.model` and `gen_ai.response.model` non-empty per spec §4.4 and §7 step 12a normative requirement. Constant-time compare per §10.8 visible in the verifier source. Verifier exit code 0 on each per §10.12. The §10.25 run-resume contract had been exercised correctly — every entry's `prev_hash` linked to the previous entry's `payload_hash` walked structurally, no genesis-form entries at any `seq > 1` per §4.4 genesis-block uniqueness rule.
 
@@ -829,7 +829,7 @@ Mike ran witness-mode on each of the five sample entries. Five PASS-STRUCTURALLY
 
 > **The AI side under witness mode: 5 of 5 PASS-STRUCTURALLY. The inspector-facing verification path works.**
 
-"Now backwards," Karen said. "For each decision, find the CRO ingestion entry that brought the source data into our warehouse. Then ask Quintessa whether the source records are still on their side."
+"Now backwards," Dawn said. "For each decision, find the CRO ingestion entry that brought the source data into our warehouse. Then ask Quintessa whether the source records are still on their side."
 
 Chen took over. For each of the five entries, the CRO ingestion entry was straightforward to find — foreign key in the warehouse, sealed in a chain entry of type `cro-ingestion`. The PGP signature verified. The tarball SHA-256 matched. All five.
 
@@ -867,22 +867,22 @@ Marisol's third email, 14 minutes later: the correction had been propagated to Q
 
 Dr. Østergaard, very calmly: "We need to follow up on this patient. Today."
 
-Karen: "Yes. That is a clinical-quality issue, not an audit finding. The audit finding is that the screening pipeline does not have a re-screening loop for source-data corrections in the window between screening and enrollment. The chain proves what the classifier saw; the chain does not prove the data the classifier saw was current as of enrollment. That is exactly the §1.2 epistemic-scope distinction — chain proves what the AI said at time T; chain does not prove the statement remained accurate at any later time T'."
+Dawn: "Yes. That is a clinical-quality issue, not an audit finding. The audit finding is that the screening pipeline does not have a re-screening loop for source-data corrections in the window between screening and enrollment. The chain proves what the classifier saw; the chain does not prove the data the classifier saw was current as of enrollment. That is exactly the §1.2 epistemic-scope distinction — chain proves what the AI said at time T; chain does not prove the statement remained accurate at any later time T'."
 
 > **⚠️ Gap-008 (audit finding) plus Clinical-Quality-001 (medical-monitor follow-up) — Source-data correction in the screening-to-enrollment window is not re-evaluated**
 > The classifier sees the candidate's data at the moment of screening. If the source EHR is corrected between screening and enrollment, the correction is not re-evaluated by the classifier. The CRC's accept decision is bound to the data the classifier saw, not to the corrected data. **The chain operates exactly as spec §1.2 describes — it proves what the AI said at the moment of screening; it does NOT prove that what the AI said remained accurate as the source EHR evolved between screening and enrollment.** The patient in question may have been enrolled into a trial they would have been excluded from under the corrected staging. The chain itself is conformant; the institutional control gap is the absence of a re-screening loop. This is a process-design finding, not a chain-integrity finding. The Daubert testability of the chain (§1.1) is unaffected — the chain's PASS still proves chain integrity. The §1.2 epistemic line is what the report needs to make explicit so the inspector reads chain-proves-X-not-Y correctly.
 
 Dr. Østergaard wrote it down. "We will pursue this with the medical monitor today. The audit finding is what we asked you to find. The clinical follow-up is mine."
 
-Karen turned to the team. "What does the chain prove and not prove here, in the §1.2 frame?"
+Dawn turned to the team. "What does the chain prove and not prove here, in the §1.2 frame?"
 
 Mike read out the §1.2 line. "Chain proves what the model said at the moment of screening (a). Chain proves the record was not tampered with after capture (b). Chain does not prove the input was clinically accurate at the moment of screening (c). Chain does not prove the input remained accurate through enrollment (the screening-to-enrollment window). Chain does not prove the decision complied with the trial's clinical-quality SOPs (d). Chain does not prove the decision was free of bias (e). The April 15 finding sits at (c) — the input was not accurate at the moment of screening, because the source EHR was corrected two days later but the correction had been pending in the EHR's review queue at the moment of screening and the snapshot Quintessa sent us had captured the pre-correction state."
 
-Karen wrote that down. *§1.2 (c) — input accuracy. Not a chain finding. A clinical-quality finding with chain-derived evidence.*
+Dawn wrote that down. *§1.2 (c) — input accuracy. Not a chain finding. A clinical-quality finding with chain-derived evidence.*
 
 The §10.13 evidentiary artifacts package would carry this exchange as part of the institution's litigation-support documentation. The chain would reproduce the full trace; the §1.2 line would distinguish what the chain proved from what the chain did not. The §5.2 best-evidence posture — captured JSON content-bearing form, canonical bytes integrity-bearing form, both originals under FRE 1001(d) — would carry the institution's discovery-production framework if the case ever became contested.
 
-"Forward trace," Karen said. "Of the five decisions, how many trace forward to enrollment?"
+"Forward trace," Dawn said. "Of the five decisions, how many trace forward to enrollment?"
 
 Mike pulled up the enrollment records. Four of the five had been enrolled. The fifth — the April 21 University of Chicago decision — had been classified as eligible but the patient had declined to participate. So the forward trace to enrollment was 4 of 5.
 
@@ -892,7 +892,7 @@ Mike worked with Marisol to confirm. Two of the four had completed Cycle 1 visit
 
 > **The forward trace: 4 of 5 to enrollment. 2 of 5 to clinical-visit data in the EDC.**
 
-Karen wrote the summary on the whiteboard:
+Dawn wrote the summary on the whiteboard:
 
 ```
 AI side reconciliation:        5/5 PASS
@@ -908,7 +908,7 @@ Forward to clinical-visit EDC: 2/5 captured
 
 The room was quiet.
 
-Dr. Østergaard, after a beat: "That is the picture. The AI side is solid. The boundary at the CRO source is the inspection risk. The forward trace into the EDC is fine when it works but it is not under our chain. Karen — that is the framing for the report."
+Dr. Østergaard, after a beat: "That is the picture. The AI side is solid. The boundary at the CRO source is the inspection risk. The forward trace into the EDC is fine when it works but it is not under our chain. Dawn — that is the framing for the report."
 
 "Yes. That is the framing."
 
@@ -934,7 +934,7 @@ Sandra: "The bank is a customer of the vendor's retail product. We are a custome
 
 Dr. Reisch: "I understand the leverage difference. I am still asking that we make the contract change for the next renewal."
 
-Karen looked at Dr. Østergaard.
+Dawn looked at Dr. Østergaard.
 
 Dr. Østergaard, calmly: "The right answer is a contract update, not an engineering integration. Sandra is right that Quintessa will not instrument. Hannah is right that a hash-bound delivery clause is a contract change, not an engineering ask. Both can be true. The next contract renewal is in November. We will draft the clause this quarter and put it on the November agenda."
 
@@ -944,7 +944,7 @@ Dr. Østergaard: "We will draft it carefully. Sandra, you and Hannah will lead t
 
 Sandra nodded. Hannah nodded.
 
-Karen turned to Hannah. "What does the clause look like, drafted to spec?"
+Dawn turned to Hannah. "What does the clause look like, drafted to spec?"
 
 Hannah pulled out her notebook. "The framing is `audit.external_artifact.*` per spec §10.19. Quintessa delivers a tarball of de-identified candidate records, signed by their PGP key. Today our chain entry records `kind = 'cro_sftp_tarball'`, `identifier`, `sha256`, `received_at_utc`, `source_party = 'quintessa-research'`, `evidentiary_role = 'chain_of_custody_handoff'`. The contract clause we want adds Quintessa-side commitments: (a) a Quintessa-issued integrity-attestation accompanying each tarball, signed by Quintessa's HSM under a documented signature key; (b) a Quintessa-side retention floor for the source records the tarball was built from, set to longer than the §10.20 deployment-window-plus-investigation-buffer pattern — for clinical trials, that's the trial duration plus the post-trial-close investigation window, which for our Phase II NSCLC trial is at least 3 years; (c) a notification clause if Quintessa's source-record retention is exceeded — they tell us before they purge so we can request specific records before the deadline. None of that is a chain change on Quintessa's side; it's all institution-side discipline. We just want it bound contractually."
 
@@ -952,7 +952,7 @@ Sandra: "And the Quintessa attestation — what does that bind? They're not chai
 
 Hannah: "Per §10.21 cross-vendor model-handover schema's bidirectional cross-anchor pattern, applied by analogy to data delivery rather than model delivery. The Quintessa attestation is a SHA-256 over the canonicalized source-record set the tarball was built from, plus a signature under Quintessa's documented key. Helmstad's chain entry binds the tarball hash; the Quintessa attestation binds the source-record-set hash. The two together let us verify, post-delivery, that the records Quintessa delivered match the records they had on their side. The §10.21 contract-binding sub-attributes — `audit.model_handover.contract_id`, `contract_version`, `contract_hash_sha256` per Round-17 M&A-G2 — would by analogy be `audit.external_artifact.contract_*` if we extend the schema, or live as institution-named attributes alongside `audit.external_artifact.*`. Either way, the contract clause is what makes it work."
 
-Karen wrote that down. *Hannah understands the spec at the level of cross-anchor reasoning. Sandra now sees the contract path and supports it.*
+Dawn wrote that down. *Hannah understands the spec at the level of cross-anchor reasoning. Sandra now sees the contract path and supports it.*
 
 Dr. Østergaard: "Hannah, draft the contract clause language using §10.19 and §10.21 by-analogy framing. Sandra, draft the negotiation strategy. End of June."
 
@@ -960,7 +960,7 @@ Sandra: "Yes. And I will draft it with Quintessa's language as much as I can. Ha
 
 Hannah: "Good. That works."
 
-Karen wrote that down too. *Friction between AI discipline and clinical-operations pragmatism. Mediated by the VP. Resolved as a contract action with named owners, a date, and a spec-cited drafting framework. That is what mediation looks like when the principals are senior enough to make the decision and the technical lead understands the spec at the level of cross-anchor reasoning.*
+Dawn wrote that down too. *Friction between AI discipline and clinical-operations pragmatism. Mediated by the VP. Resolved as a contract action with named owners, a date, and a spec-cited drafting framework. That is what mediation looks like when the principals are senior enough to make the decision and the technical lead understands the spec at the level of cross-anchor reasoning.*
 
 The friction did not return for the rest of the day.
 
@@ -968,11 +968,11 @@ The friction did not return for the rest of the day.
 
 ### 🔍 4:30 PM — The Inspector's Question
 
-Dr. Østergaard had asked Karen the question on the kickoff call three weeks ago. He asked it again now, in the conference room, with Tom and the CQO on Zoom and the team gathered around.
+Dr. Østergaard had asked Dawn the question on the kickoff call three weeks ago. He asked it again now, in the conference room, with Tom and the CQO on Zoom and the team gathered around.
 
 "If the FDA inspector picks a random patient and asks me to demonstrate that the AI eligibility decision was correct — what can I show?"
 
-Karen had been writing the answer in her head all day. She gave it now.
+Dawn had been writing the answer in her head all day. She gave it now.
 
 "You can show seven things, in this order.
 
@@ -1006,7 +1006,7 @@ Karen had been writing the answer in her head all day. She gave it now.
 
 Dr. Østergaard tilted his head once. "If the inspector asks about post-quantum readiness — the FDA inspectorate has been asking some sponsors about quantum-resistant cryptography, especially for long-retention regulatory records?"
 
-Karen had this one too. "Spec §4.3.2 algorithm-rotation and quantum-readiness commitment. Spec working group commits to publishing an emergency spec patch within 30 days of credible demonstration of a practical attack on Ed25519, HMAC-SHA-256, or SHA-256. Institutions migrate to post-attack algorithms within 180 days for signature breaks and within 90 days for HMAC/SHA-256 breaks. Per spec §4.3.2 dual-algorithm posture, when v1.x ships a post-quantum signature algorithm — Dilithium per FIPS 204 or SLH-DSA per FIPS 205 — Helmstad will operate dual-algorithm posture transitionally. The seal record's `signatures` list per §4.2 schema co-signs under both algorithms; Variant B per-algorithm `sign_payload` per §4.3.2; AND-security per §4.3.2 — both signatures must verify for the seal to be valid. Today our chain runs single-algorithm Ed25519 as the v1.0 default; we monitor the cryptographic-agility roadmap published in `docs/regulator-pack/cryptographic-agility-roadmap.md` for the dated-dual-algorithm-seal mandate effective 2030-01-01. We have time. The §10.21 cross-vendor model-handover schema does not yet require post-quantum binding; that's a v1.x candidate-normative item per §4.1.3 RECOMMENDED for v1.0b."
+Dawn had this one too. "Spec §4.3.2 algorithm-rotation and quantum-readiness commitment. Spec working group commits to publishing an emergency spec patch within 30 days of credible demonstration of a practical attack on Ed25519, HMAC-SHA-256, or SHA-256. Institutions migrate to post-attack algorithms within 180 days for signature breaks and within 90 days for HMAC/SHA-256 breaks. Per spec §4.3.2 dual-algorithm posture, when v1.x ships a post-quantum signature algorithm — Dilithium per FIPS 204 or SLH-DSA per FIPS 205 — Helmstad will operate dual-algorithm posture transitionally. The seal record's `signatures` list per §4.2 schema co-signs under both algorithms; Variant B per-algorithm `sign_payload` per §4.3.2; AND-security per §4.3.2 — both signatures must verify for the seal to be valid. Today our chain runs single-algorithm Ed25519 as the v1.0 default; we monitor the cryptographic-agility roadmap published in `docs/regulator-pack/cryptographic-agility-roadmap.md` for the dated-dual-algorithm-seal mandate effective 2030-01-01. We have time. The §10.21 cross-vendor model-handover schema does not yet require post-quantum binding; that's a v1.x candidate-normative item per §4.1.3 RECOMMENDED for v1.0b."
 
 Dr. Østergaard wrote that down. "Good. The inspector probably will not ask, but if they do."
 
@@ -1022,7 +1022,7 @@ Dr. Østergaard wrote that down. "Good. The inspector probably will not ask, but
 
 Dr. Østergaard tilted his head. "If the inspector challenges the Daubert framing — they will not name Daubert, but they will ask about evidentiary weight under FDA hearing standards — what is the structured answer?"
 
-Karen had this one ready. "Spec §1.1 names the four factors and the chain's response to each. Testability — §7 is byte-exact, the test-vector corpus is public, any third party can falsify a verifier's PASS by producing a tampered chain that the §7 procedure does not reject. Peer review — the spec is developed under the FFIEC working-group process with periodic outside-reviewer drops, the reference implementation is Apache 2.0, the corpus is public, independent experts review both spec text and reference code. Known error rate — per §1.3, per-event MAC has EUF-CMA security under HMAC-SHA-256 / FIPS 198-1, daily Merkle seal has second-preimage resistance under SHA-256 / FIPS 180-4 / RFC 6962, HSM signature has EUF-CMA under Ed25519 / FIPS 186-5; a verifying false-negative requires simultaneous compromise of three independent custody layers per §1.4, plus the residual SDK-process scenario §1.2 names. General acceptance — every primitive is NIST-standardized, and the combination of HMAC-chained event records under a tenant-bound key plus a daily Merkle root signed by an HSM is standard in deployed audit-log systems including Certificate Transparency and Trillian. The §1.1 grounding is informative, not normative — it does not add requirements; it exists so a witness laying foundation under FRE 702 / FDA-hearing analog can answer the four questions from the shipped artifacts rather than from internal documents."
+Dawn had this one ready. "Spec §1.1 names the four factors and the chain's response to each. Testability — §7 is byte-exact, the test-vector corpus is public, any third party can falsify a verifier's PASS by producing a tampered chain that the §7 procedure does not reject. Peer review — the spec is developed under the FFIEC working-group process with periodic outside-reviewer drops, the reference implementation is Apache 2.0, the corpus is public, independent experts review both spec text and reference code. Known error rate — per §1.3, per-event MAC has EUF-CMA security under HMAC-SHA-256 / FIPS 198-1, daily Merkle seal has second-preimage resistance under SHA-256 / FIPS 180-4 / RFC 6962, HSM signature has EUF-CMA under Ed25519 / FIPS 186-5; a verifying false-negative requires simultaneous compromise of three independent custody layers per §1.4, plus the residual SDK-process scenario §1.2 names. General acceptance — every primitive is NIST-standardized, and the combination of HMAC-chained event records under a tenant-bound key plus a daily Merkle root signed by an HSM is standard in deployed audit-log systems including Certificate Transparency and Trillian. The §1.1 grounding is informative, not normative — it does not add requirements; it exists so a witness laying foundation under FRE 702 / FDA-hearing analog can answer the four questions from the shipped artifacts rather than from internal documents."
 
 "And if the inspector asks what we know we don't prove?"
 
@@ -1038,15 +1038,15 @@ Dr. Østergaard wrote both down. "That is the answer."
 
 "Per spec §4.4 normative requirement, our SDK refuses to emit a chain entry whose attribute set includes any `gen_ai.*` attribute AND lacks either `gen_ai.request.model` or `gen_ai.response.model` non-empty. The refusal is at SDK-write time — entry rejected before MAC compute and before any wire emission. Raises a `GenAIModelIdentifierMissing` exception in our Python idiom so the operator's error path surfaces the misconfiguration immediately. The §7 step 12a verifier check is defense-in-depth; the SDK-side refusal closes the source so a misconfigured pipeline cannot silently produce chains that fail at audit time. We've never seen the exception in production — by construction, but the test suite exercises it on every CI run."
 
-Dr. Østergaard had been listening with both hands flat on the table. He nodded once when Karen finished.
+Dr. Østergaard had been listening with both hands flat on the table. He nodded once when Dawn finished.
 
 "That is the posture," he said. "Tom — please make sure that articulation is in the report verbatim."
 
 Tom was already typing it.
 
-The CQO on Zoom: "Karen — that articulation. Use exactly that language. The seven-artifact evidence pack is the inspection-day playbook."
+The CQO on Zoom: "Dawn — that articulation. Use exactly that language. The seven-artifact evidence pack is the inspection-day playbook."
 
-Karen: "Use it."
+Dawn: "Use it."
 
 ---
 
@@ -1054,7 +1054,7 @@ Karen: "Use it."
 
 The conference room was quieter than it had been at kickoff. Dr. Østergaard had ordered coffee and pastries. The CQO was on Zoom from his car — he had a hard stop at 6:30. Sandra was on Zoom from her office. Hannah and Devansh were in the room.
 
-Karen stood up at the whiteboard.
+Dawn stood up at the whiteboard.
 
 "Two findings sections," she said. "AI side. Legacy side."
 
@@ -1097,7 +1097,7 @@ Each row carries the spec section that *would* remediate the gap if the system w
 
 **Legacy side: 4 Gaps. 6 Partials. 3 boundary-by-design items handled per §10.19.** The Partials are items where there is *some* protection — Veeva's audit trail is real if you know the filter (§10.18 cross-referencing would surface the filter's discoverability); Salesforce field history is on for some fields; the SFTP signature does verify upstream provenance to a point — but the protection is at the discretion of the system operator or the vendor and is therefore not chain-grade evidence. The remaining items are Gaps in the strict sense. The boundary-by-design items are not Gaps and not Partials — they are §10.19 chain-coverage-map disclosures handled to spec.
 
-Karen paused at the table for a moment before she began the Gap walk.
+Dawn paused at the table for a moment before she began the Gap walk.
 
 She wanted to be precise about the §10.16 framing. The EDC extract today was a daily file pipeline — not a streaming SaaS-edge change-stream connector. §10.16 strictly applies to mirror connectors that subscribe to a SaaS platform's change stream and replicate each captured record into a chain-instrumented store. Helmstad's EDC pipeline did not match that pattern. So the §10.16 four-number wording test did not apply by the letter.
 
@@ -1105,7 +1105,7 @@ But the spirit of §10.16 — that connector lag has to be quantified, that impr
 
 For the report, she would frame the EDC finding under §4.4.6 (the family that names the connector-source attribution) and §10.16 forward-readiness (the framework the EDC pipeline would need to meet under streaming). Today's status was Gap-006 — no chain — handled per §10.19 §4 (third-party out-of-reach in the chain-coverage map). Forward-readiness status was a Partial against §10.16 in the spirit-rather-than-letter sense, with the contract renewal as the named action.
 
-Karen ticked off the Gaps on her fingers as she summarized.
+Dawn ticked off the Gaps on her fingers as she summarized.
 
 "Argus DBA write access is a Gap against the §10.3 architectural target. Veeva late-effective-date workflow is a Gap. EDC extract has no chain — Gap. CTMS overwrites — Gap.
 
@@ -1127,7 +1127,7 @@ Karen ticked off the Gaps on her fingers as she summarized.
 | ALCOA+ Contemporaneous | Yes (200 ms chain latency; nanosecond `captured_at` per §4.4; NTP discipline per §10.4) | Mostly yes; CTMS allows post-hoc edits |
 | BIMO inspection posture | Strong — 7-artifact evidence pack tied to §7, §10.5, §10.13, §10.14, §10.17, §10.21, §10.26 | Mixed — vendor-management dependencies named in §10.19 |
 
-Karen paused on the table for a beat longer than the rest.
+Dawn paused on the table for a beat longer than the rest.
 
 "The chain proves what the model said. The chain proves what the criteria document was. The chain proves who the reviewer was. The chain proves the reviewer's decision and reason. That is the FDA's question, on the AI side. Spec §1.2 names this as what the chain proves — (a) what the AI said at a specific time, and (b) that the record was not tampered with after capture.
 
@@ -1135,15 +1135,15 @@ Karen paused on the table for a beat longer than the rest.
 
 "That is the inspection risk. Six weeks. Argus first — bring it under the chain or, at minimum, revoke UPDATE on the audit-trail table per the §10.3 architectural target. EDC contract clause for November renewal — `audit.external_artifact.*` plus `audit.model_handover.*` if the relationship deepens. Veeva late-effective-date filter as a CAPA with §10.18 runbook cross-referencing. CTMS field-history funding for the next budget cycle, with the §4.4.6 / §10.16 connector path as the design target. The April 15 patient is medical-monitor work and is in flight as of this afternoon — chain-integrity finding versus process-design finding distinguished per §1.2."
 
-The CQO on Zoom: "That is the line for the inspection-prep memo. Karen — Tom — thank you. The seven-artifact evidence pack is going to be how we run the first morning of the inspection. The legacy-side findings are going to be the second morning. We will know what is coming."
+The CQO on Zoom: "That is the line for the inspection-prep memo. Dawn — Tom — thank you. The seven-artifact evidence pack is going to be how we run the first morning of the inspection. The legacy-side findings are going to be the second morning. We will know what is coming."
 
 Dr. Østergaard: "Permission to share the bifurcation framing in the BIMO prep documents to the executive committee on Friday."
 
-Karen: "Permission granted. We will send the formal report by end of week. The bifurcation framing is the framing. Use it."
+Dawn: "Permission granted. We will send the formal report by end of week. The bifurcation framing is the framing. Use it."
 
-The CQO on Zoom: "One more thing. I want it on record that this assessment found the AI-side controls to meet or exceed best-known practices observed in deployed AI clinical-decision-support systems audited in the last twelve months. And that the legacy-side controls are at-or-below the median for mid-size oncology sponsors. That is the comparative posture we are taking to the executive committee. Karen — you good with that characterization?"
+The CQO on Zoom: "One more thing. I want it on record that this assessment found the AI-side controls to meet or exceed best-known practices observed in deployed AI clinical-decision-support systems audited in the last twelve months. And that the legacy-side controls are at-or-below the median for mid-size oncology sponsors. That is the comparative posture we are taking to the executive committee. Dawn — you good with that characterization?"
 
-Karen took a beat. "I am, with the same caveat I gave at Mercator. The population of sponsors running chain-grade AI controls in production is small. Helmstad is in the top quartile of a fairly small group. The 'meets or exceeds best-known practices' phrasing is more accurate. I would also add — for the executive committee read — that the legacy-side gaps include items where the gap is known and the remediation has been deferred for budget or contractual reasons. The CTMS field-history-disabled finding has been on the HITRUST-equivalent attestation for prior audits. The Argus DBA finding has been a known industry concern for years. Helmstad is not surprised by these findings. The committee should not be surprised either."
+Dawn took a beat. "I am, with the same caveat I gave at Mercator. The population of sponsors running chain-grade AI controls in production is small. Helmstad is in the top quartile of a fairly small group. The 'meets or exceeds best-known practices' phrasing is more accurate. I would also add — for the executive committee read — that the legacy-side gaps include items where the gap is known and the remediation has been deferred for budget or contractual reasons. The CTMS field-history-disabled finding has been on the HITRUST-equivalent attestation for prior audits. The Argus DBA finding has been a known industry concern for years. Helmstad is not surprised by these findings. The committee should not be surprised either."
 
 The CQO: "Better. Use that."
 
@@ -1153,25 +1153,25 @@ Tom was writing the language down verbatim.
 
 Hannah: "One more for the record. The April 15 patient. I want it documented that the audit team found the discrepancy during a pre-inspection readiness audit, not during the inspection. The fact that we found it before the inspector matters for the BIMO read."
 
-Karen: "Documented. The reconciliation methodology — five-decision random sample with backward and forward trace — is in the report. The April 15 finding is one of the five. It will read as a discrepancy detected by the audit, with corrective action in flight."
+Dawn: "Documented. The reconciliation methodology — five-decision random sample with backward and forward trace — is in the report. The April 15 finding is one of the five. It will read as a discrepancy detected by the audit, with corrective action in flight."
 
-Dr. Østergaard stood up, shook Karen's hand, then Tom's, then went around the room and shook each team member's hand individually. It took ninety seconds. He thanked each of them by name.
+Dr. Østergaard stood up, shook Dawn's hand, then Tom's, then went around the room and shook each team member's hand individually. It took ninety seconds. He thanked each of them by name.
 
 "Drive safely. The Massachusetts Pike is bad in the rain."
 
-Karen looked out the window. It had started raining at some point during the afternoon.
+Dawn looked out the window. It had started raining at some point during the afternoon.
 
 The team packed up. There was the usual quiet shuffle of laptops closing and notebooks going into bags. Diana paused on the way out and asked Rohan a private question about extending the AD access-review process to attest table-level privileges, not just group membership. Rohan answered it. Mike traded contact details with Hannah, who had stayed for the debrief tail. Chen and Devansh exchanged GitHub handles. Luis caught Karthik in the hallway and gave him an unsolicited recommendation about a SQL Server Always Encrypted pattern that would not have prevented DBA write access but would have made it visible faster. Karthik thanked him. Elena thanked Jordan for being honest about the field-history-disabled situation.
 
-Sandra was the last one out. She stopped Karen by the door.
+Sandra was the last one out. She stopped Dawn by the door.
 
 "I want to say — I was wrong about the Quintessa contract clause. The audit gave me the framing I needed. The November renewal is going to be a conversation, not a fight. Hannah and I will get the clause to legal in June."
 
-Karen: "Good. The contract change is the right move. The chain into the CRO is not."
+Dawn: "Good. The contract change is the right move. The chain into the CRO is not."
 
 Sandra: "Understood."
 
-Karen sat for a moment after the room had mostly cleared. She thought about the day in the §10.18 cross-referencing frame.
+Dawn sat for a moment after the room had mostly cleared. She thought about the day in the §10.18 cross-referencing frame.
 
 Each finding tied to a spec section. Each spec section tied to an audit procedure. Each audit procedure tied to a SOC engagement test. Each SOC engagement test tied to an examiner workpaper. The chain of evidence — runbook → spec → design doc → audit procedure → SOC → examiner — was load-bearing, and the §10.18 normative cross-referencing requirement was what kept it walkable. A finding that did not cite its spec section was a finding that the institution could not test against; a runbook that did not cross-reference the spec was a runbook that the SOC team could not anchor to the conformance bar.
 
@@ -1181,11 +1181,11 @@ The chain itself was conformant on every property she had tested. The chain-cove
 
 She closed her notebook.
 
-Karen watched the room empty. She gathered her notes, clipped her pen back to the cover, and slung her bag over her shoulder.
+Dawn watched the room empty. She gathered her notes, clipped her pen back to the cover, and slung her bag over her shoulder.
 
 Tom held the door for her on the way out. "Round four is in the rear-view."
 
-"Round four is the second bifurcation in five weeks," Karen said. "Mercator was the first. Helmstad is the same shape with a different inspector. The pattern is real."
+"Round four is the second bifurcation in five weeks," Dawn said. "Mercator was the first. Helmstad is the same shape with a different inspector. The pattern is real."
 
 "Different inspector. Same architecture."
 
@@ -1195,11 +1195,11 @@ Tom held the door for her on the way out. "Round four is in the rear-view."
 
 ### 🧪 Post-debrief — What the report will actually say about each finding
 
-Tom and Karen stayed in the conference room for another twenty minutes after the rest of the team headed for their cars. Tom was drafting the report's findings register on his iPad; Karen was reviewing it line by line.
+Tom and Dawn stayed in the conference room for another twenty minutes after the rest of the team headed for their cars. Tom was drafting the report's findings register on his iPad; Dawn was reviewing it line by line.
 
 "Argus DBA write access," Tom said. "Findings register draft: Gap-001."
 
-Karen: "Cite §10.3 for the architectural target. Cite §10.19 for the chain-coverage map disposition today. The remediation language is `bring Argus under the chain, or revoke UPDATE on the audit-trail table at the database role layer per §10.3`. Don't call it non-conformance — Argus is not chain-instrumented today, so §10.3 doesn't bind by spec. Call it a Gap against the architectural target."
+Dawn: "Cite §10.3 for the architectural target. Cite §10.19 for the chain-coverage map disposition today. The remediation language is `bring Argus under the chain, or revoke UPDATE on the audit-trail table at the database role layer per §10.3`. Don't call it non-conformance — Argus is not chain-instrumented today, so §10.3 doesn't bind by spec. Call it a Gap against the architectural target."
 
 "LIMS audit trail. Same shape. Gap-002."
 
@@ -1246,13 +1246,13 @@ extract following at the November contract renewal under §4.4.6
 discipline, and CTMS following in the next budget cycle.
 ```
 
-Karen read it twice. "Use it."
+Dawn read it twice. "Use it."
 
 ---
 
 ### 🧾 Final Assessment Theme
 
-The drive back to the hotel was twelve minutes through Cambridge rain. Karen had her coffee, refilled, in the cup holder. The wipers were on intermittent.
+The drive back to the hotel was twelve minutes through Cambridge rain. Dawn had her coffee, refilled, in the cup holder. The wipers were on intermittent.
 
 She thought about the day. About the bifurcation. About Hannah's terminal showing a clean verifier resolution at 9:45 in the morning, all twelve §7 steps green, exit code 0 per §10.12. About Luis pointing at the S3 bucket policy at lunch and saying "three engineers can disable CloudTrail." About the April 15 patient and the staging correction that had moved between screening and enrollment — a §1.2 epistemic-scope finding, not a chain-integrity finding. About Dr. Østergaard's question at 4:30 and the seven-artifact answer she had given, each artifact tied to a normative spec section by number.
 
@@ -1282,9 +1282,9 @@ The seven-artifact evidence pack would carry the FDA inspection. Each artifact h
 
 7. **§10.13 evidentiary artifacts retention package** (§10.13 documentary evidence list; §10.14 trusted-time integration via NTP discipline per §10.4; §10.18 CC8.1 cross-referencing discipline). SDK version manifest, source-code hash, SLSA build attestation, HSM configuration, daily seal-job logs, change-management records, verifier output for the period.
 
-The thing that made Helmstad interesting was not that the chain held. The chain has held in every audit since Northbridge. The §1.4 compositional security argument — three independent layers (per-event MAC, daily Merkle seal, HSM-rooted root signature) under FIPS-standardized primitives — was load-bearing in every engagement. The thing that made Helmstad interesting was that the FDA inspection in six weeks would test the *boundary* — and the boundary was where the next class of audit findings would live, in this and every other bifurcated deployment for the rest of Karen's career.
+The thing that made Helmstad interesting was not that the chain held. The chain has held in every audit since Northbridge. The §1.4 compositional security argument — three independent layers (per-event MAC, daily Merkle seal, HSM-rooted root signature) under FIPS-standardized primitives — was load-bearing in every engagement. The thing that made Helmstad interesting was that the FDA inspection in six weeks would test the *boundary* — and the boundary was where the next class of audit findings would live, in this and every other bifurcated deployment for the rest of Dawn's career.
 
-The thing that made Helmstad interesting was not that the chain held. The chain has held in every audit since Northbridge. The §1.4 compositional security argument — three independent layers (per-event MAC, daily Merkle seal, HSM-rooted root signature) under FIPS-standardized primitives — was load-bearing in every engagement. The thing that made Helmstad interesting was that the FDA inspection in six weeks would test the *boundary* — and the boundary was where the next class of audit findings would live, in this and every other bifurcated deployment for the rest of Karen's career.
+The thing that made Helmstad interesting was not that the chain held. The chain has held in every audit since Northbridge. The §1.4 compositional security argument — three independent layers (per-event MAC, daily Merkle seal, HSM-rooted root signature) under FIPS-standardized primitives — was load-bearing in every engagement. The thing that made Helmstad interesting was that the FDA inspection in six weeks would test the *boundary* — and the boundary was where the next class of audit findings would live, in this and every other bifurcated deployment for the rest of Dawn's career.
 
 The §10.19 chain-coverage map was Helmstad's normative answer to the boundary question. Five categories: chain-instrumented institutional systems, institutional systems not yet chain-instrumented, third-party systems under contractual inspection, third-party systems out-of-reach, external evidentiary artifacts hash-anchored. Each row carried a `coverage_map_version` and an `effective_utc`; each version change emitted `chain.coverage_map_published` operational event per §10.2 with `coverage_map_sha256` so an 18-month-lookback auditor could verify which map version was in force on a given date. The Round-17 M&A-P3 close-out — the version-stamp-and-anchor requirement on the chain-coverage map — was load-bearing for FDA's pre-inspection lookback window the same way it was load-bearing for an acquirer's IT due-diligence lookback.
 
@@ -1293,7 +1293,7 @@ The §1.2 epistemic-scope discipline distinguished what the chain proved from wh
 The chain proves what the model decided.
 The contract has to prove what the model was given.
 
-Karen picked up her phone at a red light and dictated a one-line note for the report's executive summary.
+Dawn picked up her phone at a red light and dictated a one-line note for the report's executive summary.
 
 > *"On the screening path, Helmstad can demonstrate what the classifier said and that the record was not tampered with — per spec §1.2 (b). On every other path, integrity is still vendor-managed — per the §10.19 chain-coverage map's category-2 and category-4 disclosures."*
 
@@ -1303,7 +1303,7 @@ The light turned green. She put the phone down and drove the rest of the way to 
 
 ### 📎 Appendix — Spec sections cited in this report
 
-The report Karen and Tom would file by end-of-week tied every determination back to the chain-of-custody specification by section number, so a future reader could walk from a finding to the binding requirement to the audit procedure to the SOC engagement to the examiner workpaper, per spec §10.18 runbook cross-referencing. The full citation list:
+The report Dawn and Tom would file by end-of-week tied every determination back to the chain-of-custody specification by section number, so a future reader could walk from a finding to the binding requirement to the audit procedure to the SOC engagement to the examiner workpaper, per spec §10.18 runbook cross-referencing. The full citation list:
 
 - **§1.1 Daubert four-factor grounding** — testability, peer review, known error rate, general acceptance; the FDA hearings analog.
 - **§1.2 Epistemic scope** — what the chain proves (a, b) and does not prove (c, d, e); load-bearing for the April 15 patient framing.

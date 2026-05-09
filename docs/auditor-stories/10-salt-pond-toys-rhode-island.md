@@ -41,9 +41,9 @@ Four CPSC, CBP, and retailer drivers stack on top of those services. CPSIA Secti
 
 The chain's epistemic frame matters here, because Salt Pond's regulators (CPSC, CBP) and customers (Target, Walmart, Amazon) ask different evidentiary questions. Per §1.2 epistemic scope, the chain proves what the AI said and that the record was not tampered with after capture; it does not prove that the AI's classification is correct, that the manufacturing was defect-free, or that the lab's testing certificate is uncontested. Those are answered with evidence outside the chain — the lab itself, the QC supervisors' overrides, the lab's own SOC 2 report. The chain's job at Salt Pond is the same as the chain's job in banking: integrity foundation, not truth foundation.
 
-By the time the team rolled into Salt Pond, TesseraSeal had been audited across US institutions, a Tel Aviv vendor, and a K-beauty retailer in Korea + Taiwan. Northbridge was now nine engagements back — the cleanest run of the cycle, one §10.16 non-conformance and a chain that held byte-for-byte. Karen had stopped expecting another like it. Toy supply chain across RI + Shenzhen + LA was a new boundary-documentation challenge — CPSC + CBP CTPAT — but the chain primitive was familiar. The day's interesting work was at the cross-vendor seams the toy supply chain creates, not at the chain itself. The team had stopped asking whether the chain works and started asking where it ends and what documents the handoff after that point.
+By the time the team rolled into Salt Pond, TesseraSeal had been audited across US institutions, a Tel Aviv vendor, and a K-beauty retailer in Korea + Taiwan. Northbridge was now nine engagements back — the cleanest run of the cycle, one §10.16 non-conformance and a chain that held byte-for-byte. Dawn had stopped expecting another like it. Toy supply chain across RI + Shenzhen + LA was a new boundary-documentation challenge — CPSC + CBP CTPAT — but the chain primitive was familiar. The day's interesting work was at the cross-vendor seams the toy supply chain creates, not at the chain itself. The team had stopped asking whether the chain works and started asking where it ends and what documents the handoff after that point.
 
-The team showed up at the Newport HQ knowing the chain was eleven months old, the company was small enough that the entire executive team could fit around the conference-room table, and the audit had to cover three locations across twelve hours of time-zone spread. Mary Catherine had told Karen on the prep call: "I want you to find the boundaries. I know the chain is good on the AI parts. I want to know where it ends and what fills the space after that."
+The team showed up at the Newport HQ knowing the chain was eleven months old, the company was small enough that the entire executive team could fit around the conference-room table, and the audit had to cover three locations across twelve hours of time-zone spread. Mary Catherine had told Dawn on the prep call: "I want you to find the boundaries. I know the chain is good on the AI parts. I want to know where it ends and what fills the space after that."
 
 This is the diary of that day.
 
@@ -55,7 +55,7 @@ The team is split across three locations for the first time in the engagement ru
 
 **Newport, Rhode Island — Salt Pond HQ:**
 
-- **Karen** — Lead Auditor (governance and narrative)
+- **Dawn** — Lead Auditor (governance and narrative)
 - **Raj** — Database specialist
 - **Mike** — Application and API layer
 - **Diana** — IAM and access control
@@ -84,9 +84,9 @@ Client-side liaisons:
 
 ## 🌅 8:30 AM ET — Kickoff and the Drive In
 
-Karen rode in with Tom from the hotel at the head of the harbor. Ten minutes south along the bridge, then up Memorial through the historic district. The Newport HQ sits on a bluff above the salt pond the company is named for. The building is a stone-and-glass 1980s rebuild that sits where the original Quonset hut used to be. The flagpole out front has the U.S. flag, the Rhode Island flag, and a small company flag with a sailboat on it.
+Dawn rode in with Tom from the hotel at the head of the harbor. Ten minutes south along the bridge, then up Memorial through the historic district. The Newport HQ sits on a bluff above the salt pond the company is named for. The building is a stone-and-glass 1980s rebuild that sits where the original Quonset hut used to be. The flagpole out front has the U.S. flag, the Rhode Island flag, and a small company flag with a sailboat on it.
 
-Tom had a coffee from the inn. Karen had her usual — black coffee in a travel cup, half gone before they pulled out of the lot.
+Tom had a coffee from the inn. Dawn had her usual — black coffee in a travel cup, half gone before they pulled out of the lot.
 
 "Recap me," Tom said. "Headlines."
 
@@ -120,7 +120,7 @@ Tom waited.
 
 "And today?"
 
-Karen looked out the window at the harbor. Three sailboats already on the water in March wind.
+Dawn looked out the window at the harbor. Three sailboats already on the water in March wind.
 
 "Eight of these now. Toys. Three locations. Two coasts plus a remote bridge to Shenzhen. CPSC. CBP. State AG. Target. We figure out which boundaries the chain reaches and where it hands off to other people's chains."
 
@@ -134,7 +134,7 @@ Karen looked out the window at the harbor. Three sailboats already on the water 
 
 "What's the recurring line you keep saying?"
 
-Karen drained her cup. "It never is."
+Dawn drained her cup. "It never is."
 
 "That one."
 
@@ -146,20 +146,20 @@ Mary Catherine met them at the door. She was wearing a fleece vest with the Salt
 
 "Welcome. Eduardo is on the bridge from LA already — he started at five AM their time. Li Wei is on from Shenzhen at 8:30 our time, which is 8:30 PM his time. He will be on until 11 AM ours, which is 11 PM his. We have a tight day. Chowder at noon."
 
-Karen smiled. "Chowder?"
+Dawn smiled. "Chowder?"
 
 "Clam chowder. White. Not Manhattan. We are not Manhattan people."
 
 Tom laughed.
 
-> **🔍 Karen's note (internal):**
+> **🔍 Dawn's note (internal):**
 > *Family-business kickoff. She is treating this like a Rhode Island wedding — chowder, the bridge to Shenzhen open, the LA office on the line, everyone in the right place. Eight engagements in and this is the first one where the kickoff included a meal preference.*
 
 The team filed into the conference room. The wall display had three video tiles — the LA office, the Shenzhen conference room with Li Wei in it, and Elena's home office in Boston. Elena waved. Eduardo nodded. Li Wei was in a navy blazer with Salt Pond Shenzhen on the lanyard, the conference-room lights low behind him at his end of the day.
 
-Mary Catherine sat at the head of the table. "Karen, the floor is yours."
+Mary Catherine sat at the head of the table. "Dawn, the floor is yours."
 
-Karen stood at the whiteboard. She wrote four words across the top.
+Dawn stood at the whiteboard. She wrote four words across the top.
 
 `QC. Customs. Forecast. Recall.`
 
@@ -202,11 +202,11 @@ Reason: chain integrity verified, HMAC recomputed,
         against public key saltpond-2026-q1
 ```
 
-Mike turned the laptop toward Mary Catherine. She read the output. Karen watched her face. There was a half-second where Mary Catherine did not move.
+Mike turned the laptop toward Mary Catherine. She read the output. Dawn watched her face. There was a half-second where Mary Catherine did not move.
 
 "That's the same four seconds I saw in October. Still feels like a magic trick."
 
-"It is not a magic trick," Karen said. "It is twelve steps of verification — HMAC, Merkle, signature against the daily seal — that runs in four seconds because the chain shape is small and the operation is local."
+"It is not a magic trick," Dawn said. "It is twelve steps of verification — HMAC, Merkle, signature against the daily seal — that runs in four seconds because the chain shape is small and the operation is local."
 
 "My CTO told me that the first time. I just like seeing it."
 
@@ -224,11 +224,11 @@ Mike paused. "The EDI feed itself — Target's 852 — that's a third-party feed
 
 Mary Catherine looked at her CTO on the bridge from Boston. The CTO, James, said, "The EDI feed is not chain-instrumented. We do not own it. We hash-record the import event when the feed lands in our system. The hash of the file we received is in the chain. What was in Target's system before they sent it to us is their chain, not ours."
 
-Karen wrote: *Demand-forecast service hash-records the inbound EDI feed at the import boundary. Upstream — inside Target's systems — is out of Salt Pond's chain. Same handoff shape we saw at Olmstead with the external fairness audit hash. This is exactly the §10.19 chain-coverage-map "third-party systems out of contractual inspection reach" category — the chain anchors at the boundary, the upstream is documented as the retailer's chain, the institutional substitute is the retailer's own SOC 2 report.*
+Dawn wrote: *Demand-forecast service hash-records the inbound EDI feed at the import boundary. Upstream — inside Target's systems — is out of Salt Pond's chain. Same handoff shape we saw at Olmstead with the external fairness audit hash. This is exactly the §10.19 chain-coverage-map "third-party systems out of contractual inspection reach" category — the chain anchors at the boundary, the upstream is documented as the retailer's chain, the institutional substitute is the retailer's own SOC 2 report.*
 
 Tom paused. "Can we do better than 'we just hash the import event'? Should the EDI feed hash be wrapped in `audit.external_artifact.*` per §10.19?"
 
-Karen thought about it. "It could be. The §10.19 worked-example list names third-party signed PDFs and signed receipts; an EDI 852 feed is a signed document under EDI X12 conventions. If Salt Pond wants the chain entry to carry `kind = retailer_edi_feed`, `identifier = Target 852 transmission ID`, `source_party = target_retailer`, `evidentiary_role = recall_readiness`, that is the discoverable form. James, want to add it to the Phase 2 list?"
+Dawn thought about it. "It could be. The §10.19 worked-example list names third-party signed PDFs and signed receipts; an EDI 852 feed is a signed document under EDI X12 conventions. If Salt Pond wants the chain entry to carry `kind = retailer_edi_feed`, `identifier = Target 852 transmission ID`, `source_party = target_retailer`, `evidentiary_role = recall_readiness`, that is the discoverable form. James, want to add it to the Phase 2 list?"
 
 James, on the bridge: "Add it. The work is small."
 
@@ -237,7 +237,7 @@ James, on the bridge: "Add it. The work is small."
 
 The team worked the demand-forecast service for forty minutes. Twelve sample forecasts across the last quarter. Twelve PASS. Mike captured the verifier output for the report.
 
-Karen wrote a paragraph for her notebook on the structural shape of the demand-forecast service.
+Dawn wrote a paragraph for her notebook on the structural shape of the demand-forecast service.
 
 > *Demand-forecast at Newport is the simplest of the four services from a chain perspective. Single-region (Newport-only per §10.15 Pattern B), single-tenant (`saltpond`), no cross-vendor anchors except the EDI feed import boundary. The service identity rotates quarterly per the §10.10 IKM-rotation-across-the-seal-boundary discipline. The seal HSM key rotates on its own quarterly cadence per §10.5 HSM custody. The chain entries carry the standard §4.4 OTel envelope plus the `gen_ai.*` semconv per §A.2 plus the §A.3 routing family for the model-selection step (the demand-forecast service uses a fixed model — no routing — so the routing family is simple but present). The demand-forecast service is the chain's clean baseline; if any of the four services pose a chain integrity question, demand-forecast is the one that should pass first. It does, eleven months running.*
 
@@ -245,7 +245,7 @@ Karen wrote a paragraph for her notebook on the structural shape of the demand-f
 
 ## 🧠 9:30 AM ET (= 9:30 PM CST) — The Shenzhen QC Vision Walk-Through
 
-Li Wei's video tile expanded to fill half the wall display. The Salt Pond Shenzhen conference room was lit only by the overhead lights at 9:30 PM local. Behind him, through the glass wall, Karen could see the floor lights of the office. The first shift in Dongguan was finishing — there was the faint mechanical noise of a conveyor in the audio, somebody talking in Mandarin off-camera, and then quiet.
+Li Wei's video tile expanded to fill half the wall display. The Salt Pond Shenzhen conference room was lit only by the overhead lights at 9:30 PM local. Behind him, through the glass wall, Dawn could see the floor lights of the office. The first shift in Dongguan was finishing — there was the faint mechanical noise of a conveyor in the audio, somebody talking in Mandarin off-camera, and then quiet.
 
 "Good evening from Shenzhen," Li Wei said. His English was easy and clear. "I have the QC vision dashboard up. I will walk you through today's production at Dongguan and Foshan, then we sample a unit from yesterday for the verifier."
 
@@ -295,20 +295,20 @@ Diana, on the Newport side: "Document that. It is an out-of-chain reliance."
 
 Li Wei walked the team through the lot-disposition workflow. A flagged unit goes to the Salt Pond QC supervisor. The supervisor reviews the image and the AI classification. The supervisor either confirms the flag, overrides up (more severe disposition), or overrides down (less severe). The override decision is in the chain. The override reason is from a controlled vocabulary — `STITCHING_ACCEPTABLE_PER_BUYER_TOLERANCE`, `EYE_ATTACHMENT_PRECAUTIONARY_SCRAP`, and so on.
 
-"The same shape as Olmstead," Karen said. "Structured override with a controlled-vocabulary reason."
+"The same shape as Olmstead," Dawn said. "Structured override with a controlled-vocabulary reason."
 
 Li Wei: "We do not have a free-text rationale field at all. The buyer tolerances are pre-loaded into the controlled vocabulary every season. If the QC supervisor wants to record a rationale outside the vocabulary, the unit is escalated to me and I add a chain entry with my badge."
 
-Karen: "Cleaner than Olmstead."
+Dawn: "Cleaner than Olmstead."
 
 > **✓ Confirmation #5**
 > The Shenzhen QC override workflow uses a fully controlled vocabulary with no free-text rationale field. Out-of-vocabulary cases escalate to the GM with a separate chain entry under the GM's badge. There is no equivalent of the Olmstead Slate-rationale gap on the Shenzhen side. The §10.22 redaction-discipline posture statement (pre-MAC at the SDK boundary) is not under stress here because the QC override carries no PII — the controlled vocabulary entries and the operator badge are both non-redacted; if the institution ever extended the chain to capture a free-text justification with PII, the §10.22 `audit.redaction.*` discipline would apply, but the controlled-vocabulary discipline removes the redaction question from the workflow's design.
 
 The team worked the QC vision service for an hour. Sampled twelve flagged units across three factories and four product lines. All twelve PASS. The factory-sound bleed-through stopped about thirty minutes in — second shift had ended in Dongguan, and the floor was quiet at Li Wei's end.
 
-Mike walked through the chain-entry structure for Karen's working notes. Each per-unit QC vision entry carries the `gen_ai.*` semconv attributes per §4.4 (model_id, model_version, request_messages, response, completion_token_count, plus the institution's QC-vision-specific extensions for image-input handling) bound under the per-event MAC of §4.1. The chain entry's canonical bytes are RFC 8785 JCS-canonical per §5; the §5 canonical-form exclusion rule keeps the chain-stamp fields (`prev_hash`, `payload_hash`, `key_version`, `key_fingerprint`, `format_version`, `mac_computed_at_utc`, `kms_handle_uri`, `algorithm`, `seq`) out of the MAC input. The §4.4.4 severity treatment for chain-of-custody traffic places the QC entries in the spec's `9..20` SeverityNumber range (institution-tuned per CC8.1; Salt Pond uses 11 for routine flagged-unit dispositions and 13 for SCRAP_EYE_ATTACHMENT escalations). The §A.2 OpenTelemetry GenAI envelope reference enumerates the conformant `gen_ai.*` attributes the chain expects.
+Mike walked through the chain-entry structure for Dawn's working notes. Each per-unit QC vision entry carries the `gen_ai.*` semconv attributes per §4.4 (model_id, model_version, request_messages, response, completion_token_count, plus the institution's QC-vision-specific extensions for image-input handling) bound under the per-event MAC of §4.1. The chain entry's canonical bytes are RFC 8785 JCS-canonical per §5; the §5 canonical-form exclusion rule keeps the chain-stamp fields (`prev_hash`, `payload_hash`, `key_version`, `key_fingerprint`, `format_version`, `mac_computed_at_utc`, `kms_handle_uri`, `algorithm`, `seq`) out of the MAC input. The §4.4.4 severity treatment for chain-of-custody traffic places the QC entries in the spec's `9..20` SeverityNumber range (institution-tuned per CC8.1; Salt Pond uses 11 for routine flagged-unit dispositions and 13 for SCRAP_EYE_ATTACHMENT escalations). The §A.2 OpenTelemetry GenAI envelope reference enumerates the conformant `gen_ai.*` attributes the chain expects.
 
-> **🔍 Karen's note (internal):**
+> **🔍 Dawn's note (internal):**
 > *The QC vision service is the cleanest AI-side chain we have seen in any of the eight engagements. Per-unit chain entries with image hash, model version, classification, controlled-vocabulary disposition, supervisor badge — every field a CPSC inspector would ask about. The chain composes with the §1.2 epistemic scope honestly: the chain proves what the model said about each unit; it does not prove the model is correct. The factory-floor operator's disposition (under the QC supervisor's chain-recorded action) lives in the contract factory's separate access-control system per §10.19 category 3. The boundary is real and the chain stops at the right place. The supervisor is the chain-recorded actor; the factory operator is the contractual-inspection-substitute actor.*
 
 ---
@@ -364,7 +364,7 @@ He also walked the §10.25 run-resume discipline. "Per §10.25, when an SDK proc
 
 Per §10.26 reference verifier distribution, the institution names the verifier implementation (Vidimus reference verifier), the version (pinned per §11 References), and the cosign verification key fingerprint in CC8.1. Salt Pond's CC8.1 names all three per the §10.26 three-name citation discipline.
 
-> **🔍 Karen's note (internal):**
+> **🔍 Dawn's note (internal):**
 > *Same pattern as Olmstead's admissions ledger and Northbridge's banking chain. The database is mutable like any Postgres backend. The verifier catches the tamper at HMAC for single-entry attempts (§7 step 4) and at the Merkle/seal layer (§7 step 9) for multi-entry attempts. The CloudHSM key is what closes the loop — without HSM access, an attacker cannot forge a daily seal that matches the rewritten Merkle root, and the §1.4 compositional security analysis names the per-tenant HKDF binding plus Ed25519 EUF-CMA plus Merkle second-preimage as the three properties that compose to a 128-bit composite security level under NIST SP 800-175B. The ops team does not have HSM access. Two officers do, under separation of duties per §10.5 HSM custody. The split is real. (And Salt Pond's CloudHSM partition does not currently emit `chain.partition_ceremony_attended` per §10.17, because the institution has not had a partition ceremony in the eleven-month window — but the spec section is on the to-do list to wire up before the next IKM rotation, which is on the §10.10 cross-the-seal-boundary discipline.)*
 
 Mary Catherine watched the FAIL outputs come back. She did not say anything.
@@ -387,7 +387,7 @@ Raj: "Records edited inside three years — the change history is preserved. Rec
 
 James: "Correct. But the chain entries that reference those records live indefinitely on the chain side. The ERP is the operational system. The chain is the evidentiary record."
 
-Karen wrote: *ERP audit-log retention 3 years. Chain retention indefinite. The bifurcation between the operational record and the evidentiary record is documented and intentional. Same pattern as Northbridge's core banking versus the chain ledger.*
+Dawn wrote: *ERP audit-log retention 3 years. Chain retention indefinite. The bifurcation between the operational record and the evidentiary record is documented and intentional. Same pattern as Northbridge's core banking versus the chain ledger.*
 
 > **✓ Confirmation #6**
 > The chain ledger is append-only in practice per §10.3. Direct database mutation is technically possible — the Postgres backend is mutable like any Postgres backend — but the §7 verifier catches single-entry tamper at the HMAC layer (step 4) and multi-entry tamper at the Merkle/seal layer (step 9). Sampled 20 random entries across eleven months at random; all PASS. The ERP audit-log retention is three years; the chain retention is indefinite (subject to the institution's §10.13 evidentiary-artifacts retention discipline — SDK manifest, source-code hash, HSM configuration, daily seal-job logs, change-management records, verifier output for the period). The bifurcation between operational system and evidentiary record is intentional and documented; this lines up with §5.2 best-evidence posture (the captured JSON is the content-bearing form, the canonical bytes are the integrity-bearing form, both originals under FRE 1001(d)).
@@ -425,7 +425,7 @@ The recall-traceability service rotates monthly because it is the cross-cutting 
 
 "Clean separation between the production credential and the daily-seal HSM key," Diana said. "The Salt Pond ops team rotates the service credentials. The HSM key is in AWS CloudHSM `us-east-1` and is operated under a separation-of-duties policy with the CTO and the security director as the two authorized officers. Neither has rotated the seal key in the eleven months — the seal key has its own quarterly rotation cycle on its own cadence and that has happened on schedule."
 
-Karen wrote: *Three locations, four services, twenty-three rotations in eleven months, all chain-recorded. Cleaner separation than I expected for a $320M company. The CloudHSM-instead-of-on-prem decision is justified — Salt Pond is small enough that on-prem HSM was overkill, CloudHSM is acceptable per CPSC and CBP, and the operational discipline is in place.*
+Dawn wrote: *Three locations, four services, twenty-three rotations in eleven months, all chain-recorded. Cleaner separation than I expected for a $320M company. The CloudHSM-instead-of-on-prem decision is justified — Salt Pond is small enough that on-prem HSM was overkill, CloudHSM is acceptable per CPSC and CBP, and the operational discipline is in place.*
 
 Diana also walked the §10.17 HSM partition ceremony attestation discipline. Salt Pond's CloudHSM partition has not had a partition-creation, partition-wipe, IKM-rotation, partition-PIN-reset, or controlling-person-rotation ceremony in the eleven-month window — the institution's two authorized officers (CTO + security director per §10.5 separation of duties) have remained unchanged. When the next ceremony does occur (the IKM rotation is on a roughly biennial cadence per Salt Pond's CC8.1 schedule), Salt Pond will emit `chain.partition_ceremony_attended` per §10.17 with the full schema: `ceremony_type`, `partition_handle`, `ceremony_started_at_utc`, `ceremony_completed_at_utc`, `signatories` JCS-canonical array (each with `role`, `name`, `entity_affiliation` per Round-17 M&A-P1), `witness` JCS-canonical object (separate party from signatories), `attendance_pdf_sha256` (SHA-256 of the scanned attendance-log PDF). The optional `hsm_attestation_token_b64` field per §10.17 NIST-P3 (RECOMMENDED at v1.0b, candidate-normative for v1.x) will be emitted from CloudHSM's attestation API when the ceremony occurs.
 
@@ -438,7 +438,7 @@ Diana noted one boundary. "The contract-factory access-control system in Donggua
 
 Mary Catherine: "The factory access logs are part of our quarterly contract-compliance audit on the contract-factory side. We do pull them and review them. We just do not chain them."
 
-Karen: "Document the review cadence in the chain-coverage map per §10.19. That makes the boundary discoverable to a CPSC auditor and to a CTPAT revalidation reviewer who will ask 'where does the chain reach and what evidentiary substitute do you have where it doesn't.' The factory access-log review goes in the §10.19 third-party-under-contractual-inspection category. The institution names the contract clause that grants the inspection right, the substitute audit procedure (the quarterly review), and the cadence. The auditor reading the chain-coverage map sees the boundary, the reliance, and the institutional substitute in one document. That is the form the spec amendment closed."
+Dawn: "Document the review cadence in the chain-coverage map per §10.19. That makes the boundary discoverable to a CPSC auditor and to a CTPAT revalidation reviewer who will ask 'where does the chain reach and what evidentiary substitute do you have where it doesn't.' The factory access-log review goes in the §10.19 third-party-under-contractual-inspection category. The institution names the contract clause that grants the inspection right, the substitute audit procedure (the quarterly review), and the cadence. The auditor reading the chain-coverage map sees the boundary, the reliance, and the institutional substitute in one document. That is the form the spec amendment closed."
 
 Diana raised one more thing. "Mary Catherine — the third-generation transition. Per §10.24 entity succession, when a chain operating under `(tenant_id, run_id)` keying experiences a legal-entity change of the operator (merger, acquisition, divestiture, rename, subsidiary transfer), the institution must emit a `chain.entity_succession` operational event. Salt Pond is a family business; the family trust holding shares is in the middle of generational transition. If at some point the holding company restructures or the operating LLC is succeeded by a new entity, that triggers §10.24 — the institution emits the succession event with the from-entity LEI, the to-entity LEI per RFC 9101, the dual_signatures array (one from-entity authorized signer, one to-entity authorized signer, both bound under the seal of the transfer-day per §4.3 sign_payload v1.0b). It is not a problem today. It is a problem to be ready for."
 
@@ -460,7 +460,7 @@ The training-data lineage was the §10.20 question. The QC vision model was trai
 
 "Training-data retention floor under §10.20 is the longest active deployment window plus a 60-90 day investigation buffer. We trained eighteen months ago. The model has been in production eleven months. The longest active deployment window is eleven months and counting. Our retention floor on the training-data shards is two years post-training, which gives us roughly six months of buffer above the current deployment window. The retention floor is named in our CC8.1 control description per §10.20."
 
-Karen: "Cross-vendor model handover under §10.21 — does it apply? Or is this fully in-house?"
+Dawn: "Cross-vendor model handover under §10.21 — does it apply? Or is this fully in-house?"
 
 James: "Fully in-house. The model was trained by our Newport ML team and is operated by the same team. There is no external model-development consultancy; no cross-vendor anchor under §10.21 needed. If we ever bring in an external supplier-risk model — which is on the long-term roadmap for Phase 3 — the §10.21 `audit.model_handover.*` attribute family becomes the binding form, with the model_artifact_sha256, model_card_sha256, fairness_audit_report_sha256, and the §10.20 training_data_retention_floor_days commitment all on the chain."
 
@@ -481,7 +481,7 @@ Salt Pond's US-China data flows include manufacturing-floor images (Shenzhen →
 
 Per the Wave-6 fourth-errata Sun-Won-driven `audit.cross_border_transfer.*` attribute family (informative, advisory; canonical at §4.4.1 routing schema and §A.4 lookup), institutions transferring data across jurisdictions MAY emit cross-border transfer basis attributes on chain entries — `contract_id`, `contract_version`, `contract_hash_sha256`, `source_jurisdiction`, `destination_jurisdiction`, `lawful_basis_type`. Salt Pond is not currently emitting these attributes; the Phase 2 list adds them to the Shenzhen-Newport image-transfer chain entries.
 
-Karen: "The §A.4 attribute set lifts the cross-border posture from institutional convention to chain-discoverable. China's PIPL Article 38 cross-border transfer basis is institutional knowledge today; with the attribute set on the chain entries, a CPSC or CBP auditor can read the basis off the chain mechanically."
+Dawn: "The §A.4 attribute set lifts the cross-border posture from institutional convention to chain-discoverable. China's PIPL Article 38 cross-border transfer basis is institutional knowledge today; with the attribute set on the chain entries, a CPSC or CBP auditor can read the basis off the chain mechanically."
 
 Mary Catherine: "Add it. Phase 2."
 
@@ -502,25 +502,25 @@ Eduardo started. He had a thirty-year background in ocean import logistics and h
 
 "From Yantian to Los Angeles is fourteen days on the water. The container leaves Yantian sealed under a steamship-line bill of lading. The seal number is recorded by Yantian terminal operations at gate-out. The bill of lading is filed with CBP under the 24-Hour Manifest Rule before the ship leaves Yantian. Once it is on the water, the chain of custody is governed by CBP, the steamship line, and CTPAT — Customs-Trade Partnership Against Terrorism — vetting requirements for all parties on the manifest. We are a CTPAT Tier 2 importer in good standing."
 
-Karen: "And during the fourteen days, what does our chain see?"
+Dawn: "And during the fourteen days, what does our chain see?"
 
 Eduardo: "Nothing. The chain sees the lot manifest event when the container leaves Yantian — that is a Salt Pond Shenzhen chain entry. The chain sees the LA distribution receiving event when the container arrives at our DC — that is a Salt Pond LA chain entry. In between, the bonded-carrier custody is CBP's responsibility and the steamship line's responsibility. We rely on the CBP CSI data feed — Container Security Initiative — for in-transit visibility. That feed is not in our chain."
 
-Karen: "Why not?"
+Dawn: "Why not?"
 
 Eduardo: "Cost-benefit. The CSI feed updates every four hours during transit. Hashing it into our chain at every update would add roughly 84 chain entries per container. At our volume — about forty containers a month — that is 3,360 entries a month for in-transit visibility on a leg that we do not legally own. We did the math eleven months ago and decided to anchor only the entry and exit events."
 
-Karen: "And if a container is opened in transit by CBP for inspection?"
+Dawn: "And if a container is opened in transit by CBP for inspection?"
 
 Eduardo: "CBP issues a CES — Centralized Examination Station — notice. We get the notice. We do not currently hash that notice into the chain. It goes into the customs-broker file."
 
-Karen put her spoon down.
+Dawn put her spoon down.
 
 "That is the gap. Not the CSI feed updates — those are operational telemetry. The CES notices are evidentiary. If a container is opened in transit, the broken seal and the inspection record matter for chain-of-custody integrity downstream. That is exactly the kind of cross-vendor anchor you want in the chain."
 
 Eduardo nodded slowly. "We have had two CES notices in eleven months. Both routine, both clean. But you are right — those are evidentiary."
 
-Karen wrote: *CSI in-transit feed — hash anchoring at the entry, exit, and any CES inspection event. The feed itself stays out of chain (operational); the inspection notices anchor in. The right binding is `audit.external_artifact.*` per §10.19 with `kind = ces_inspection_notice` — the spec's named worked example. Recommend Phase 2.*
+Dawn wrote: *CSI in-transit feed — hash anchoring at the entry, exit, and any CES inspection event. The feed itself stays out of chain (operational); the inspection notices anchor in. The right binding is `audit.external_artifact.*` per §10.19 with `kind = ces_inspection_notice` — the spec's named worked example. Recommend Phase 2.*
 
 > **⚠️ Surprise #2 — Finding (this engagement drove `audit.external_artifact.*` into the spec body)**
 > The CBP Container Security Initiative (CSI) in-transit data feed is intentionally out of the chain on cost-benefit grounds. The chain anchors only the Yantian gate-out event and the LA receiving event. CES (Centralized Examination Station) inspection notices — issued when CBP opens a container in transit — are also currently out of the chain.
@@ -544,11 +544,11 @@ Karen wrote: *CSI in-transit feed — hash anchoring at the entry, exit, and any
 
 Li Wei spoke up from Shenzhen. "On the Yantian side, we already chain the gate-out event. The seal number, container ID, lot manifest, and bill-of-lading hash all go in. The Yantian terminal-operations system is the upstream we rely on for the gate-out event itself. That is third-party — Yantian Port Holdings."
 
-Karen: "Same shape as the EDI feed. Hash-record the upstream at the boundary, document that the upstream is not under our chain. The Yantian gate-out hash is itself a candidate for `audit.external_artifact.*` per §10.19 — `kind = bonded_carrier_manifest`, `source_party = yantian_port_holdings`, `evidentiary_role = chain_of_custody_handoff`. The spec's worked-example list names bonded-carrier manifests explicitly. James, Eduardo — both Yantian gate-out and the LA receipt should carry the `audit.external_artifact.*` form on the chain entry going forward, even though the chain already records the underlying events. The external_artifact wrapper makes the boundary discoverable at the schema level rather than as institutional convention."
+Dawn: "Same shape as the EDI feed. Hash-record the upstream at the boundary, document that the upstream is not under our chain. The Yantian gate-out hash is itself a candidate for `audit.external_artifact.*` per §10.19 — `kind = bonded_carrier_manifest`, `source_party = yantian_port_holdings`, `evidentiary_role = chain_of_custody_handoff`. The spec's worked-example list names bonded-carrier manifests explicitly. James, Eduardo — both Yantian gate-out and the LA receipt should carry the `audit.external_artifact.*` form on the chain entry going forward, even though the chain already records the underlying events. The external_artifact wrapper makes the boundary discoverable at the schema level rather than as institutional convention."
 
 Eduardo: "Eleven months in and we have not found the upstream wrong. Yantian operations is one of the cleanest container-terminal systems in the world."
 
-Karen: "That is operational confidence. The chain-of-custody documentation needs to say what the chain anchors and what it relies on. Not whether the upstream is in fact reliable. Per §1.2 epistemic scope — the chain proves what was received, not whether what was received was right. Yantian's reliability is institutional knowledge; the boundary is a chain-coverage-map fact."
+Dawn: "That is operational confidence. The chain-of-custody documentation needs to say what the chain anchors and what it relies on. Not whether the upstream is in fact reliable. Per §1.2 epistemic scope — the chain proves what was received, not whether what was received was right. Yantian's reliability is institutional knowledge; the boundary is a chain-coverage-map fact."
 
 Mary Catherine had been listening. "I want this in the chain-coverage map. The CES notices are the kind of thing CPSC will ask about during the cooperative-agreement audit. I want them in."
 
@@ -558,7 +558,7 @@ Tom wrote it down for the report.
 
 The chowder was very good.
 
-> **🔍 Karen's note (internal):**
+> **🔍 Dawn's note (internal):**
 > *Three things landed at lunch. One — the CES Nit became a §10.19 + `audit.external_artifact.*` deliverable. The spec section names ces_inspection_notice as a worked example, so the institutional implementation work is to wire the broker's case-management webhook into Salt Pond's chain emitter and stamp the six attributes. Two — the Yantian gate-out and LA receipt are reframed as `audit.external_artifact.*` entries with `kind = bonded_carrier_manifest`. Three — the chain-coverage map itself is the deliverable that contains all of the above. The map is a CC8.1 publication; it is version-stamped per §10.19 Round-17 M&A-P3 and chain-anchored via `chain.coverage_map_published`. The auditor's deliverable for Salt Pond is no longer "find the boundaries"; it is "publish the map, anchor the map version, name each boundary in the spec-mandated five categories." That is a much cleaner deliverable than the institution-internal-convention shape we were headed toward.*
 
 ---
@@ -589,7 +589,7 @@ Status: PASS
 Step: 12
 ```
 
-Luis turned the screen toward the camera. Karen watched from Newport. Mary Catherine read the output.
+Luis turned the screen toward the camera. Dawn watched from Newport. Mary Catherine read the output.
 
 "Same four-second pattern. Just faster on the LA hardware."
 
@@ -606,7 +606,7 @@ Luis pulled one. The AI had classified a unit as HTS 9503.00.00 — toys, not el
 
 "Clean," Mike said. "Structured override, controlled-vocabulary reason, broker-badge actor."
 
-Karen: "Same shape as Shenzhen QC."
+Dawn: "Same shape as Shenzhen QC."
 
 > **✓ Confirmation #9**
 > The customs-entry override workflow at LA mirrors the Shenzhen QC override workflow. Structured override decision, controlled-vocabulary reason code, broker-badge actor — same shape as §4.4.1's controlled-vocabulary discipline. Sampled override (HTS 9503 → 9504 reclassification per CBP ruling letter) verified PASS. Per §1.2 epistemic scope, the chain proves the broker overrode the AI's classification with a named reason; the chain does not prove the override was correct (CBP's own ruling-letter system is the source-of-truth for that).
@@ -615,7 +615,7 @@ The team worked the customs-entry service for forty-five minutes. Eight sample e
 
 Luis walked the chain-entry structure for the customs-entry service. The chain payload carries the AI's HTS classification (which is functionally a §4.4.1 routing decision — the AI routes the entry to one of thousands of HTS codes, with a confidence score per code), the duty calculation, the Section 321 eligibility decision, the CTPAT documentation hash, the broker-of-record badge, and (when applicable) the override decision with reason code. Per §4.4.1 the routing schema's six event types apply when the classification is multi-step — `attempt`, `success`, `failover`, `failover-exhausted-success`, `refused`, and the Wave-6 `classifier_output`. Salt Pond's customs-entry flow today uses a single-provider classification (the in-house HTS classifier model); future Phase 2 work could add a fallback classifier under §4.4.1 failover semantics. The override reason codes are controlled-vocabulary per the §4.4.1 `audit.routing.refusal_reason` schema discipline. The chain entries also carry the §4.4.2 deployment-intent attribute set (`audit.deployment.intent = production`) and the §4.4.3 transport identification resource attributes.
 
-> **🔍 Karen's note (internal):**
+> **🔍 Dawn's note (internal):**
 > *The customs-entry service is the chain's most cross-vendor leg. Five hash-anchored boundaries (Newport ERP export, LA receiving import, AI inference, CBP ABI gateway transmission, CBP acceptance) plus the post-amendment `audit.external_artifact.*` form for each cross-vendor handoff. The §10.19 chain-coverage map will name each boundary in the right category. The Section 321 partial is the only real gap; the Phase 2 work folded into the Descartes-webhook scope closes it.*
 
 ---
@@ -643,7 +643,7 @@ Mike: "The CBP-side reference number is anchored in our chain even though CBP's 
 
 Chen: "Right. We hash-record what we receive from CBP. CBP's internal chain-of-custody for the entry summary is theirs. We do not extend into it."
 
-Karen: "Same shape as the EDI 852 from Target this morning. Same shape as Yantian gate-out from this morning. The chain anchors at every cross-vendor boundary; the upstream/downstream chain belongs to the other party."
+Dawn: "Same shape as the EDI 852 from Target this morning. Same shape as Yantian gate-out from this morning. The chain anchors at every cross-vendor boundary; the upstream/downstream chain belongs to the other party."
 
 Chen: "We have five legs. Five hash anchors. Five bytes-on-disk references. If CBP comes back two years from now and asks 'what did you submit on March 27, 2026, for entry 2026-03-27-CE-04188', we can produce the bytes, prove the hash, and show the ABI transmission record."
 
@@ -654,11 +654,11 @@ Eduardo flagged a wrinkle.
 
 "Section 321 de-minimis. We do direct-to-consumer Amazon for some SKUs — the under-$800 ones. Section 321 lets shipments under $800 in fair retail value enter duty-free under the de-minimis rule. CBP issued a rule change in 2025 requiring more granular country-of-origin reporting on de-minimis entries. Our customs-entry AI handles this for full-container freight cleanly. The de-minimis pipeline is partly manual — the customs broker reviews each de-minimis batch before submission, and the manual review is partially out of the AI's chain."
 
-Karen: "How partial?"
+Dawn: "How partial?"
 
 Eduardo: "The AI generates the country-of-origin classification and the de-minimis eligibility check. The broker manually adds the granular country-of-origin breakdown when it does not match the AI's pre-classification. That manual addition is captured in the broker's case-management system but is not currently hashed into our chain. We hash the final ABI submission, so the broker's addition is captured in the final hash. But the intermediate state — the AI's pre-classification, the broker's manual addition, the merged result — is only partially in the chain."
 
-Karen wrote: *Section 321 de-minimis chain coverage — partial. AI pre-classification in chain. Broker manual addition in broker case-management system, not hashed in until final ABI submission. Final submission is in chain. Intermediate state is partial. CBP is moving on de-minimis enforcement. The §10.19 `audit.external_artifact.intermediate_state` boolean is exactly the binding the broker's case-snapshot needs — the spec's Wave-6 fourth-errata worked example IS the customs-broker case-snapshot at moment-of-save before the final ABI submission. Recommend Phase 2 to hash-anchor the broker's manual addition step using `audit.external_artifact.*` with `intermediate_state = true`.*
+Dawn wrote: *Section 321 de-minimis chain coverage — partial. AI pre-classification in chain. Broker manual addition in broker case-management system, not hashed in until final ABI submission. Final submission is in chain. Intermediate state is partial. CBP is moving on de-minimis enforcement. The §10.19 `audit.external_artifact.intermediate_state` boolean is exactly the binding the broker's case-snapshot needs — the spec's Wave-6 fourth-errata worked example IS the customs-broker case-snapshot at moment-of-save before the final ABI submission. Recommend Phase 2 to hash-anchor the broker's manual addition step using `audit.external_artifact.*` with `intermediate_state = true`.*
 
 > **⚠️ Surprise #3 — Finding (this engagement drove `audit.external_artifact.intermediate_state` into the spec body)**
 > Section 321 de-minimis chain coverage is partial. The AI pre-classification is in the chain. The customs broker's manual country-of-origin addition (required when the AI's pre-classification needs more granular detail under the 2025 CBP rule change) is captured in the broker's case-management system, not hashed into Salt Pond's chain until the final ABI submission. The final submission hash captures the merged result, so the chain has the end-state. The intermediate-state coverage is the gap.
@@ -683,7 +683,7 @@ Karen wrote: *Section 321 de-minimis chain coverage — partial. AI pre-classifi
 
 Eduardo: "Fair. We have been waiting to see whether the CBP rule change finalizes before investing in the broker-side integration. It looks like it is finalizing. I will put it on the Phase 2 list."
 
-Karen: "Document the current coverage in the report and put the Phase 2 recommendation in the remediation list. Do not document this as a gap. It is a partial with a known remediation path — and the §10.19 `audit.external_artifact.intermediate_state` form is the spec's named binding for it. The institutional shape and the spec shape line up."
+Dawn: "Document the current coverage in the report and put the Phase 2 recommendation in the remediation list. Do not document this as a gap. It is a partial with a known remediation path — and the §10.19 `audit.external_artifact.intermediate_state` form is the spec's named binding for it. The institutional shape and the spec shape line up."
 
 Tom wrote it down.
 
@@ -737,7 +737,7 @@ Mary Catherine nodded, slowly.
 
 The whole team came back to the Newport conference room. Eduardo was on from LA. Li Wei was still on from Shenzhen — it was 3 AM there now, and he had been on the bridge for six and a half hours. He had said earlier he wanted to stay through the recall test.
 
-Karen stood at the whiteboard.
+Dawn stood at the whiteboard.
 
 "Recall-readiness exercise. We pick a lot, we run a hypothetical recall, we measure how long it takes to produce a complete trace. Mary Catherine, you pick the lot."
 
@@ -811,7 +811,7 @@ Mike narrated the chain-walk for the team. The recall-trace tool is built on the
 
 The recall-trace tool also produces an §A.14 external-artifact lookup view: the seven `audit.external_artifact.kind` values across the trace (cpsia_certificate, bonded_carrier_manifest at gate-out, bonded_carrier_manifest at LA receipt, customs_broker_state_snapshot if Section 321 was in play, cbp_abi_submission, retailer_edi_feed, factory_access_log_extract for any factory-side anchored evidence) plus the institution's named cadence and retention for each kind. The §A.14 lookup view is mechanically generated from the chain entries; it requires no institutional reconstruction.
 
-Karen looked at the wall clock. 3:14 PM. They had started at 3:00 sharp.
+Dawn looked at the wall clock. 3:14 PM. They had started at 3:00 sharp.
 
 "Fourteen minutes."
 
@@ -828,7 +828,7 @@ Mary Catherine held the printed lot index in her hand and looked at it for a lon
 
 "This is what we did not have in 2024."
 
-Karen wrote: *Recall test passed. 14 minutes. Cross-location, cross-vendor, end-to-end. Comprehensive. The chain is what stands between Salt Pond and the next 'recoverable rather than producible' moment.*
+Dawn wrote: *Recall test passed. 14 minutes. Cross-location, cross-vendor, end-to-end. Comprehensive. The chain is what stands between Salt Pond and the next 'recoverable rather than producible' moment.*
 
 ---
 
@@ -836,21 +836,21 @@ Karen wrote: *Recall test passed. 14 minutes. Cross-location, cross-vendor, end-
 
 The recall test had gone well enough that the room was relaxed. Eduardo on the LA bridge raised his hand.
 
-"Karen. One more thing on Section 321."
+"Dawn. One more thing on Section 321."
 
-Karen: "Go."
+Dawn: "Go."
 
 "The CBP de-minimis rule change finalized two weeks ago. It is going into effect on July 1. The granular country-of-origin reporting requirement is more aggressive than what we are currently doing. Our broker's manual addition step — the partial we wrote up at lunch — has to be hashed into our chain by July 1 to keep the chain coverage clean. That is fourteen weeks."
 
-Karen: "What is the implementation work?"
+Dawn: "What is the implementation work?"
 
 Eduardo: "Webhook from the broker's case-management system into our chain at the moment the broker saves the manual addition. The broker's vendor — Descartes — already has a webhook API. Our customs-entry service consumes webhooks. The implementation is small. The schedule is the issue. Fourteen weeks for what should be a four-week project, given that we have to coordinate with Descartes, our broker, and the CBP rule effective date."
 
-Karen paused. "Eduardo — Descartes is a SaaS platform whose change stream we will consume. That puts us in §10.16 SaaS-edge capture connectors territory. The chain extension into the SaaS edge happens through a mirror connector — the institution operates a process that subscribes to Descartes's change stream, replicates the broker's case-state into the institution's chain-instrumented store, and emits the chain entry from that store. Per §10.16 the institution's CC8.1 must quantify four numbers — median lag, 95th-percentile lag SLO over a rolling 30-day window, alerting threshold strictly greater than the SLO and typically no more than 2× the SLO, and connector-outage RTO. The §10.16 normative posture is hard: imprecise lag wording is non-conformance, never a Nit. We do not get to write 'near real-time' on the runbook."
+Dawn paused. "Eduardo — Descartes is a SaaS platform whose change stream we will consume. That puts us in §10.16 SaaS-edge capture connectors territory. The chain extension into the SaaS edge happens through a mirror connector — the institution operates a process that subscribes to Descartes's change stream, replicates the broker's case-state into the institution's chain-instrumented store, and emits the chain entry from that store. Per §10.16 the institution's CC8.1 must quantify four numbers — median lag, 95th-percentile lag SLO over a rolling 30-day window, alerting threshold strictly greater than the SLO and typically no more than 2× the SLO, and connector-outage RTO. The §10.16 normative posture is hard: imprecise lag wording is non-conformance, never a Nit. We do not get to write 'near real-time' on the runbook."
 
 Eduardo: "Understood. We will quantify the four numbers in the runbook before the integration goes live. The 95th-percentile bound for a broker-case-management webhook is probably 30-60 seconds; the alerting threshold around 90-120 seconds; the RTO under one hour."
 
-Karen: "Document it. The §4.4.6 SaaS-edge connector source attribution attribute family — `audit.connector_source.*` — is also normative on connector-emitted chain entries: `system = "descartes-webhook"`, `replay_id`, `commit_timestamp`, `commit_user`, `lag_observed_ms`, `change_kind`. Per the §4.4.6 stable run_id discipline, the chain `run_id` for connector-emitted entries must be derived from a stable Descartes-side identifier (the broker case ID is the obvious choice), not from an ephemeral runtime identifier."
+Dawn: "Document it. The §4.4.6 SaaS-edge connector source attribution attribute family — `audit.connector_source.*` — is also normative on connector-emitted chain entries: `system = "descartes-webhook"`, `replay_id`, `commit_timestamp`, `commit_user`, `lag_observed_ms`, `change_kind`. Per the §4.4.6 stable run_id discipline, the chain `run_id` for connector-emitted entries must be derived from a stable Descartes-side identifier (the broker case ID is the obvious choice), not from an ephemeral runtime identifier."
 
 Eduardo: "Stable run_id is straightforward. The broker case ID is stable across the case lifecycle."
 
@@ -860,13 +860,13 @@ Eduardo: "Roughly fifty thousand dollars to Descartes for the webhook customizat
 
 Mary Catherine: "Approve. I will sign for it this afternoon."
 
-Karen: "That moves the partial from 'recommended Phase 2' to 'in flight, completion by July 1, ahead of the rule effective date.'"
+Dawn: "That moves the partial from 'recommended Phase 2' to 'in flight, completion by July 1, ahead of the rule effective date.'"
 
 Eduardo: "Yes."
 
 Tom wrote it in his book.
 
-> **🔍 Karen's note (internal):**
+> **🔍 Dawn's note (internal):**
 > *The Section 321 partial got moved to in-flight inside thirty minutes of the recall test producing a clean trace. The recall test sold the partial. The chain working on the recall convinced the COO to fund the partial closure. That is the right shape. We did not have to write a finding letter. The client funded the remediation in the same room.*
 >
 > *And the funded shape lines up with the spec's normative form — `audit.external_artifact.kind = customs_broker_state_snapshot` with `intermediate_state = true` per §10.19. Eduardo's Descartes-webhook scope is the §10.16 SaaS-edge connector pattern with the §4.4.6 connector-source attribution. The institutional implementation work and the spec's normative form are the same shape; the engineering team will not have to translate. That is the test of a spec amendment landing well: when the institutional remediation falls naturally into the spec's named binding, the spec did its job at the right level of abstraction.*
@@ -887,7 +887,7 @@ Mary Catherine: "Quarterly. James, put it in the runbook."
 
 James, on the bridge: "Quarterly recall-trace validation, named in CC8.1, cross-referenced to §10.18, archived per §10.13. Done."
 
-Karen: "And the §10.12 verifier CLI exit-code contract gives you a structured signal — exit 0 for PASS, exit 1 for verifier-procedure-failure, exit 2 for control-completeness anomaly under PASS, exit 3 for a verifier internal error. The recall-trace tool can wrap the verifier call and surface the four exit codes to the operator running the validation. That gives you a quarterly dashboard of exit-code histograms over time — drift detection at the operational level, not at the chain-integrity level."
+Dawn: "And the §10.12 verifier CLI exit-code contract gives you a structured signal — exit 0 for PASS, exit 1 for verifier-procedure-failure, exit 2 for control-completeness anomaly under PASS, exit 3 for a verifier internal error. The recall-trace tool can wrap the verifier call and surface the four exit codes to the operator running the validation. That gives you a quarterly dashboard of exit-code histograms over time — drift detection at the operational level, not at the chain-integrity level."
 
 > **✓ Confirmation #15 (recall-test validation cadence)**
 > Salt Pond commits to quarterly recall-trace validations, named in CC8.1 per §10.18, archived as §10.13 evidentiary artifacts, with the §10.12 verifier exit-code contract surfacing the operational signals. The cumulative evidence over a year is four trace outputs (one per quarter); the cross-engagement evidence over the four-year CTPAT revalidation cycle is sixteen trace outputs. The spec sections that ground the validation cadence are §10.13 evidentiary artifacts retention, §10.18 runbook cross-referencing, §10.12 verifier CLI exit-code contract, and §10.19 chain-coverage map (the recall-trace exercises every cross-vendor boundary on the map; quarterly validation tests the map continuously).
@@ -896,21 +896,21 @@ Karen: "And the §10.12 verifier CLI exit-code contract gives you a structured s
 
 ## ⚖️ 4:15 PM ET — Brief Aside on Litigation Posture
 
-Tom and Karen had a brief aside before the recall-question scene. Salt Pond is in the consumer-products space; product-liability litigation is a real risk class even when the chain is producing 14-minute traces.
+Tom and Dawn had a brief aside before the recall-question scene. Salt Pond is in the consumer-products space; product-liability litigation is a real risk class even when the chain is producing 14-minute traces.
 
 Tom: "If a class-action suit were filed tomorrow alleging defective lot 25-D-0492, what is our FRE 902 posture? Self-authentication of electronic records under FRE 902(13) and FRE 902(14) — can we lay foundation from the chain alone?"
 
-Karen: "Per §5.2 best-evidence posture and §10.13 evidentiary-artifacts retention, yes. The captured JSON is the content-bearing form; the canonical bytes are the integrity-bearing form; both are originals under FRE 1001(d). The chain's PASS output plus the §10.13 artifact set (SDK manifest, source-code hash, HSM configuration, daily seal-job logs, change-management records, verifier output for the period) substantiate FRE 901(b)(9) authentication of the process. The institution's IT witness lays foundation from these without re-engineering the system."
+Dawn: "Per §5.2 best-evidence posture and §10.13 evidentiary-artifacts retention, yes. The captured JSON is the content-bearing form; the canonical bytes are the integrity-bearing form; both are originals under FRE 1001(d). The chain's PASS output plus the §10.13 artifact set (SDK manifest, source-code hash, HSM configuration, daily seal-job logs, change-management records, verifier output for the period) substantiate FRE 901(b)(9) authentication of the process. The institution's IT witness lays foundation from these without re-engineering the system."
 
 Tom: "And the partial-disclosure mode? If plaintiff's counsel asks for the QC chain entries for lot 25-D-0492 only — not the full chain — can we produce a verifiable subset?"
 
-Karen: "Per the verifier-design partial-disclosure mode (RFC 6962 §2.1.1 audit path with directional-bit encoding, integrated with the §10.12 verifier exit-code contract), yes. The partial-disclosure verifier produces an audit-path output that proves the disclosed entries were under the day's Merkle seal without exposing the rest of the chain. That is the symmetric-production discipline a court-ordered selective-production complies with."
+Dawn: "Per the verifier-design partial-disclosure mode (RFC 6962 §2.1.1 audit path with directional-bit encoding, integrated with the §10.12 verifier exit-code contract), yes. The partial-disclosure verifier produces an audit-path output that proves the disclosed entries were under the day's Merkle seal without exposing the rest of the chain. That is the symmetric-production discipline a court-ordered selective-production complies with."
 
 Tom: "Document this in the CC8.1 control description so the institution's litigation-support team has a named procedure to invoke. Per §10.18 cross-referencing the procedure ties to the partial-disclosure mode in the verifier design."
 
 Mary Catherine, from her seat: "The General Counsel will want to see this in writing. The 2024 inspector wrote 'recoverable rather than producible'; the 2026 GC will want to read 'producible AND verifiable AND admissible under FRE 902.' Add it to the Friday memo."
 
-Karen: "Done."
+Dawn: "Done."
 
 > **✓ Confirmation #16 (litigation posture)**
 > Salt Pond's chain produces FRE 902(13) / 902(14) self-authenticating electronic records per §5.2 best-evidence posture and §10.13 evidentiary-artifacts retention. The §10.12 verifier exit-code contract gives the litigation-support team a structured signal for chain integrity. The partial-disclosure verifier mode supports court-ordered selective production with audit-path proof of inclusion under the day's Merkle seal without exposing the rest of the chain. The institutional CC8.1 control description names the litigation-support invocation per §10.18 cross-referencing.
@@ -925,13 +925,13 @@ She turned around.
 
 "I want to ask one question before we wrap. If I get a CPSC call tonight saying lot 25-D-0492 has a defect that we missed in QC, what does the chain give me?"
 
-Karen looked at her steadily.
+Dawn looked at her steadily.
 
-"Walk it through with me," Karen said.
+"Walk it through with me," Dawn said.
 
 Mary Catherine nodded.
 
-Karen stood and went to the whiteboard.
+Dawn stood and went to the whiteboard.
 
 "One. The chain has every QC pass for lot 25-D-0492 from the Foshan factory floor on November 12 through November 15, 2025. Three thousand eight hundred and forty unit-level entries, plus the forty-seven flagged units with their pre- and post-rework images. If CPSC says the QC missed a defect, you produce the QC chain and you can say: here are all 3,840 inspections, here are the 47 we caught, here are the images we have. If the alleged defect is in one of the units we caught and reworked, the image and the disposition are in the chain. If the alleged defect was systematic, the whole lot's QC record is in the chain."
 
@@ -975,7 +975,7 @@ Mary Catherine had been watching the whiteboard. She nodded.
 
 "Compared to the 2024 scare, we now have evidence."
 
-Karen: "Compared to the 2024 scare, the inspector would not write 'recoverable rather than producible.' He would write 'producible' and then he would ask his lab questions about the actual product. The chain has done its job. Whatever happens next is between the lab and the testing data, not between the inspector and Salt Pond's filing cabinets."
+Dawn: "Compared to the 2024 scare, the inspector would not write 'recoverable rather than producible.' He would write 'producible' and then he would ask his lab questions about the actual product. The chain has done its job. Whatever happens next is between the lab and the testing data, not between the inspector and Salt Pond's filing cabinets."
 
 Mary Catherine sat down.
 
@@ -988,9 +988,9 @@ Mary Catherine sat down.
 
 ## 🗺️ 5:00 PM ET — The Chain-Coverage Map (§10.19 deliverable)
 
-Before the joint debrief, Karen pulled Mary Catherine and James aside for a fifteen-minute aside on the shape of the §10.19 chain-coverage-map deliverable. The §10.19 spec section is structural — it names what must appear; the institutional task is to render the structure for Salt Pond's actual topology.
+Before the joint debrief, Dawn pulled Mary Catherine and James aside for a fifteen-minute aside on the shape of the §10.19 chain-coverage-map deliverable. The §10.19 spec section is structural — it names what must appear; the institutional task is to render the structure for Salt Pond's actual topology.
 
-Karen drew the five-category template on the whiteboard.
+Dawn drew the five-category template on the whiteboard.
 
 ```
 §10.19 Chain-coverage map (CC8.1 publication, version-stamped, chain-anchored)
@@ -1007,7 +1007,7 @@ Karen drew the five-category template on the whiteboard.
      (audit.external_artifact.* kinds + cadence + retention posture)
 ```
 
-Karen walked through Salt Pond's topology against each category.
+Dawn walked through Salt Pond's topology against each category.
 
 **Category 1 — Chain-instrumented institutional systems.** Four entries: `(saltpond, qc-vision-shenzhen)`, `(saltpond, customs-entry-la)`, `(saltpond, demand-forecast-newport)`, `(saltpond, recall-traceability)`. Each carries §4.4.3 transport identification (`ffiec.chain.spec`, `service.name`, `service.version`, `ffiec.chain.posture`, `ffiec.chain.format_version`). Each emits §10.2 operational events on its own cadence. The four service-identity rotations per single-location service plus the eleven monthly rotations on `recall-traceability` are §10.2-eventized.
 
@@ -1033,9 +1033,9 @@ The chain-anchor cadence varies by kind. The retention posture for the source ar
 
 **Version stamp and chain anchor.** The map carries `coverage_map_version = "v1.0"` (institution-issued, monotonically incrementing) and `effective_utc = 2026-04-01T00:00:00Z` (the publication date). Each publication emits the §10.2 `chain.coverage_map_published` operational event carrying `coverage_map_version`, `effective_utc`, and `coverage_map_sha256` (SHA-256 over the canonical bytes of the published map). Salt Pond will re-emit on every seal day per the §10.19 Round-17 M&A-P3 recommendation, so an 18-month-lookback auditor finds at least one anchor event in any sampled month — the §10.19 normative reason for chain-anchoring is exactly the M&A-due-diligence lookback case.
 
-Mary Catherine read the whiteboard end-to-end. "This is what I needed. The Friday memo is going to have one new appendix — the chain-coverage map — and the appendix is going to be the §10.19 deliverable. Karen, can you produce a draft tonight?"
+Mary Catherine read the whiteboard end-to-end. "This is what I needed. The Friday memo is going to have one new appendix — the chain-coverage map — and the appendix is going to be the §10.19 deliverable. Dawn, can you produce a draft tonight?"
 
-Karen: "Draft tonight, sign-off Friday morning. James, the runbook cross-references per §10.18 are on you."
+Dawn: "Draft tonight, sign-off Friday morning. James, the runbook cross-references per §10.18 are on you."
 
 James: "Done."
 
@@ -1050,7 +1050,7 @@ Tom wrote the §10.19 deliverable into the engagement-output list under "remedia
 
 The team reconvened — Newport in the conference room, LA on the bridge, Shenzhen on the bridge with Li Wei now near 5:30 AM local time, Elena from Boston on the bridge.
 
-Karen stood at the whiteboard. Four rows.
+Dawn stood at the whiteboard. Four rows.
 
 | Audience | Status |
 |---|---|
@@ -1085,7 +1085,7 @@ She put the pen down.
 
 Eduardo from LA: "One question on the CTPAT side. The CES-notice anchoring lands by July 1 with the Section 321 webhook. Does CBP read the §10.19 + `audit.external_artifact.*` form as 'tighter than current' for the revalidation, or as 'institution-internal documentation that does not affect the revalidation findings'?"
 
-Karen: "Per §10.19's chain-coverage map intent, the map is a CC8.1 publication that makes the institution's chain-of-custody posture discoverable to a vendor-management auditor. CBP's CTPAT revalidation is a vendor-management-side read of the importer's posture; the §10.19 map is exactly the kind of institution-internal document the revalidation reviewer can read in advance and reference during the on-site review. The CES-notice anchoring is the operational proof that the chain is doing what the map says. Together they make the revalidation a structured read against published evidence rather than an investigative read against institutional convention. CBP has been reading institutional convention for years; the spec amendment lifts the institutional shape into a discoverable structure that survives the auditor handoff between revalidation cycles."
+Dawn: "Per §10.19's chain-coverage map intent, the map is a CC8.1 publication that makes the institution's chain-of-custody posture discoverable to a vendor-management auditor. CBP's CTPAT revalidation is a vendor-management-side read of the importer's posture; the §10.19 map is exactly the kind of institution-internal document the revalidation reviewer can read in advance and reference during the on-site review. The CES-notice anchoring is the operational proof that the chain is doing what the map says. Together they make the revalidation a structured read against published evidence rather than an investigative read against institutional convention. CBP has been reading institutional convention for years; the spec amendment lifts the institutional shape into a discoverable structure that survives the auditor handoff between revalidation cycles."
 
 Eduardo: "Got it. We will package the chain-coverage map plus the four-quantified-number §10.16 connector lag bounds plus the CES-notice anchoring chain entries together for the revalidation packet."
 
@@ -1109,15 +1109,15 @@ Li Wei smiled. "Good night, Mary Catherine. Or — good evening for you. We will
 
 His tile went dark.
 
-Eduardo on the LA tile: "Karen, thank you. Same offer as Eduardo always makes — when you are next in LA, the staging-floor tour is open. The crew likes auditors who actually look at the floor."
+Eduardo on the LA tile: "Dawn, thank you. Same offer as Eduardo always makes — when you are next in LA, the staging-floor tour is open. The crew likes auditors who actually look at the floor."
 
-Karen: "I will take you up on that."
+Dawn: "I will take you up on that."
 
 Elena waved goodnight from Boston.
 
 The Newport team packed up. Raj loaded the boxes of evidence into the rental SUV. Diana said goodbye to Mary Catherine at the door. Mike took one last look at the salt pond — the heron was back, standing in the shallows, head down.
 
-Karen walked out last. She turned at the doorway and looked back at the conference-room window — at the empty whiteboard, the cold chowder bowls, the four rows that would become Friday's memo.
+Dawn walked out last. She turned at the doorway and looked back at the conference-room window — at the empty whiteboard, the cold chowder bowls, the four rows that would become Friday's memo.
 
 She thought about what would land on Friday and what would land later. Friday's deliverable was the four-row summary, the recall test result, the Section 321 partial in flight, and the §10.19 chain-coverage map drafted overnight. The §10.16 quantified-lag-bound runbook for the Descartes integration would land within four weeks, ahead of the webhook integration going live. The §10.18 runbook cross-references would land alongside the runbook updates the Phase 2 work generated. The §10.19 chain-coverage map version-stamping discipline (`coverage_map_version`, `effective_utc`, `chain.coverage_map_published` operational event per §10.2) would be operational from the first published version. The §10.20 training-data retention floor was already in CC8.1; no work needed there. The §10.21 cross-vendor model-handover schema was on Phase 3 not Phase 2. The §10.24 entity succession runbook section would land as a standing procedure ahead of the family-trust generational transition.
 
@@ -1127,7 +1127,7 @@ She put the SUV in gear. Tom looked at her.
 
 "How does this one rank against the eight?"
 
-Karen thought about it. "Cleanest cross-vendor anchor we have seen — Bureau Veritas. Cleanest single-service per-unit chain — Shenzhen QC. Most cross-vendor boundaries — customs-entry. Best recall test — 14 minutes on a cold pick. Most spec amendments driven — §10.19 and `audit.external_artifact.*`. Highest stakes-to-effort ratio — the 2024 inspector's phrase 'recoverable rather than producible' cost the family three years of operational anxiety; the 2026 chain test on lot 25-D-0492 would have closed the same inquiry in fourteen minutes."
+Dawn thought about it. "Cleanest cross-vendor anchor we have seen — Bureau Veritas. Cleanest single-service per-unit chain — Shenzhen QC. Most cross-vendor boundaries — customs-entry. Best recall test — 14 minutes on a cold pick. Most spec amendments driven — §10.19 and `audit.external_artifact.*`. Highest stakes-to-effort ratio — the 2024 inspector's phrase 'recoverable rather than producible' cost the family three years of operational anxiety; the 2026 chain test on lot 25-D-0492 would have closed the same inquiry in fourteen minutes."
 
 Tom: "And the wrinkle?"
 
@@ -1141,7 +1141,7 @@ The salt pond was glassy in the rearview mirror. The heron stood in the shallows
 
 The chain reached every boundary it owns. It stopped cleanly at every boundary it does not. The §10.19 chain-coverage map and the `audit.external_artifact.*` family — both folded into the spec body because this engagement found them — would outlast this engagement and serve the next consumer-products engagement as a starting condition. That is what an engagement that drives spec amendments looks like in retrospect: the institutional remediation list and the spec body close at the same time, and the next reader of the spec gets the closure as a starting point.
 
-> **🔍 Karen's note (internal):**
+> **🔍 Dawn's note (internal):**
 > *Eight engagements in. First time we ran one across three locations on a video bridge. The bridge worked. The chain worked. The boundaries are at the cross-vendor seams — Bureau Veritas, Yantian, the steamship line, CBP, the contract factories, the retailers — and at each seam the chain anchors at the boundary and documents what it relies on. The maritime leg is genuinely CBP's chain. The chain literally isn't there because it isn't supposed to be. The handoff is documented.*
 >
 > *It never is — and at the bonded-carrier handoff, the chain literally isn't, because it's CBP's chain after that point. The question is whether the handoff is documented, not whether we extend the chain into the maritime leg. Today we proved the handoff is documented. Tomorrow we recommend tightening it at the CES-notice receipt.*
