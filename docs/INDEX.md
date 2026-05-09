@@ -1,5 +1,7 @@
 # Documentation index
 
+> **⚠️ DEPRECATED — this entire `docs/` directory is no longer authoritative.** It is preserved as a historical snapshot. Authoritative chain-of-custody specification, conformance test vectors, governance, and public-facing project documents now live in [`ffiec-public`](https://github.com/smuchow1962/ffiec-chain-of-custody). Cross-references inside this tree to `spec/...`, design rationale, regulator-pack overlays, and feedback rounds may be stale, internally inconsistent, or contradicted by the current spec lifecycle there. Treat anything below as informational background only.
+>
 > **What this doc is.** Top-level navigation for the chain-of-custody documentation. If you're new to the corpus, find your audience below and follow the suggested reading order.
 
 ## By audience

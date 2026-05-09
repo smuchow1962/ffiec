@@ -31,13 +31,9 @@ This is a monorepo with three Go modules:
 | [`ledger/`](ledger/) | Reference ingest server. Receives OTLP, verifies HMAC, writes append-only ledger, computes daily Merkle seal, signs in HSM. |
 | [`verifier/`](verifier/) | Standalone offline CLI for examiners. Walks the chain, verifies every HMAC, validates the daily Merkle proof, validates the HSM signature. |
 
-Plus the design documents:
+The chain-of-custody **specification**, conformance test vectors, governance, and all authoritative project documentation live in a separate repo, [`ffiec-public`](https://github.com/smuchow1962/ffiec-chain-of-custody). That is the canonical source.
 
-| Path | Purpose |
-|---|---|
-| [`docs/design/`](docs/design/) | Design documents for the reference implementations and the threat model. |
-
-The chain-of-custody **specification** itself lives in a separate repo, [`ffiec-public`](https://github.com/smuchow1962/ffiec-chain-of-custody) — that is the canonical source for spec text and conformance test vectors. Cross-references inside `docs/` that still point at `spec/...` are stale and will be cleaned up in a follow-up sweep.
+The [`docs/`](docs/) tree in this repo is **deprecated** — preserved as a historical snapshot but no longer authoritative. See [`docs/INDEX.md`](docs/INDEX.md) for the deprecation banner.
 
 ## Quick start
 
