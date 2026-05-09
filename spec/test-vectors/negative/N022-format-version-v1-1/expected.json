@@ -1,7 +1,0 @@
-{
-  "_about": "Expected verifier output for N022. The verifier MUST refuse the chain at spec §7 step 1 with the reason string below. Status MUST be FAIL.",
-  "status": "FAIL",
-  "step": 1,
-  "reason": "format_version v1.1 not supported by this verifier (running v1)",
-  "match_rule": "exact-or-syntactically-equivalent (the version string and verifier-running-version MUST be the same; whitespace and punctuation around the literal MAY vary)"
-}

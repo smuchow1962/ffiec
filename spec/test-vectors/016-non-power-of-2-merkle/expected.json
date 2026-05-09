@@ -1,8 +1,0 @@
-{
-  "_about": "Expected Merkle roots for case 016. A conforming v1 verifier implementing RFC 6962 §2.1 right-promote balancing MUST reproduce these byte-for-byte from the leaves in fixture.json.",
-  "merkle_roots": {
-    "3_leaves": "dd6351d5116bd0e6e52ed6731a4dc22de6b1a7811a79fec21a52b1dfcac10810",
-    "5_leaves": "ba019ff1e3c94d606603b6fef0dfd33e1a0ab7202babb9e5e6029b2cdbdaa339",
-    "7_leaves": "ac2e348512498a8d06b1bf432a303d1025ced42a25a7dbe68a8454bd22126779"
-  }
-}
