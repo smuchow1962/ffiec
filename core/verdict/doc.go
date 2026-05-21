@@ -22,17 +22,23 @@
 // lookup table for `additional_verifications` markers lives here
 // alongside the verdict struct.
 //
-// Commit-5 default shape (per Richard's cross-consult 2026-05-21):
-// 2-field verdict object — `additional_verifications` + `exit_code`
-// — matching what the .NET + Python references emit today and
-// gating against vector 036 sub-cases (036a/b/c) without breaking
-// cross-implementation byte-pin tests. The four spec-normative
-// non-optional fields (`posture`, `verifier_version`,
-// `verifier_spec_version_supported`, `trust_anchor_manifest_sha256`)
-// and the v1.0c-optional `operational_events_log_root` are scaffold
-// TODOs with explicit comment markers; Steve's open call on
-// 2-vs-6-field shape decides whether they ship in Commit 5 or wait
-// for fixture 036d to materialize cross-impl convergence.
+// Commit-5 shape (locked 2026-05-21 per Steve's J-1 answer): full
+// 6-field Verdict-Object — `additional_verifications`, `exit_code`,
+// `posture`, `trust_anchor_manifest_sha256`,
+// `verifier_spec_version_supported`, `verifier_version` — plus the
+// v1.0c-optional `operational_events_log_root` field per §10.79.
+// Six fields ship at v1.0 because the spec normates them as
+// required and shipping less than spec-required is a conformance
+// gap we won't accept. Critical path: Heather's case 036 extension
+// + §10.12 normative-text lift land first (her amendment queue
+// priority); Glenn's .NET + Python Verdict 6-field catchup lands
+// the cross-impl byte-equivalence pin Commit 5 gates against.
+//
+// Per the locked release plan, the `verifier_version` field carries
+// the implementation identifier shape "<binary-name>-v1.0.0-YYYY-MM-DD"
+// — version + build date so an examiner reading the verdict can
+// confirm vintage at a glance. The binary name lands at Commit 6
+// when Steve picks the final verifier product name.
 //
 // The 18-marker `additional_verifications` enumeration ships in
 // full at Commit 5 even though .NET + Python carry only 1 today.
@@ -47,7 +53,9 @@
 // Herald.Py/src/herald/_verdict.py; both implementations agree
 // byte-for-byte on the integer exit codes, the streaming/terminal
 // partition, and the structured verdict's JCS-canonical form."
-// Three-way symmetry is the conformance bar.
+// Three-way symmetry across the Go reference verifier + Visus
+// (Python; renamed from Vidimus 2026-05-21) + Herald.Compliance
+// (.NET embedded) is the conformance bar.
 //
 // Cross-consult: Steve dispatched Richard 2026-05-21 for byte-form
 // review of this surface against the .NET + Python references.

@@ -8,6 +8,7 @@ import (
 
 	"github.com/mmpworks/ffiec/core/constants"
 	"github.com/mmpworks/ffiec/core/hkdf"
+	"github.com/mmpworks/ffiec/core/jcs"
 )
 
 // Check is one named conformance assertion the runner executed. The
@@ -71,23 +72,30 @@ func (r *Report) PassCount() int {
 //     expected hkdf_inputs_digest (spec §4.2 + §3 + §4.2 sub-
 //     normative on length encoding; pinned).
 //
+// What this DOES check at Commit 2:
+//
+//   - RFC 8785 JCS self-test — confirms the in-repo JCS
+//     implementation reproduces the baked-in fixture byte-for-byte.
+//     A failure here means the JCS implementation drifted; vector
+//     008 conformance becomes unreliable from this commit forward.
+//
 // What this DOES NOT yet check (lands in later commits):
 //
-//   - Per-event MAC bytes — depends on the canonical event bytes,
-//     which depend on RFC 8785 JCS (Commit 2).
+//   - Per-event MAC bytes — depends on the canonical event bytes
+//     of a §4.4-wire chain entry, which lands in Commit 3.
 //   - Merkle root bytes — the leaves are the per-event payload
-//     hashes which depend on the canonical bytes (Commits 2-3).
+//     hashes which depend on the §4.4 wire entries (Commit 3).
 //   - sign_payload bytes — depends on the dispatch table for v1.0a /
 //     v1.0b / v1.0c byte forms (Commit 5).
 //   - Verdict-object JCS bytes — depends on the verdict-object
-//     writer (Commit 5) and on JCS (Commit 2).
+//     writer (Commit 5).
 //
-// The Commit-1 conformance gate therefore asserts the byte-level
-// foundation primitives independently. Later commits extend the
-// runner with the dependent checks as the implementation lands.
+// Later commits extend the runner with the dependent checks as the
+// implementation lands.
 func RunMasterFixture(fx *MasterFixture) *Report {
 	r := &Report{}
 
+	r.Checks = append(r.Checks, checkJCSSelfTest())
 	r.Checks = append(r.Checks, checkFixtureConstants(fx))
 	r.Checks = append(r.Checks, checkHKDFInputsDigest(fx))
 
@@ -127,6 +135,26 @@ func ikmVariants(fx *MasterFixture) []ikmVariant {
 			expectedFingerprintHex: fx.Expected.KeyFingerprintV2Hex,
 		},
 	}
+}
+
+// checkJCSSelfTest runs the JCS package's baked-in self-test. A
+// failure here means the canonicalizer in core/jcs/ drifted from
+// RFC 8785 — every downstream conformance assertion that depends
+// on canonical bytes (Merkle leaves, per-event MAC, sign_payload,
+// verdict-object) would be unreliable. Running the self-test FIRST
+// in the conformance gate puts the most-load-bearing primitive
+// first.
+//
+// The vector 008 conformance test in core/jcs/vector008_test.go is
+// the deeper conformance bar (61 cases vs the self-test's 1 case);
+// this check is the fast-fail signal that surfaces a JCS regression
+// against the in-tree pin without requiring the test-vector corpus
+// to be present.
+func checkJCSSelfTest() Check {
+	if err := jcs.SelfTest(); err != nil {
+		return failCheck("jcs-self-test", "%v", err)
+	}
+	return passCheck("jcs-self-test")
 }
 
 // checkFixtureConstants asserts the fixture's HKDF inputs equal the
