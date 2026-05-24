@@ -81,6 +81,20 @@ func writeReport(w io.Writer, path string, r *verify.Result) {
 			fmt.Fprintf(w, "    [%s] %s\n", status, s.Name)
 		}
 	}
+	if len(r.AdditionalVerifications) > 0 {
+		fmt.Fprintln(w, "  additional_verifications:")
+		for _, av := range r.AdditionalVerifications {
+			status := "PASS"
+			if !av.OK {
+				status = "FAIL"
+			}
+			if av.Note != "" {
+				fmt.Fprintf(w, "    [%s] %-30s (%d entries) — %s\n", status, av.Family, av.EntryHits, av.Note)
+			} else {
+				fmt.Fprintf(w, "    [%s] %-30s (%d entries)\n", status, av.Family, av.EntryHits)
+			}
+		}
+	}
 	overall := "PASS (structural)"
 	if r.MACPass {
 		overall = "PASS (full, key-bound)"

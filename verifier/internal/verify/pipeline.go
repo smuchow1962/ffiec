@@ -2,6 +2,7 @@ package verify
 
 import (
 	"crypto/ed25519"
+	"encoding/base64"
 	"errors"
 	"fmt"
 )
@@ -17,6 +18,23 @@ type Result struct {
 	StructuralPass bool
 	MACPass        bool   // false if the master-key path was not run
 	Steps          []Step // ordered, one per executed check
+
+	// AdditionalVerifications records the §14.6/§14.7/§14.8 attribute
+	// families that were present and validated on chain entries. The
+	// entries are deterministic: one per distinct attribute family found
+	// across all chain entries, in family-name order.
+	AdditionalVerifications []AdditionalVerification
+}
+
+// AdditionalVerification records one attribute-family validation
+// result. The Family field is the spec family name (e.g.,
+// "audit.actor", "audit.reasoning", "audit.downstream_action"); OK
+// is true when every entry carrying that family passed validation.
+type AdditionalVerification struct {
+	Family    string
+	OK        bool
+	EntryHits int    // how many chain entries carried this family
+	Note      string // non-empty on failure
 }
 
 // Step is one named check's outcome.
@@ -83,16 +101,87 @@ func Verify(led *Ledger, plan Plan) (*Result, error) {
 			OK:   false,
 			Note: "skipped: no --master-key supplied (structural-only verification)",
 		})
-		return r, nil
+	} else {
+		if err := step(r, "per-event-mac", plan.StopOnFirstFailure, func() error {
+			_, e := CheckChainMACs(led.Entries, plan.MasterIKM)
+			return e
+		}); err != nil {
+			return r, err
+		}
+		r.MACPass = true
 	}
-	if err := step(r, "per-event-mac", plan.StopOnFirstFailure, func() error {
-		_, e := CheckChainMACs(led.Entries, plan.MasterIKM)
-		return e
-	}); err != nil {
-		return r, err
-	}
-	r.MACPass = true
+
+	// §14.6/§14.7/§14.8 attribute-family validation. This is additive:
+	// it does not gate structural/MAC pass. When attribute families are
+	// present on chain entries, the verifier validates them and records
+	// the outcome in AdditionalVerifications.
+	r.AdditionalVerifications = validateChainAttributes(led.Entries)
 	return r, nil
+}
+
+// validateChainAttributes walks every entry, decodes the event payload,
+// and validates any §14.6/§14.7/§14.8 attribute families found. Returns
+// one AdditionalVerification per distinct family, in family-name order.
+func validateChainAttributes(entries []ChainEntry) []AdditionalVerification {
+	state := map[string]*attrFamilyState{}
+
+	for i := range entries {
+		payload, err := base64.StdEncoding.DecodeString(entries[i].EventPayloadJCS)
+		if err != nil {
+			continue // payload decode errors are caught by other steps
+		}
+		attrs, err := ParseEventAttributes(payload)
+		if err != nil || attrs == nil {
+			continue
+		}
+		recordFamily(state, "audit.actor", attrs.Actor != nil, ValidateActorAttributes(attrs.Actor))
+		recordFamily(state, "audit.reasoning", attrs.Reasoning != nil, ValidateReasoningAttributes(attrs.Reasoning))
+		recordFamily(state, "audit.downstream_action", attrs.DownstreamAction != nil, ValidateDownstreamActionAttributes(attrs.DownstreamAction))
+	}
+
+	// Deterministic output: sorted by family name.
+	families := []string{"audit.actor", "audit.downstream_action", "audit.reasoning"}
+	var out []AdditionalVerification
+	for _, name := range families {
+		s, found := state[name]
+		if !found {
+			continue
+		}
+		av := AdditionalVerification{
+			Family:    name,
+			OK:        s.ok,
+			EntryHits: s.hits,
+			Note:      s.firstErr,
+		}
+		out = append(out, av)
+	}
+	return out
+}
+
+// attrFamilyState tracks per-family validation state across all entries.
+type attrFamilyState struct {
+	hits     int
+	ok       bool
+	firstErr string
+}
+
+// recordFamily updates the per-family state for one chain entry.
+func recordFamily(state map[string]*attrFamilyState, name string, present bool, err error) {
+	if !present {
+		return
+	}
+	s, exists := state[name]
+	if !exists {
+		s = &attrFamilyState{ok: true}
+		state[name] = s
+	}
+	s.hits++
+	if err != nil {
+		s.ok = false
+		if s.firstErr == "" {
+			s.firstErr = err.Error()
+		}
+	}
 }
 
 // step runs fn, records the outcome, and returns the error if stopOnFail
