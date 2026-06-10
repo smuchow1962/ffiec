@@ -253,41 +253,32 @@ func matchOutcome(name string, got verify.Outcome, exp expectedOutput) Check {
 }
 
 // reasonMatches reports whether the verifier's rendered reason satisfies
-// the pin, applying the two normative §7 reason-string rules:
+// the pin, applying the single normative §7 reason-string rule:
 //
-//  1. **Normative-prefix rule (§7 line 1572).** "Implementations MAY
-//     append additional diagnostic detail after the normative reason
-//     string (separated by `: `)... but the normative prefix MUST appear
-//     verbatim." So a pin that is the bare prefix (N014's
-//     `key_fingerprint mismatch at seq 4`) is satisfied by a verifier
-//     reason that appends the `: looked-up IKM…` detail; and a pin that
-//     carries the full detail (N006) is satisfied by the verifier
-//     emitting it verbatim. The verifier's reason matches when it equals
-//     the pin OR begins with the pin followed by the `: ` detail boundary.
+//	**Normative-prefix rule (§7 line 1572).** "Implementations MAY append
+//	additional diagnostic detail after the normative reason string
+//	(separated by `: `)... but the normative prefix MUST appear verbatim."
+//	So a pin that is the bare prefix (N014's `key_fingerprint mismatch at
+//	seq 4`) is satisfied by a verifier reason that appends the `: looked-up
+//	IKM…` detail; and a pin that carries the full detail (N006) is
+//	satisfied by the verifier emitting it verbatim. The verifier's reason
+//	matches when it equals the pin OR begins with the pin followed by the
+//	`: ` detail boundary.
 //
-//  2. **Quote-insensitivity (N023 fixture divergence).** N023 pins the
-//     format_version value quoted (`"V1"`) while N009/N022 and the §7
-//     step-1 spec template leave it unquoted. The verifier renders one
-//     canonical (unquoted) form; the compare strips ASCII double-quotes
-//     from both sides so that fixture inconsistency — and nothing else —
-//     compares equal. Flagged to Heather in the plan doc.
+// The earlier quote-insensitivity tolerance (for the N009/N022-unquoted-
+// vs-N023-quoted format_version divergence) is GONE. Heather re-rendered
+// N009/N022/N023 uniformly to the quoted form, and the verifier now
+// renders the quoted form too (checkFormatVersion uses %q). The compare is
+// therefore byte-exact (modulo the normative `: detail` suffix). A future
+// fixture rendered with the wrong quoting now FAILS the gate loudly
+// instead of being silently tolerated — that loud failure is the point.
 func reasonMatches(got string, exp expectedOutput) bool {
-	g, want := stripQuotes(got), stripQuotes(exp.Reason)
-	if g == want {
+	if got == exp.Reason {
 		return true
 	}
 	// Normative-prefix rule: the verifier appended `: detail` after the
 	// pinned normative prefix.
-	return strings.HasPrefix(g, want+": ")
-}
-
-// stripQuotes removes ASCII double-quote characters so a reason that
-// differs only by the §7-template-vs-fixture quoting divergence (N023)
-// compares equal. It does not strip any other punctuation — the message
-// family must otherwise match byte-for-byte (or by the normative-prefix
-// rule).
-func stripQuotes(s string) string {
-	return strings.ReplaceAll(s, "\"", "")
+	return strings.HasPrefix(got, exp.Reason+": ")
 }
 
 // loadAuditFile reads input.json's audit_file block and builds the IKM

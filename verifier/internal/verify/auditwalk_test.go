@@ -45,9 +45,38 @@ func TestWalkAuditFile_Step1FormatVersion(t *testing.T) {
 	if got.Status != "FAIL" || got.Step != "1" || got.ExitCode != 1 {
 		t.Fatalf("step1: got %+v", got)
 	}
-	want := "format_version v2 not supported by this verifier (running v1)"
+	// Quoted rendering (%q) — matches the §7 reason-string family and the
+	// uniform N009/N022/N023 fixtures. See TestCheckFormatVersion_QuotedRendering.
+	want := `format_version "v2" not supported by this verifier (running v1)`
 	if got.Reason != want {
 		t.Errorf("step1 reason: got %q want %q", got.Reason, want)
+	}
+}
+
+// TestCheckFormatVersion_QuotedRendering pins the chosen format_version
+// reason rendering: the offending value is QUOTED. This is the regression
+// guard the N023 tolerance-tightening leaves behind — if a future change
+// reverts to the unquoted %s form, this fails loudly, and so does the
+// gate's byte-exact compare against the quoted N009/N022/N023 fixtures.
+func TestCheckFormatVersion_QuotedRendering(t *testing.T) {
+	cases := []struct {
+		in   string
+		want string
+	}{
+		{"v2", `format_version "v2" not supported by this verifier (running v1)`},
+		{"v1.1", `format_version "v1.1" not supported by this verifier (running v1)`},
+		{"V1", `format_version "V1" not supported by this verifier (running v1)`},
+	}
+	for _, tc := range cases {
+		t.Run(tc.in, func(t *testing.T) {
+			got := checkFormatVersion(AuditHeader{FormatVersion: tc.in})
+			if got.Status != "FAIL" || got.Step != "1" {
+				t.Fatalf("got %+v, want FAIL at step 1", got)
+			}
+			if got.Reason != tc.want {
+				t.Errorf("reason: got %q want %q", got.Reason, tc.want)
+			}
+		})
 	}
 }
 

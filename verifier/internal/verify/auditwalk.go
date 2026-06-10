@@ -215,10 +215,19 @@ func checkTruncation(af *AuditFile) Outcome {
 // checkFormatVersion is §7 step 1. A v1 verifier accepts only "v1";
 // every variant ("v2", "v1.1", "V1") is refused here with the value
 // rendered into the reason.
+//
+// Rendering rule: the value is rendered QUOTED (%q). This matches the §7
+// reason-string family (the sign_payload_version, algorithm, and
+// canonical_encoding "X" not supported messages at §7 lines 900/977/987/
+// 1656 all quote the offending value) and the now-uniform N009/N022/N023
+// fixtures, which Heather re-rendered to the quoted form to resolve the
+// earlier quoting divergence. The quoted rendering is pinned by
+// TestCheckFormatVersion_QuotedRendering so a future fixture rendered
+// unquoted FAILS loudly rather than being silently tolerated.
 func checkFormatVersion(h AuditHeader) Outcome {
 	if h.FormatVersion != constants.FormatVersion {
 		return fail("1", fmt.Sprintf(
-			"format_version %s not supported by this verifier (running v1)", h.FormatVersion))
+			"format_version %q not supported by this verifier (running v1)", h.FormatVersion))
 	}
 	return pass()
 }
