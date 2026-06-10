@@ -52,11 +52,11 @@ func case035MetadataLeafJCS(t *testing.T) []byte {
 	t.Helper()
 	manifestSHA := case035ManifestSHA(t)
 	leaf := map[string]any{
-		"seal.backfill_at_close":                      true,
-		"seal.backfill_baseline_manifest_sha256":      manifestSHA,
-		"seal.backfill_companion_attestation_run_id":  "northbridge-cape-madeline-close-2026-04-15",
-		"seal.backfill_window_end_utc":                "2026-04-15T14:00:00Z",
-		"seal.backfill_window_start_utc":              "2024-10-15T00:00:00Z",
+		"seal.backfill_at_close":                     true,
+		"seal.backfill_baseline_manifest_sha256":     manifestSHA,
+		"seal.backfill_companion_attestation_run_id": "northbridge-cape-madeline-close-2026-04-15",
+		"seal.backfill_window_end_utc":               "2026-04-15T14:00:00Z",
+		"seal.backfill_window_start_utc":             "2024-10-15T00:00:00Z",
 		"seal.dual_signatures": []any{
 			map[string]any{
 				"entity_affiliation": "from_entity",
