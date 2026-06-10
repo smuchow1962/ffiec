@@ -143,15 +143,23 @@ type NegativeResult struct {
 	Report     *Report
 }
 
-// RunNegativeVector asserts a materialized negative vector's expected
-// output, or returns a Skipped result carrying the recorded expectation
-// for a stub.
+// RunNegativeVector asserts a materialized negative vector, or returns a
+// Skipped result carrying the recorded expectation for a stub.
 //
-// Today every negative is a description-only stub (0/38 materialized),
-// so this returns Skipped for all of them. The runner is built so that
-// the moment a fixture lands (input.json + expected_output.txt), the
-// gate asserts it without any code change here — the materialization
-// state drives the behavior.
+// For a materialized vector the gate dispatches on the vector's class
+// (see classifyNegative):
+//
+//   - live-walk classes drive the verifier's actual §7 walk / §10.42
+//     recompute / §7-step-11 structural compare over the fixture and
+//     assert the verifier ITSELF emits the pinned Status/Step/Reason/
+//     ExitCode;
+//   - contract-only vectors (whose pinned reason needs a §10.x verifier
+//     path or signature crypto not built / not materialized) retain the
+//     reason-template self-consistency assertion.
+//
+// The classification and its per-vector reasoning live in the plan doc.
+// When a fixture is not materialized the gate SKIPs it, so the bar
+// re-arms automatically if a fixture is removed.
 func RunNegativeVector(v NegativeVector) NegativeResult {
 	if !v.OnDiskMaterialized {
 		return NegativeResult{
@@ -162,12 +170,14 @@ func RunNegativeVector(v NegativeVector) NegativeResult {
 		}
 	}
 
-	// Materialized: assert the pinned expected output. The verifier's
-	// §7 walk over input.json must produce expected_output.txt's
-	// Status/Step/Reason. This path activates when fixtures land; until
-	// then no negative reaches it.
-	r := &Report{}
-	r.Checks = append(r.Checks, runMaterializedNegative(v))
+	exp, err := parseExpectedOutput(v.Dir)
+	if err != nil {
+		r := &Report{}
+		r.Checks = append(r.Checks, failCheck(v.Slot+"/parse-expected", "%v", err))
+		return NegativeResult{Slot: v.Slot, Report: r}
+	}
+
+	r := &Report{Checks: runLiveNegative(v, exp)}
 	return NegativeResult{Slot: v.Slot, Report: r}
 }
 
