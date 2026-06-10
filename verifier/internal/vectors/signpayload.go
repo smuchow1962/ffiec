@@ -120,10 +120,14 @@ type byteFormInput struct {
 }
 
 // signPayloadInputsLayout is the backfill family layout (035): a
-// sign_payload_inputs block. The backfill vectors derive merkle_root +
-// hkdf_digest from a baseline manifest + metadata leaf, so those two
-// fields are NOT present here — reconstructing them needs the
-// backfill-Merkle path, which is a separate conformance tier.
+// sign_payload_inputs block. The merkle_root is recomputed from the
+// baseline manifest + metadata leaf by the §10.42 backfill runner
+// (see backfill.go); the hkdf_inputs_digest is genuinely absent from
+// 035's input.json (the _compute.py hardcodes a placeholder that the
+// fixture never surfaces back to input). The byte-form sign_payload
+// runner therefore cannot reconstruct 035's full sign_payload from its
+// input alone — it is deferred here with the precise reason, while the
+// §10.42 recompute itself is gated by the backfill runner.
 type signPayloadInputsLayout struct {
 	SignPayloadInputs struct {
 		SignPayloadVersion  string `json:"sign_payload_version"`
@@ -140,12 +144,15 @@ type signPayloadInputsLayout struct {
 	} `json:"sign_payload_inputs"`
 }
 
-// errDeferredReconstruction signals a vector whose sign_payload depends
-// on a derived field (e.g. a backfill Merkle root) the byte-form runner
-// does not compute. The gate SKIPs these with the reason recorded,
-// rather than failing — the full reconstruction lands with the
-// backfill-Merkle path.
-var errDeferredReconstruction = fmt.Errorf("deferred: sign_payload depends on a derived field not present in the byte-form fixture")
+// errDeferredReconstruction signals a backfill-family vector whose full
+// sign_payload byte-compare cannot run from input.json alone. For 035
+// the merkle_root IS recomputable (the §10.42 backfill runner gates it
+// against expected_merkle_root_hex.txt), but the hkdf_inputs_digest is
+// absent from input.json — the _compute.py hardcodes a placeholder it
+// never writes back. The byte-form runner SKIPs the full reconstruction
+// with this precise reason; the load-bearing §10.42 recompute is gated
+// separately by the backfill runner.
+var errDeferredReconstruction = fmt.Errorf("deferred: backfill sign_payload reconstruction needs hkdf_inputs_digest_hex, which 035's input.json does not pin (§10.42 merkle_root recompute IS gated by the backfill runner)")
 
 // resolveSealFields decodes whichever known layout the vector uses into
 // the common sealFields. Returns errDeferredReconstruction when the
