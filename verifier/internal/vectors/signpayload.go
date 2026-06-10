@@ -12,6 +12,7 @@ import (
 	"sort"
 
 	"github.com/mmpworks/ffiec/core/signpayload"
+	"github.com/mmpworks/ffiec/verifier/internal/verify"
 )
 
 // signPayloadExpectedFile / signPayloadSHAFile name the sign_payload
@@ -190,7 +191,20 @@ func resolveSealFields(raw []byte) (sealFields, error) {
 	var spi signPayloadInputsLayout
 	if err := json.Unmarshal(raw, &spi); err == nil && spi.SignPayloadInputs.SignPayloadVersion != "" {
 		in := spi.SignPayloadInputs
-		if in.MerkleRootHex == "" || in.HKDFInputsDigest == "" {
+		// The backfill family's merkle_root is DERIVED — it is the
+		// §10.42 backfill root over (baseline manifest + metadata leaf),
+		// not pinned directly in sign_payload_inputs. Recompute it via
+		// the same wave-2 path the backfill runner gates. Once 035's
+		// input.json carries hkdf_inputs_digest_hex (Heather's fix
+		// 0f6825a), the full sign_payload reconstruction is unblocked.
+		if in.MerkleRootHex == "" {
+			root, err := recoverBackfillRoot(raw)
+			if err != nil {
+				return sealFields{}, errDeferredReconstruction
+			}
+			in.MerkleRootHex = root
+		}
+		if in.HKDFInputsDigest == "" {
 			return sealFields{}, errDeferredReconstruction
 		}
 		return sealFields{
@@ -210,6 +224,27 @@ func resolveSealFields(raw []byte) (sealFields, error) {
 	}
 
 	return sealFields{}, fmt.Errorf("unrecognized sign_payload fixture layout")
+}
+
+// recoverBackfillRoot recomputes the §10.42 backfill Merkle root from the
+// raw input.json's synthetic_baseline_manifest + metadata_leaf, so the
+// backfill family's sign_payload can bind the derived root it never pins
+// directly. Reuses the wave-2 backfill primitives (no new crypto): the
+// manifest tuples + the JCS-canonicalized metadata leaf feed
+// verify.RecomputeBackfillMerkleRoot.
+func recoverBackfillRoot(raw []byte) (string, error) {
+	var in backfillInput
+	if err := json.Unmarshal(raw, &in); err != nil {
+		return "", fmt.Errorf("decode backfill input: %w", err)
+	}
+	if len(in.SyntheticBaselineMan.Tuples) == 0 || len(in.MetadataLeaf) == 0 {
+		return "", fmt.Errorf("backfill input missing manifest tuples or metadata leaf")
+	}
+	metadataLeafJCS, err := canonicalizeMetadataLeaf(in.MetadataLeaf)
+	if err != nil {
+		return "", err
+	}
+	return verify.RecomputeBackfillMerkleRoot(in.SyntheticBaselineMan.Tuples, metadataLeafJCS)
 }
 
 // SignPayloadResult carries the outcome of running one sign_payload
