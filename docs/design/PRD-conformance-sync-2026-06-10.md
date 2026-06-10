@@ -155,3 +155,35 @@ parse each vector's bespoke embedded object. It asserts:
   built to gate them the moment fixtures land, but today the negative
   conformance bar is "SKIP with recorded expectations," not "assert." This is a
   spec-side materialization dependency, not a Go gap — flagged for Steve.
+
+---
+
+## Realized outcomes (2026-06-10)
+
+All five steps landed, build/vet/test green per module after each. Five local
+commits on `main` (NOT pushed — Steve reviews before push):
+
+| Commit | What |
+|---|---|
+| `6d37bac` | `core/jcs` RFC 8785 canonicalizer + 008 conformance gate (full 008 corpus green: float canon, non-ASCII unicode, surrogate pairs, deep-nest 10/50/100, all control chars, NaN/Inf rejection, very long strings) |
+| `ff7bd3b` | Positive canonical-output corpus gate: **52/52 checks across 22 vectors** |
+| `d72951a` | `core/signpayload` v1.0a/b/c dispatch (PRD-3 gap) + gate: **3 vectors green** (018/019/020), 035 deferred |
+| `3bf9003` | Negative corpus gate: **38/38 INDEX rows parsed, 38 SKIP** (0 materialized) |
+| `f0175d7` | `delegation_chain` sort migrated json.Marshal → core/jcs (Herald parity) + regression test |
+
+**Gate totals:** canonical 52/52 across 22 vectors; sign_payload 6/6 across 3
+(1 deferred); negative 38 rows parsed/38 skipped; JCS 008 corpus full green;
+HKDF RFC 5869 green (pre-existing); master fixture green (pre-existing).
+
+**Deferred / flagged for Steve:**
+- **Negative fixtures N001–N038** are spec-side authoring (Heather / spec-author
+  lane). The Go gate auto-arms when they land — no Go change needed.
+- **Stub positive vectors** 001, 002, 010, 015, 027 — same spec-side dependency.
+- **035-backfill-seal sign_payload** needs the backfill-Merkle recompute path to
+  reconstruct its derived merkle_root; deferred to that follow-on, not failing.
+- **Rich-expected family** (003, 008, 016, 017, 022, 023, 024, 026) — 008 is
+  gated via the JCS corpus; the others carry per-vector `expected.json` shapes
+  that gate on full §7 chain-walk machinery (a follow-on once those fixtures'
+  walk surfaces stabilize). Not wired this pass; listed for completeness.
+- **Race detector** unavailable on this box (`-race` needs cgo/gcc). Verifier
+  gate path is single-threaded so race exposure is nil; non-race suite green.
