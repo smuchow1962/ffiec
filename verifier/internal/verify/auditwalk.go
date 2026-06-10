@@ -1,6 +1,7 @@
 package verify
 
 import (
+	"crypto/ed25519"
 	"crypto/sha256"
 	"encoding/binary"
 	"encoding/hex"
@@ -27,13 +28,16 @@ import (
 // function so the corpus asserts live verifier behavior, not a re-derived
 // answer key.
 //
-// Scope: steps 1-10 (the crypto-walkable core). Steps 11 (signature) and
-// 12 (cadence/dev-mode) require a real Ed25519 public key the negative
-// corpus does not materialize (its seals carry a placeholder), so the
-// walk reaches PASS after step 10. The structural slice of step 11 that
-// needs no key — the §4.3.2 algorithm/key-type field compare — is
-// available via CheckAlgorithmKeyType for callers that have the resolved
-// key-type descriptor.
+// Scope: steps 1-11. Steps 1-10 are the crypto-walkable core (no key
+// needed). Step 11 (the §4.3 Ed25519 seal signature) runs when the caller
+// supplies the institution's public key via WalkAuditFileWithKey; the
+// no-key WalkAuditFile path stops after step 10. Step 12 (cadence/dev-
+// mode) is bound INTO the step-11 sign_payload — a tampered cadence or
+// dev_mode changes the reconstructed bytes and fails the signature — so
+// it needs no separate walk function. The structural slice of step 11
+// that needs no key — the §4.3.2 algorithm/key-type field compare — stays
+// available via CheckAlgorithmKeyType for callers that have only the
+// resolved key-type descriptor.
 
 // AuditFile is the on-disk shape the corpus materializes under the
 // top-level `audit_file` key. Field tags mirror the corpus JSON.
@@ -74,8 +78,12 @@ type AuditEntry struct {
 	PayloadHashHex    string                 `json:"payload_hash_hex"`
 }
 
-// AuditSeal is the daily seal block (step 10 input + the step-11 fields
-// the structural algorithm/key-type compare reads).
+// AuditSeal is the daily seal block (step 10 input + the §4.3 step-11
+// signature fields). The sign_payload_* fields carry the §4.3 byte form
+// the seal was signed over; the walk reconstructs that form from the
+// structured fields and confirms it equals the published bytes before
+// verifying the signature, so a published payload that does not bind the
+// real merkle_root/tenant is itself a step-11 failure.
 type AuditSeal struct {
 	MerkleRootHex string `json:"merkle_root_hex"`
 	Algorithm     string `json:"algorithm"`
@@ -83,6 +91,25 @@ type AuditSeal struct {
 	// mismatch fixture carries (e.g. "rsa-3072" when algorithm is
 	// "ed25519"). Absent on conformant seals.
 	ResolvedPublicKeyType string `json:"resolved_public_key_type"`
+
+	// §4.3 sign_payload + signature fields (step 11 inputs). The seal
+	// records both the reconstructable structured fields AND the published
+	// sign_payload_hex so the verifier can cross-check the two.
+	SealDate            string `json:"seal_date"`
+	FormatVersion       string `json:"format_version"`
+	SignPayloadVersion  string `json:"sign_payload_version"`
+	Cadence             string `json:"cadence"`
+	DevMode             bool   `json:"dev_mode"`
+	TenantID            string `json:"tenant_id"`
+	HKDFInputsDigestHex string `json:"hkdf_inputs_digest_hex"`
+	SignPayloadHex      string `json:"sign_payload_hex"`
+	SignatureB64        string `json:"signature_b64"`
+
+	// v1.0b / v1.0c sign_payload additions, threaded through to the
+	// reconstruction when the seal's version binds them.
+	KeyVersionsCanon         string `json:"key_versions_canon"`
+	KMSHandleURIsDigestHex   string `json:"kms_handle_uris_digest_hex"`
+	OperationalEventsLogRoot string `json:"operational_events_log_root_hex"`
 }
 
 // Outcome is the §7 normative verifier output triple plus the §10.12
@@ -119,16 +146,34 @@ type IKMRegistry map[int][]byte
 
 // WalkAuditFile executes the §7 step 1-10 procedure over af, returning
 // the first failing step's normative Outcome, or a clean PASS when every
-// executed step holds. The walk stops at the first failure per §7
-// ("reports the most specific reason and stops processing the affected
-// unit").
+// executed step holds. Step 11 (seal signature) is SKIPPED — this is the
+// no-key path, kept for callers that drive only the crypto-walkable core
+// (the contract-only negative fixtures whose seals carry no real
+// signature, and any caller without a configured public key).
+//
+// For the full §7 walk including the live Ed25519 step-11 verification,
+// call WalkAuditFileWithKey with the institution's public key.
+func WalkAuditFile(af *AuditFile, ikms IKMRegistry) Outcome {
+	return WalkAuditFileWithKey(af, ikms, nil)
+}
+
+// WalkAuditFileWithKey executes the §7 procedure over af. When pub is
+// non-nil it runs the full steps 1-11; when pub is nil it runs steps 1-10
+// and stops (the WalkAuditFile path). The walk stops at the first failure
+// per §7 ("reports the most specific reason and stops processing the
+// affected unit").
+//
+// The verifier consumes pub as PUBLIC-key material only. It never reads
+// the private seed; signing is the corpus generator's job, not the
+// verifier's.
 //
 // Cognitive-complexity note: the body is a flat sequence of guarded step
 // calls, each returning an Outcome whose non-empty Status==FAIL short-
 // circuits. A reviewer reads the step list top-to-bottom against the §7
 // numbered procedure. The per-step logic lives in the small functions
-// below so this orchestrator stays a legible step ledger.
-func WalkAuditFile(af *AuditFile, ikms IKMRegistry) Outcome {
+// below (and in auditsign.go for step 11) so this orchestrator stays a
+// legible step ledger.
+func WalkAuditFileWithKey(af *AuditFile, ikms IKMRegistry, pub ed25519.PublicKey) Outcome {
 	if out := checkTruncation(af); out.Status == "FAIL" {
 		return out
 	}
@@ -146,6 +191,12 @@ func WalkAuditFile(af *AuditFile, ikms IKMRegistry) Outcome {
 	}
 	if out := checkMerkleRootAudit(af); out.Status == "FAIL" {
 		return out
+	}
+	// §7 step 11: seal signature, only when a public key is configured.
+	if pub != nil {
+		if out := CheckSealSignatureV1(af.Seal, pub); out.Status == "FAIL" {
+			return out
+		}
 	}
 	return pass()
 }
