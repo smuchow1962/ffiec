@@ -23,8 +23,12 @@ var expectedClass = map[string]negativeClass{
 	"N020": classAlgKeyType,
 	// §10.42 backfill root recompute (1).
 	"N025": classBackfillRoot,
-	// Contract-only (18).
-	"N004": classContractOnly, "N005": classContractOnly,
+	// §7 step-11 live Ed25519 signature walk (2). The DRIVER decides per-
+	// fixture whether to run the live walk or fall back to contract-only
+	// (live-readiness gate in negative_signature.go); the CLASS is always
+	// signature.
+	"N004": classSealSignature, "N005": classSealSignature,
+	// Contract-only (16).
 	"N017": classContractOnly, "N018": classContractOnly, "N019": classContractOnly,
 	"N021": classContractOnly, "N024": classContractOnly, "N026": classContractOnly,
 	"N027": classContractOnly, "N028": classContractOnly, "N029": classContractOnly,
@@ -65,11 +69,18 @@ func TestNegativeLiveVectors_RunLivePath(t *testing.T) {
 		t.Fatalf("DiscoverNegativeVectors: %v", err)
 	}
 
-	livePathSuffixes := []string{"/§7-walk", "/§7-step-11-structural", "/§10.42-root-recompute"}
-	liveCount, contractCount := 0, 0
+	// Live-path suffixes split into the always-live classes (base walk /
+	// structural step-11 / backfill recompute) and the signature class,
+	// whose per-fixture liveness depends on Heather's materialization.
+	alwaysLiveSuffixes := []string{"/§7-walk", "/§7-step-11-structural", "/§10.42-root-recompute"}
+	const signatureSuffix = "/§7-step-11-signature"
+
+	alwaysLiveCount, signatureLiveCount, contractCount := 0, 0, 0
 
 	for _, v := range vectors {
-		if classifyNegative(v.Slot) == classContractOnly {
+		class := classifyNegative(v.Slot)
+		if class == classContractOnly {
+			contractCount++
 			continue
 		}
 		result := RunNegativeVector(v)
@@ -80,25 +91,35 @@ func TestNegativeLiveVectors_RunLivePath(t *testing.T) {
 		if !result.Report.Pass() {
 			t.Errorf("%s live assertion failed", v.Slot)
 		}
-		if !anyCheckNameHasSuffix(result.Report.Checks, livePathSuffixes) {
+
+		// Signature vectors run live OR fall back to contract-only based on
+		// the live-readiness gate; both outcomes pass. The other live
+		// classes MUST carry an always-live suffix.
+		if class == classSealSignature {
+			if anyCheckNameHasSuffix(result.Report.Checks, []string{signatureSuffix}) {
+				signatureLiveCount++
+			} else {
+				contractCount++ // fell back to /expected-output
+			}
+			continue
+		}
+		if !anyCheckNameHasSuffix(result.Report.Checks, alwaysLiveSuffixes) {
 			t.Errorf("%s classified live but its checks carry no live-path name: %v",
 				v.Slot, checkNames(result.Report.Checks))
 		}
-		liveCount++
+		alwaysLiveCount++
 	}
 
-	for _, v := range vectors {
-		if classifyNegative(v.Slot) == classContractOnly {
-			contractCount++
-		}
+	// The base/structural/backfill live count is fixed at 20 (18 base + 1
+	// alg-key-type + 1 backfill). The signature count is whatever is
+	// materialized — at minimum N004 (garbage sig, decodable), and N005
+	// once its real wrong-tenant signature lands.
+	const wantAlwaysLive = 20
+	if alwaysLiveCount != wantAlwaysLive {
+		t.Errorf("ran %d always-live vectors, expected %d", alwaysLiveCount, wantAlwaysLive)
 	}
-
-	const wantLive = 20
-	if liveCount != wantLive {
-		t.Errorf("ran %d live vectors, expected %d", liveCount, wantLive)
-	}
-	t.Logf("live-walk: %d vectors asserted via the verifier's own §7/§10.42 walk; contract-only: %d",
-		liveCount, contractCount)
+	t.Logf("live-walk: %d always-live (§7/§10.42/step-11-structural) + %d step-11-signature live; contract-only: %d",
+		alwaysLiveCount, signatureLiveCount, contractCount)
 }
 
 func anyCheckNameHasSuffix(checks []Check, suffixes []string) bool {

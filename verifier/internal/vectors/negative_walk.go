@@ -47,6 +47,11 @@ const (
 	// the seal's baseline manifest and asserts it differs from the seal's
 	// corrupted apex root.
 	classBackfillRoot
+	// classSealSignature drives the live §7 step-11 Ed25519 signature walk
+	// over the seal when the fixture is live-ready (real signature + a
+	// resolvable public key); it falls back to contract-only otherwise.
+	// See negative_signature.go for the live-readiness gate.
+	classSealSignature
 )
 
 // classifyNegative maps a vector slot to how the gate exercises it. The
@@ -63,6 +68,8 @@ func classifyNegative(slot string) negativeClass {
 		"N011", "N012", "N013", "N014", "N015", "N016", "N022", "N023",
 		"N030", "N033":
 		return classBaseWalk
+	case "N004", "N005":
+		return classSealSignature
 	case "N020":
 		return classAlgKeyType
 	case "N025":
@@ -149,6 +156,8 @@ func runLiveNegative(v NegativeVector, exp expectedOutput) []Check {
 		return []Check{assertAlgKeyType(v, exp)}
 	case classBackfillRoot:
 		return []Check{assertBackfillReject(v, exp)}
+	case classSealSignature:
+		return []Check{assertSealSignatureWalk(v, exp)}
 	default:
 		return []Check{runMaterializedNegative(v)}
 	}
