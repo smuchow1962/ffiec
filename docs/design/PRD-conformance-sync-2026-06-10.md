@@ -621,3 +621,84 @@ with a documented mechanism caveat (prefix-match / structural-compare).
 - **N025 backfill leaf semantics:** N025 reuses wave-2's §10.42 recompute; a root
   divergence there is the same "wrapped the subtree root as a leaf" class wave-2
   pinned.
+
+## Realized outcomes (wave 3, 2026-06-10)
+
+All three items landed, build/vet/test green per module after each step. Three
+local commits on `main` (NOT pushed — Steve reviews):
+
+| Commit | What |
+|---|---|
+| `3a70ebd` | Item 1: `buildSeal` resolves `operational_events_log_root_hex` from the seal block (v1.0c runner field). Heather authors 027 against this convention (committed first so her concurrent work reads it). |
+| `a131647` | Item 2: `verify.WalkAuditFile` (§7 step 1-10 over the audit_file shape) + the negative-walk driver. 20 vectors assert live verifier behavior; `TestNegativeLiveVectors_RunLivePath` proves the live path runs (not the contract-only fallback). |
+| `550aa72` | 035 full sign_payload byte-compare: `recoverBackfillRoot` feeds the §10.42-derived root into the v1.0b reconstruction (Heather's 035 fix `0f6825a` unblocked it). |
+
+**Reason-match contract — the two normative rules implemented (D-W3-2 superseded):**
+The match is NOT raw byte-equality and NOT a loose prefix. It applies both §7
+normative reason rules:
+1. **§7-line-1572 normative-prefix rule.** The verifier MAY append `: detail`
+   after the pinned normative prefix; a pin that is the bare prefix (N014:
+   `key_fingerprint mismatch at seq 4`) is satisfied by the verifier appending
+   `: looked-up IKM…`, and a full-detail pin (N006) is satisfied verbatim. The
+   match accepts `got == pin` OR `got` starts with `pin + ": "`.
+2. **Quote-insensitivity (N023).** The format_version value quoting diverges
+   between fixtures (N023 quotes `"V1"`; N009/N022 + the spec template leave it
+   unquoted). Comparison strips ASCII double-quotes from both sides — exactly
+   that inconsistency, nothing else.
+This is stronger and more correct than the wave-3-plan's family-prefix framing:
+Status + Step + ExitCode are asserted exactly; only the reason carries the two
+documented normative tolerances.
+
+**035 deferral resolved.** Heather's `0f6825a` surfaced `hkdf_inputs_digest_hex`
+into 035's `input.json`. The remaining gap was the DERIVED merkle_root (the
+§10.42 backfill root, never pinned in `sign_payload_inputs`); `recoverBackfillRoot`
+recomputes it via the wave-2 path and feeds it into the byte-form reconstruction.
+035's full v1.0b sign_payload now matches byte-for-byte including line 7
+(`8943b16e…`). sign_payload gate: **8/8 across 4 vectors, 0 deferred** (was 6/6
+across 3, 1 deferred).
+
+**027 status.** Heather prepared 027's `_compute.py` (ffiec-public `6aef365`) and
+recorded the convention as confirmed-in-WIP (`745b89e`), but 027's `input.json`
+is NOT yet pinned. The runner field-resolution (item 1) is committed and waiting;
+027 will gate the moment its `input.json` materializes with
+`operational_events_log_root_hex` on the seal block — no Go change needed.
+
+**Final full-gate counts (fresh `-count=1` run, both modules green):**
+- Negative: **38 asserted (20 live-walk + 18 contract-only), 0 skipped.**
+- Sign_payload: **8/8 across 4 vectors, 0 deferred** (035 now complete).
+- Canonical-output: 59/59 across 25 vectors.
+- Backfill (§10.42): 2/2 across 1 (035 root recompute).
+- Rich-family: 31/31 across 6.
+- Master fixture: 6/6. JCS 008 + HKDF RFC 5869: green.
+- `core` + `verifier` modules: `go build` + `go vet` + `go test` all green.
+
+**Verifier capability added (not just corpus checks):**
+- `verify.WalkAuditFile(af, ikms) Outcome` — the §7 step 1-10 procedure over the
+  audit_file shape. A future `verifier verify --audit-file` CLI mode drives it.
+- `verify.CheckAlgorithmKeyType(seal)` — the structural §7-step-11
+  algorithm/key-type field compare (no crypto).
+- `verify.AuditFile` / `AuditHeader` / `AuditEntry` / `AuditSeal` / `Outcome` /
+  `IKMRegistry` — the audit-file shape + the normative output triple.
+
+**Live-walk honesty discipline (the fool's three corrections, all applied):**
+1. Re-derivation guard, not label-trust: a clean-room Python §7 walk (planning)
+   + `TestNegativeLiveVectors_RunLivePath` (committed) prove the 20 live vectors
+   produce the pin from real recomputation. N036's tamper-label-vs-bytes
+   disagreement was caught this way and kept contract-only.
+2. N004/N005 split assessed: both stay contract-only (no real Ed25519 key in the
+   corpus; the baseline placeholder makes step-11 crypto non-walkable for every
+   fixture). N004's garbage sig is structurally malformed but the verifier has no
+   key to verify any sig against, so the honest call is contract-only.
+3. N020 stated explicitly as a *structural field-compare* (algorithm vs
+   resolved_public_key_type), not crypto.
+
+**Flagged for Steve / Heather (spec lane — NOT patched by me):**
+- **N023 quoting divergence** (finding #1 above) — the verifier handles it via
+  quote-insensitive match; recommend the spec/_lib pick one quoting rule.
+- **N036 tamper-label vs bytes** (finding #2 above) — kept contract-only; the
+  pinned `payload_hash MAC mismatch` is a receiver-decoder reason, not a §7-walk
+  outcome from these bytes (the MAC does not break in the fixture).
+- **N025 Step descriptor** is the spec's prose `§10.42 step 2 (Merkle root
+  verification)`, not a bare number; the live recompute-rejection + the rendered
+  reason (`backfill merkle root mismatch at backfill seq 1`) + exit code are the
+  genuinely-computed assertions. The prose Step is matched as-pinned.
