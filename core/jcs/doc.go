@@ -6,11 +6,12 @@
 // (canonical bytes are the Merkle leaf input), §10.12 verdict-object
 // (canonical JCS bytes are the trailing line of every verifier run).
 //
-// Status: stub. The full RFC 8785 implementation lands in Commit 2 of
-// the verifier upgrade. The §7 pre-flight JCS self-test (baked-in
-// vector 008 byte comparison) is wired alongside the implementation
-// so a verifier built without conformant JCS refuses at startup with
-// exit code 3 per §10.12.
+// Status: implemented (jcs.go + number.go). The 008-jcs-edge-cases
+// corpus is the conformance gate (conformance_test.go) — byte-identical
+// to the .NET reference's JcsRfc8785ConformanceTests answer key. The
+// §7 pre-flight JCS self-test (baked-in vector 008 byte comparison)
+// can wrap Canonicalize so a verifier built without conformant JCS
+// refuses at startup with exit code 3 per §10.12.
 //
 // Implementation decision (D-1, locked 2026-05-21): stdlib-only,
 // ~150 lines, mirrors the existing in-repo posture of writing HKDF
