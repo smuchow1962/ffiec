@@ -7,6 +7,8 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/mmpworks/ffiec/core/jcs"
 )
 
 // -- §14.6 closed enum for authentication_method --------------------------
@@ -15,13 +17,13 @@ import (
 // value ("institution_named") is the escape hatch per CC8.1 — any
 // value not in this set AND not "institution_named" is rejected.
 var authMethodEnum = map[string]bool{
-	"saml_sso":           true,
-	"oidc_sso":           true,
-	"mtls_workload":      true,
-	"spiffe_workload":    true,
-	"hsm_bearer_token":   true,
-	"api_key_with_iam":   true,
-	"institution_named":  true,
+	"saml_sso":          true,
+	"oidc_sso":          true,
+	"mtls_workload":     true,
+	"spiffe_workload":   true,
+	"hsm_bearer_token":  true,
+	"api_key_with_iam":  true,
+	"institution_named": true,
 }
 
 // -- §14.7 closed enum for substrate_kind ---------------------------------
@@ -108,22 +110,37 @@ func validateDelegationChain(chain []DelegationChainEntry) error {
 }
 
 // isDelegationChainLexSorted checks whether the delegation_chain entries
-// are lex-sorted by their JCS-canonical JSON serialisation. The spec
-// requires "JCS-canonical lex-sorted array of delegated-authority
-// identity pairs."
+// are lex-sorted by their JCS-canonical bytes. The spec requires a
+// "JCS-canonical lex-sorted array of delegated-authority identity
+// pairs"; the .NET reference (AuditActor.BuildActorEnvelope) sorts by
+// the RFC 8785 canonical bytes of each entry under StringComparer.Ordinal.
+//
+// We mirror that exactly via core/jcs — NOT json.Marshal. json.Marshal
+// emits keys in struct-declaration order (only coincidentally byte-
+// ordinal here) and HTML-escapes, so it can diverge from the .NET / Python
+// references on a value the corpus does not yet exercise. Going through
+// the single JCS primitive removes that latent divergence and keeps the
+// verifier on one canonicalizer.
 func isDelegationChainLexSorted(chain []DelegationChainEntry) bool {
 	keys := make([]string, len(chain))
 	for i, d := range chain {
-		// JCS serialisation of each entry is deterministic because struct
-		// fields have a fixed order. json.Marshal on a Go struct produces
-		// fields in declared order — which matches JCS for ASCII-only keys.
-		b, err := json.Marshal(d)
+		canon, err := jcs.Canonicalize(delegationEntryMap(d))
 		if err != nil {
-			return false // serialisation failure — treat as unsorted
+			return false // canonicalization failure — treat as unsorted
 		}
-		keys[i] = string(b)
+		keys[i] = string(canon)
 	}
 	return sort.StringsAreSorted(keys)
+}
+
+// delegationEntryMap renders one delegation entry as the JCS input shape
+// (a map keyed by the wire field names) so core/jcs sorts the keys
+// byte-ordinal exactly as the .NET reference's canonical envelope does.
+func delegationEntryMap(d DelegationChainEntry) map[string]any {
+	return map[string]any{
+		"authenticated_user_id_hash": d.AuthenticatedUserIDHash,
+		"authentication_method":      d.AuthenticationMethod,
+	}
 }
 
 // ValidateReasoningAttributes checks §14.7 constraints.

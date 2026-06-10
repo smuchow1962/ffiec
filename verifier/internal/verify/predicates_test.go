@@ -3,6 +3,8 @@ package verify
 import (
 	"strings"
 	"testing"
+
+	"github.com/mmpworks/ffiec/core/jcs"
 )
 
 // -- helpers ---------------------------------------------------------------
@@ -278,10 +280,10 @@ func TestValidateDownstreamActionAttributes_Nil(t *testing.T) {
 
 func TestValidateDownstreamActionAttributes_Valid(t *testing.T) {
 	d := &DownstreamActionAttributes{
-		ActionKind:        "account_status_change",
-		SystemOfRecordID:  "core-banking-v3",
+		ActionKind:         "account_status_change",
+		SystemOfRecordID:   "core-banking-v3",
 		ChangeRecordIDHash: validSHA256Hex(),
-		AppliedAtUTC:      "2026-05-23T14:30:00Z",
+		AppliedAtUTC:       "2026-05-23T14:30:00Z",
 	}
 	if err := ValidateDownstreamActionAttributes(d); err != nil {
 		t.Errorf("valid downstream action rejected: %v", err)
@@ -290,9 +292,9 @@ func TestValidateDownstreamActionAttributes_Valid(t *testing.T) {
 
 func TestValidateDownstreamActionAttributes_MissingActionKind(t *testing.T) {
 	d := &DownstreamActionAttributes{
-		SystemOfRecordID:  "sys",
+		SystemOfRecordID:   "sys",
 		ChangeRecordIDHash: validSHA256Hex(),
-		AppliedAtUTC:      "2026-05-23T14:30:00Z",
+		AppliedAtUTC:       "2026-05-23T14:30:00Z",
 	}
 	err := ValidateDownstreamActionAttributes(d)
 	if err == nil {
@@ -305,9 +307,9 @@ func TestValidateDownstreamActionAttributes_MissingActionKind(t *testing.T) {
 
 func TestValidateDownstreamActionAttributes_MissingSystemOfRecordID(t *testing.T) {
 	d := &DownstreamActionAttributes{
-		ActionKind:        "record_updated",
+		ActionKind:         "record_updated",
 		ChangeRecordIDHash: validSHA256Hex(),
-		AppliedAtUTC:      "2026-05-23T14:30:00Z",
+		AppliedAtUTC:       "2026-05-23T14:30:00Z",
 	}
 	err := ValidateDownstreamActionAttributes(d)
 	if err == nil {
@@ -335,10 +337,10 @@ func TestValidateDownstreamActionAttributes_MissingChangeRecordIDHash(t *testing
 
 func TestValidateDownstreamActionAttributes_MalformedChangeRecordIDHash(t *testing.T) {
 	d := &DownstreamActionAttributes{
-		ActionKind:        "record_updated",
-		SystemOfRecordID:  "sys",
+		ActionKind:         "record_updated",
+		SystemOfRecordID:   "sys",
 		ChangeRecordIDHash: "not-a-sha256",
-		AppliedAtUTC:      "2026-05-23T14:30:00Z",
+		AppliedAtUTC:       "2026-05-23T14:30:00Z",
 	}
 	err := ValidateDownstreamActionAttributes(d)
 	if err == nil {
@@ -351,8 +353,8 @@ func TestValidateDownstreamActionAttributes_MalformedChangeRecordIDHash(t *testi
 
 func TestValidateDownstreamActionAttributes_MissingAppliedAtUTC(t *testing.T) {
 	d := &DownstreamActionAttributes{
-		ActionKind:        "record_updated",
-		SystemOfRecordID:  "sys",
+		ActionKind:         "record_updated",
+		SystemOfRecordID:   "sys",
 		ChangeRecordIDHash: validSHA256Hex(),
 	}
 	err := ValidateDownstreamActionAttributes(d)
@@ -366,10 +368,10 @@ func TestValidateDownstreamActionAttributes_MissingAppliedAtUTC(t *testing.T) {
 
 func TestValidateDownstreamActionAttributes_InvalidAppliedAtUTC(t *testing.T) {
 	d := &DownstreamActionAttributes{
-		ActionKind:        "record_updated",
-		SystemOfRecordID:  "sys",
+		ActionKind:         "record_updated",
+		SystemOfRecordID:   "sys",
 		ChangeRecordIDHash: validSHA256Hex(),
-		AppliedAtUTC:      "2026-05-23T14:30:00+05:00",
+		AppliedAtUTC:       "2026-05-23T14:30:00+05:00",
 	}
 	err := ValidateDownstreamActionAttributes(d)
 	if err == nil {
@@ -399,10 +401,10 @@ func TestValidateEventAttributes_AllFamiliesValid(t *testing.T) {
 			SubstrateKind: "neurosymbolic",
 		},
 		DownstreamAction: &DownstreamActionAttributes{
-			ActionKind:        "payment_executed",
-			SystemOfRecordID:  "ledger-v2",
+			ActionKind:         "payment_executed",
+			SystemOfRecordID:   "ledger-v2",
 			ChangeRecordIDHash: validSHA256Hex(),
-			AppliedAtUTC:      "2026-01-15T08:00:00Z",
+			AppliedAtUTC:       "2026-01-15T08:00:00Z",
 		},
 	}
 	errs := ValidateEventAttributes(attrs)
@@ -528,3 +530,51 @@ func TestIsDelegationChainLexSorted_Unsorted(t *testing.T) {
 	}
 }
 
+// TestIsDelegationChainLexSorted_SortKeyIsJCSBytes is the regression
+// guard for the json.Marshal → core/jcs migration. The sort key MUST be
+// the RFC 8785 canonical bytes of each entry (byte-ordinal key order),
+// matching the .NET reference (AuditActor sorts by CanonicalizeEnvelope
+// under StringComparer.Ordinal). This test pins that the canonical form
+// of each entry — keys sorted authenticated_user_id_hash <
+// authentication_method (byte-ordinal) — is what drives the order, so a
+// future change back to a non-JCS serializer is caught.
+func TestIsDelegationChainLexSorted_SortKeyIsJCSBytes(t *testing.T) {
+	// Two entries identical except the hash; the canonical bytes differ
+	// only at the hash value, so the entry with the lexically smaller
+	// hash sorts first. A serializer that emitted keys in a different
+	// order (or HTML-escaped a value) would produce a different key and
+	// could mis-order entries whose discriminating field is not the
+	// first declared struct field.
+	lo := DelegationChainEntry{
+		AuthenticatedUserIDHash: strings.Repeat("0a", 32),
+		AuthenticationMethod:    "oidc_sso",
+	}
+	hi := DelegationChainEntry{
+		AuthenticatedUserIDHash: strings.Repeat("0b", 32),
+		AuthenticationMethod:    "oidc_sso",
+	}
+
+	if !isDelegationChainLexSorted([]DelegationChainEntry{lo, hi}) {
+		t.Error("entries in ascending JCS-canonical order rejected")
+	}
+	if isDelegationChainLexSorted([]DelegationChainEntry{hi, lo}) {
+		t.Error("entries in descending JCS-canonical order accepted")
+	}
+
+	// Verify the canonical bytes have keys in byte-ordinal order —
+	// authenticated_user_id_hash (0x61...) sorts before
+	// authentication_method only by comparing the full key bytes; both
+	// share the "authentic" prefix, so the discriminating byte is
+	// 'ed_' vs 'ation'. This asserts the JCS primitive is doing the
+	// sort, not Go struct field order.
+	canon, err := jcs.Canonicalize(delegationEntryMap(lo))
+	if err != nil {
+		t.Fatalf("canonicalize: %v", err)
+	}
+	got := string(canon)
+	want := `{"authenticated_user_id_hash":"` + strings.Repeat("0a", 32) +
+		`","authentication_method":"oidc_sso"}`
+	if got != want {
+		t.Errorf("delegation entry canonical bytes:\n got: %s\nwant: %s", got, want)
+	}
+}
