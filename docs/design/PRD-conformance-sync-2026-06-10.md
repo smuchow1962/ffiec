@@ -702,3 +702,211 @@ is NOT yet pinned. The runner field-resolution (item 1) is committed and waiting
   verification)`, not a bare number; the live recompute-rejection + the rendered
   reason (`backfill merkle root mismatch at backfill seq 1`) + exit code are the
   genuinely-computed assertions. The prose Step is matched as-pinned.
+
+---
+
+# Wave 4 — real signature crypto (§7 step 11) + repo hygiene + regression hardening
+
+Steve's wave-4 directives: real Ed25519 signature verification, regression tests,
+repo hygiene (`.gitattributes`), N023 tolerance tightening, and continue
+finalizing. A real test keypair now exists at
+`E:\dev\testing\private-keys\tesseraseal\` (public key
+`0985603b6c0e099bac783bcd7801664ed376a7888eafbf191859854bf8ff7f35`, private seed
+local-only, env-var override `TESSERASEAL_TEST_KEY_DIR`). Heather concurrently
+materializes N004/N005 as real signature-bearing fixtures and publishes the public
+key into the corpus.
+
+## Realized outcomes (wave 4, 2026-06-10)
+
+Five local commits on `main` (NOT pushed — Steve reviews). Build/vet/test green per
+module after each step.
+
+| Commit | What |
+|---|---|
+| `80f84e1` | `.gitattributes`: LF-pin Go source + binary-guard crypto material. |
+| `6600d1a` | §7 step 11 — live Ed25519 seal-signature verification (verify package). |
+| `2c7d68f` | Live §7 step-11 signature driver — N004 flips to live-walk (vectors package). |
+| `c4b7e93` | N023 tolerance tightening — quoted `format_version` rendering, byte-exact compare. |
+| `e35a029` | CRLF-class regression — mangled corpus read is caught, not tolerated. |
+
+### Directive 1 — `.gitattributes` (repo hygiene)
+
+Same bug class Heather guarded in ffiec-public (`18e7c32`: `spec/test-vectors/**
+-text`): a fresh clone with `core.autocrlf=true` silently rewrites LF→CRLF on
+checkout and changes the bytes a tool reads. Two guards:
+
+1. `text eol=lf` on `*.go`/`go.mod`/`go.sum`/`go.work` + prose/config — gofmt emits
+   LF, and a CRLF-rewritten source reads as a whole-file diff to a Unix contributor.
+2. `-text` (binary) on `*.hex`/`*.pem`/`*.sig`/`*.bin`/`*.golden` — pins the
+   crypto-material class **before** the first such file lands. The verifier consumes
+   only public-key material; the test keypair lives outside the repo under
+   `TESSERASEAL_TEST_KEY_DIR`.
+
+`git add --renormalize .` produced **zero churn** — the tree is already all-LF, so
+this is a pure forward guard with no risk of a normalization storm.
+
+### Directive 2 — §7 step 11, live Ed25519 (the wave-3 contract-only call is now resolved)
+
+The wave-3 doc kept N004/N005 contract-only because "no real Ed25519 key in the
+corpus." Wave 4 has the key. Step 11 is now a real two-assertion crypto check:
+
+1. **Reconstruct-and-compare.** Rebuild the §4.3 `sign_payload` from the seal's
+   structured fields via `core/signpayload.Build` (the same builder vectors
+   018/019/020/035 gate byte-for-byte) and confirm it equals the seal's published
+   `sign_payload_hex`. A published payload that does not reconstruct from the real
+   fields is itself a step-11 failure — it covers bytes that do not bind the day's
+   real root/tenant/version. Running this **before** the verify catches a tampered
+   `tenant_id` even when an attacker also forged a matching signature over their
+   substituted payload (the N005 wrong-tenant mode).
+2. **Verify.** `ed25519.Verify(pub, reconstructed, sig)`. The N004 garbage-signature
+   mode fails here.
+
+Both render `signature verification failed` / step 11 / exit 1, matching the pins.
+
+**Trust boundary:** the verifier consumes **only** public-key material —
+`ParsePublicKeyHex` is the single entry point; `CheckSealSignatureV1` takes an
+`ed25519.PublicKey`. It never reads the private seed. Tests that must SIGN a fixture
+read the seed via `TESSERASEAL_TEST_KEY_DIR` and **SKIP with a clear message** when
+absent, so CI without the key still runs the rest of the gate green.
+
+**Live-readiness gate (the honest flip).** N004/N005 classify as `classSealSignature`;
+the DRIVER decides per-fixture whether to run live or fall back to contract-only,
+gated on (a) a base64-decodable signature and (b) a resolvable public key (corpus
+pub.hex → vector pub.hex → `TESSERASEAL_TEST_KEY_DIR`/pub.hex). Result:
+
+- **N004 flips LIVE.** Its `ZZZ…` signature decodes to 66 bytes, the published
+  `sign_payload_hex` reconstructs from the structured fields, and `ed25519.Verify`
+  rejects the garbage sig → the pinned FAIL/11/exit-1. Check carries the live
+  `/§7-step-11-signature` suffix.
+- **N005 flipped LIVE during this session.** Heather landed N005's real wrong-tenant
+  signature (a 64-byte Ed25519 sig over the OTHER-tenant payload) while wave 4 was in
+  progress, and the live-readiness gate auto-flipped it — **with no Go change.** The
+  seal's structured `tenant_id` is `tenant-ffiec-test-1`, but its published
+  `sign_payload_hex` binds `tenant-ffiec-test-OTHER`. The reconstruct-and-compare
+  rebuilds from `test-1`, gets bytes ≠ the published OTHER-binding hex, and rejects
+  at step 11 → the pinned FAIL/11/exit-1. This is exactly the wrong-tenant defence:
+  `tenant_id` is bound into `sign_payload`, so a seal signed for a different tenant
+  fails. The auto-flip is the proof the design is right — the driver gate, not a
+  hard-coded slot list, decides liveness.
+
+The honesty-guard test (`TestNegativeLiveVectors_RunLivePath`) counts signature
+liveness by **actual live-path execution**, not a hard-coded number, so the count
+tracks Heather's materialization. CI without the key: N004/N005 both fall back to
+contract-only (no resolvable pub.hex), gate stays green.
+
+**Step-11 unit coverage** (`auditsign_test.go`, all pass with the key present):
+valid-signature PASS, garbage-signature FAIL, wrong-tenant FAIL (proves the
+reconstruct-and-compare catches a real sig over a substituted tenant),
+tampered-published-hex FAIL, wrong-key FAIL, wrong-key-length FAIL, plus
+`ParsePublicKeyHex` validation and `reconstructSignPayload`-matches-builder.
+
+### Directive 3 — N023 tolerance tightening (the wave-3 flag is now closed)
+
+Wave 3 flagged the `format_version` quoting divergence to Heather and handled it
+with a quote-insensitive match. Heather **resolved** it by re-rendering
+N009/N022/N023 uniformly to the **quoted** form (`"v2"` / `"v1.1"` / `"V1"`) — the
+chosen rule, matching the §7 reason-string family (sign_payload_version / algorithm
+/ canonical_encoding `"X"` not supported all quote the value). Three changes:
+
+1. `checkFormatVersion` renders `%q` (quoted) instead of `%s`.
+2. `reasonMatches` drops the quote-insensitivity tolerance (`stripQuotes` deleted).
+   The compare is now byte-exact modulo the normative `: detail` prefix rule.
+3. Two regression tests pin the rule so a future wrong-quoting fixture FAILS loudly:
+   `TestCheckFormatVersion_QuotedRendering` (verify) and
+   `TestReasonMatches_QuotingIsByteExact` (vectors — proves quoted-vs-unquoted now
+   compares UNEQUAL, the tolerance is provably gone).
+
+### Directive 4 — regression sweep + CRLF-class test
+
+Swept the wave-1..3 findings for fixed-but-not-regression-pinned items:
+
+| Finding | Regression status |
+|---|---|
+| delegation_chain JCS sort | **Already pinned** — `predicates_test.go` (unsorted-chain reject + canonical-bytes). |
+| 035 backfill-root recover | **Already pinned** — `backfill_test.go` (verify + vectors packages). |
+| v1.0c field threading | **Already pinned** — `signpayload_test.go` (v1_0c 13-line + v1.0b parity). |
+| **CRLF class** | **Was the gap — now pinned** (`crlf_corpus_test.go`). |
+
+The CRLF regression is the Go-side complement to the `.gitattributes` guard: even if
+the guard is missing/bypassed, `checkCanonicalSelfConsistency` hashes the RAW bytes
+of `expected_canonical.txt` against the pinned sha256, so a CRLF-mangled golden file
+changes the hash and FAILS loudly. `TestReadPrimarySHA_CRLFTolerant` documents the
+deliberate asymmetry: the sha-PIN read IS CRLF-tolerant (the hex token has no
+embedded EOL), the BLOB hash is not (its content bytes change). Pinning both records
+where CRLF matters and where it does not.
+
+## Final full-gate counts (wave 4, fresh `-count=1`, both modules green)
+
+- Negative: **38 asserted, 0 skipped.** Live split: **20 always-live (§7 base walk
+  ×18 + §7-step-11 structural alg/key-type ×1 + §10.42 backfill ×1) + 2
+  step-11-signature live (N004 garbage + N005 wrong-tenant); 16 contract-only.**
+  (N005 flipped live mid-session as Heather's real signature landed — the gate
+  auto-tracked it with no Go change.)
+- Sign_payload: 8/8 across 4 vectors, 0 deferred.
+- Canonical-output: 59/59 across 25 vectors.
+- Backfill (§10.42): 2/2 across 1.
+- Rich-family: 31/31 across 6.
+- Master fixture: 6/6. JCS 008 + HKDF RFC 5869: green.
+- New step-11 unit tests: all green with the test key present; SKIP (not FAIL)
+  without it.
+- `core` + `cliutil` + `ledger` + `testkit` + `verifier`: `go build` + `go vet` +
+  `go test` all green.
+
+## Verifier capability added (wave 4)
+
+- `verify.WalkAuditFileWithKey(af, ikms, pub) Outcome` — the full §7 step 1-11 walk;
+  step 11 runs when `pub != nil`. `WalkAuditFile` is now the no-key steps-1-10 path.
+- `verify.CheckSealSignatureV1(seal, pub) Outcome` — the §4.3 step-11 reconstruct +
+  verify.
+- `verify.ParsePublicKeyHex(hex) (ed25519.PublicKey, error)` — the single public-key
+  entry point (public material only).
+- `verify.SealCarriesLiveSignature(seal) bool` — the positive-path live-readiness
+  predicate.
+
+## Remaining to product-final (honest list)
+
+These are the known gaps between "the gate is green today" and "the verifier is a
+shippable, byte-equivalent-to-the-references TesseraSeal artifact." None are
+blocking the current wave; each is a tracked next step.
+
+1. **Corpus `pub.hex` publication (Heather, in flight).** N004 + N005 both run live
+   today by resolving the public key from the local-only `TESSERASEAL_TEST_KEY_DIR`.
+   For an auditor on a fresh clone to drive the live signature path, the corpus must
+   publish `test-signing-key.pub.hex` at the corpus root (the driver's first search
+   candidate). When it lands, the live path is reproducible without the local key dir
+   — no Go change; the resolver already prefers the corpus copy. (N005's real
+   wrong-tenant signature already landed mid-wave; both signature vectors are live.)
+
+2. **N036 receiver-decoder wave (contract-only today).** N036's pinned
+   `payload_hash MAC mismatch` is a receiver-decoder reason (OTLP/JSON bytes-encoding
+   path), not a §7-walk outcome — the MAC does not break in the fixture bytes. Needs
+   the receiver-decoder verification path before it can go live. Flagged to Heather
+   in wave 3; still open.
+
+3. **017 §10.31 output-writer (the verdict-emission path).** The verifier computes
+   Outcomes but does not yet emit the §10.31 structured verdict object / §10.12
+   exit-code output on a real CLI surface. The `verifier verify --audit-file` mode
+   that drives `WalkAuditFileWithKey` and prints the normative triple + verdict is
+   the next CLI build. 017 (merkle-inclusion partial-disclosure) gates the
+   partial-disclosure output shape.
+
+4. **015 PQC dual-algorithm (deferred to v1.x).** The `signatures` list form
+   (§4.3.2 Variant B, Dilithium/SLH-DSA coexistence) is not implemented. The
+   single-algorithm Ed25519 path is complete; the dual-algorithm dispatch (verify
+   each entry in canonical-sorted order against its `public_key_id`-resolved key)
+   is a v1.x build. 015 is the conformance witness.
+
+5. **027 v1.0c sibling-log vector (waiting on Heather's input.json).** The runner
+   field-resolution for `operational_events_log_root_hex` is committed (wave 3);
+   027 gates the moment its `input.json` materializes. No Go change needed.
+
+6. **CLI front door + runbook (Phase 6-7 of the build plan).** The auditor-facing
+   `tesseraseal-verifier` CLI (read chain + config, emit §10.12 exit code), godoc on
+   every exported symbol, and the operator runbook are not yet built. The verifier
+   core is the engine; the CLI surface is the deliverable an auditor runs.
+
+7. **Byte-equivalence cross-check against .NET + Python references.** The Go verifier
+   produces Outcomes that match the corpus pins, but a direct byte-for-byte
+   diff of the verdict output against Richard's .NET reference and the Python
+   reference for the same input is not yet wired. That is the multi-implementation
+   conformance proof; it needs the §10.31 output-writer (item 3) first.
