@@ -1,0 +1,54 @@
+# .gitattributes — line-ending + byte-integrity policy for the ffiec repo.
+#
+# Two hazard classes are guarded here. Both are the same class of bug
+# Heather guarded in ffiec-public (commit 18e7c32, `spec/test-vectors/**
+# -text`): a fresh clone on a machine with core.autocrlf=true rewrites LF
+# to CRLF on checkout and silently changes the bytes a tool reads.
+#
+# 1. gofmt-friendliness. Go source MUST stay LF. gofmt emits LF, `go vet`
+#    and the toolchain assume LF, and a CRLF-rewritten .go file shows up
+#    as a whole-file diff against a Unix contributor. `text eol=lf` pins
+#    the working-tree bytes to LF regardless of the cloner's autocrlf.
+#
+# 2. byte-pinned crypto material. The conformance corpus lives in
+#    ffiec-public, but any signing-key material, hex digests, signatures,
+#    or golden fixtures vendored INTO this repo must be byte-for-byte
+#    identical on every clone. The verifier consumes ONLY public-key
+#    material (never the private seed); the test keypair lives outside the
+#    repo under TESSERASEAL_TEST_KEY_DIR. Should a .hex/.pem/.sig/.bin or
+#    a *.golden land here in future, `-text` makes Git treat it as binary
+#    so no EOL normalization runs on it — a CRLF-mangled fingerprint or
+#    signature would fail verification loudly, but the better outcome is
+#    that the mangling never happens. This is the every-bug-is-a-class
+#    guard: pin the class now, before the first such file is committed.
+
+# Default: let Git auto-detect text vs binary and normalize text to LF in
+# the repo. Explicit rules below override this for the load-bearing cases.
+* text=auto eol=lf
+
+# --- Class 1: Go toolchain source (gofmt requires LF) ---
+*.go        text eol=lf
+go.mod      text eol=lf
+go.sum      text eol=lf
+go.work     text eol=lf
+
+# Repo prose + config: LF for cross-platform diff stability.
+*.md        text eol=lf
+*.json      text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf
+*.py        text eol=lf
+*.js        text eol=lf
+*.css       text eol=lf
+*.html      text eol=lf
+*.ndjson    text eol=lf
+
+# --- Class 2: byte-pinned crypto material + golden fixtures ---
+# Treated as binary (-text): no EOL normalization, ever. A CRLF rewrite
+# of a key fingerprint, a signature, or a golden compare would corrupt
+# the verify. None of these are tracked today; the guard pins the class.
+*.hex       -text
+*.pem       -text
+*.sig       -text
+*.bin       -text
+*.golden    -text
