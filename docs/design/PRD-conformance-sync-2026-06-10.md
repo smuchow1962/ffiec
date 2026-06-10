@@ -401,3 +401,223 @@ commits on `main` (NOT pushed — Steve reviews):
 - **035 full sign_payload byte-compare** — auto-arms once finding #1's fixture
   field lands.
 - **017 partial-disclosure output-writer** — the §10.31 CLI mode finding #2 needs.
+
+---
+
+# Wave 3 — deep negative §7-walk driver + v1.0c runner field + 035 byte-compare
+
+**Date:** 2026-06-10 (same day, third wave)
+**Status:** In progress
+**Spec:** `chain-of-custody-DRAFT-0.3.0.md` (PRD-3) — §7 verification procedure + §10.12 exit codes
+**Approved:** Steve, wave-3 go-ahead.
+
+## What
+
+Two items, in order:
+
+1. **Thread `operational_events_log_root` through the vectors runner.** The
+   `buildSeal` helper at `verifier/internal/vectors/signpayload.go` hardcoded
+   `OperationalEventsLogRoot: ""`, which blocked materializing the v1.0c
+   sibling-log sign_payload vector (027). Resolve the field from the fixture's
+   seal block so the v1.0c form reconstructs from input alone.
+
+2. **The deep negative §7-walk driver.** Today `runMaterializedNegative` asserts
+   only fixture self-consistency (the `expected_output.txt` contains the
+   INDEX-pinned reason-template). Build a driver that runs the verifier's actual
+   §7 step 1–12 walk over each negative's `input.json` tampered `audit_file` and
+   asserts the verifier ITSELF emits the pinned Status / failing Step / Reason /
+   §10.12 ExitCode. This turns the self-consistent fixtures into live
+   verifier-behavior assertions.
+
+## Item 1 — runner field-resolution convention (committed first)
+
+**Field name:** `operational_events_log_root_hex` on the seal block, consistent
+with the existing `merkle_root_hex` / `hkdf_inputs_digest_hex` `_hex`-suffix
+convention in the 018/019/020 `byteFormInput` layout. The `core/signpayload.Build`
+v1.0c path already appends `OperationalEventsLogRoot` as the 13th field; this is
+runner field-resolution only — `buildSeal` reads `seal.operational_events_log_root_hex`
+and the `byteFormInput`/`signPayloadInputsLayout` structs gain the field.
+
+**Heather authors 027 against this convention.** A v1.0c sibling-log vector's
+`input.json` seal block carries `operational_events_log_root_hex` alongside
+`merkle_root_hex`; the sign_payload runner reconstructs the 13-line form and
+byte-compares against `expected_sign_payload.txt`.
+
+## Item 2 — the §7-walk driver
+
+### The audit_file shape (distinct from the Ledger shape — confirmed)
+
+The negative corpus `input.json` carries a top-level `audit_file` object:
+`{header, entries[], seal}`. The header is `{format_version, tenant_id,
+seal_date, genesis_hash_hex, hkdf_inputs_digest_hex}`; each entry is `{seq,
+tenant_id, run_id, key_version, key_fingerprint_hex, format_version, event,
+event_canonical_hex, prev_hash_hex, payload_hash_hex}`; the seal mirrors the
+sign_payload family. This is the §4.1 construction from the corpus's shared
+`negative/_lib.py` — session_key = `HKDF(IKM, salt=ffiec…salt,
+info=ffiec…info|tenant)`, MAC = `HMAC(session_key, prev_hash || canonical)`,
+fingerprint = `SHA-256(tenant||ikm)[:16]`. It is NOT the older
+`verify.Ledger`/`ChainEntry` shape (`EventPayloadJCS` + per-entry
+`EntryID`-bound MAC). The driver implements a fresh §7 walk over the `audit_file`
+shape, reusing the genuine shared primitives: `core/hkdf.Derive`,
+`core/constants.*`, `verify.MerkleLeafHash`/`MerkleTreeHash`,
+`verify.KeyFingerprint`.
+
+### The IKM registry
+
+The walk needs IKMs keyed by `key_version`. The corpus pins them in
+`chain_vectors.json inputs` (`ikm_v1_hex` / `ikm_v2_hex`) — the same two
+generations the master fixture and `_lib.py` use. The driver loads them into a
+`{1: IKM_v1, 2: IKM_v2}` registry; an entry whose `key_version` is absent (N007
+uses 99) fails at §7 step 7.
+
+### §7 step → reason mapping (the driver implements)
+
+| Step | Check | Reason on failure |
+|---|---|---|
+| pre-flight | mid-write truncation (audit_file carries `_ndjson_truncated` markers) | `audit file ends mid-line — possible mid-write crash` (exit 2) |
+| 1 | `header.format_version == "v1"` | `format_version <X> not supported by this verifier (running v1)` |
+| 2 | recompute `hkdf_inputs_digest` | `header HKDF inputs do not match running v1 inputs` |
+| 3 | `genesis_hash == 32 zero bytes` | `header genesis_hash does not match v1 constant` |
+| 4 | `event.tenant_id == header.tenant_id` | `cross-chain lift detected at seq <N> (event.tenant_id mismatch)` |
+| 5 | `entry.format_version == header.format_version` | `format_version mismatch at seq <N>` |
+| 6 | `entry.prev_hash == expected_prev` (prev-hash first), then `entry.seq == expected_seq` | `chain link broken at seq <N>` |
+| 7 | IKM lookup by `key_version` | `unknown key_version: no IKM for (tenant=<T>, key_version=<V>) at seq <N>` |
+| 8 | `SHA-256(tenant‖ikm)[:16] == entry.key_fingerprint` | `key_fingerprint mismatch at seq <N>: looked-up IKM does not match the entry's recorded fingerprint` |
+| 9 | `HMAC(session_key, expected_prev ‖ canonical) == entry.payload_hash` (uses **expected_prev**, not entry.prev — §7 step 9 footgun note) | `payload_hash MAC mismatch at seq <N>` |
+| 10 | RFC 6962 root over payload_hash leaves `== seal.merkle_root` | `merkle root mismatch — ledger contents do not produce sealed root` |
+
+Steps 11 (signature) and 12 (cadence/dev-mode) are NOT crypto-walkable from the
+corpus: the baseline seal carries a placeholder signature
+(`TEST-SIGNATURE-PLACEHOLDER…`) and no real Ed25519 public key. The walk
+therefore stops at step 10; signature-tampering negatives are classified
+contract-only (below). On a clean walk through step 10 the driver returns PASS.
+
+### Reason-match contract
+
+Per `negative/INDEX.md` line 7: "The constant prefix and the message family are
+normative"; position-dependent tokens (`<N>`, `<V>`, `<T>`) are substituted from
+the input. The driver's walk renders the reason with the **constant prefix
+verbatim** and the position token substituted (e.g., `chain link broken at seq
+2`). The gate asserts:
+- `Status` exact (FAIL / PASS).
+- `Step` exact (the bare step number, or `pre-flight`).
+- `Reason` family-prefix match against the pinned `Reason-Template` with
+  `<N>`/`<V>`/`<T>` token-substitution — the live walk's rendered reason must
+  equal the fixture's rendered `Reason` line (constant prefix + substituted
+  token), which is the strongest honest "the verifier itself emits this"
+  assertion.
+- `ExitCode` exact (§10.12: FAIL→1, truncation/structural→2).
+
+A clean-room reference walk (Python, run during planning) confirmed all 18
+live-walk candidates produce the pinned Status + Step + rendered Reason from real
+recomputation — not from reading the expected string. That re-derivation guard is
+the honesty proof: a fixture whose tamper label disagrees with its bytes (N036,
+see below) is caught, not rubber-stamped.
+
+## Classification — live-walk vs contract-only vs v1.x (the honest coverage map)
+
+Each negative assessed against: does the §7 1–10 base walk over the materialized
+`audit_file` genuinely produce the pinned Status/Step/Reason from recomputation?
+
+| Vector | Class | §7 / §10.x reason |
+|---|---|---|
+| N001 payload bit-flip | **live-walk** | step 9 MAC recompute rejects (verified `!=` stored) |
+| N002 events reordered | **live-walk** | step 6 chain-link (prev-hash mismatch at expected_seq 2) |
+| N003 merkle altered | **live-walk** | step 10 root recompute rejects |
+| N006 fingerprint flipped | **live-walk** | step 8 fingerprint recompute rejects (no MAC compute) |
+| N007 unknown key_version | **live-walk** | step 7 IKM lookup miss (key_version 99) |
+| N008 entry format mismatch | **live-walk** | step 5 per-entry format_version |
+| N009 header format v2 | **live-walk** | step 1 format_version |
+| N010 header hkdf flipped | **live-walk** | step 2 hkdf_inputs_digest recompute |
+| N011 genesis nonzero | **live-walk** | step 3 genesis constant |
+| N012 cross-chain tenant | **live-walk** | step 4 per-entry binding |
+| N013 mid-write truncation | **live-walk** | pre-flight (`_ndjson_truncated` markers) → exit 2 |
+| N014 botched rotation | **live-walk** | step 8 fingerprint (rotation defence) |
+| N015 prev_hash substituted | **live-walk** | step 6 chain-link |
+| N016 prev+payload recomputed | **live-walk** | step 6 chain-link (deep) |
+| N030 output-hash mismatch | **live-walk** | step 9 MAC (verified `!=` stored) |
+| N033 DP noise seed tampered | **live-walk** | step 9 MAC (verified `!=` stored) |
+| N020 algorithm/key-type mismatch | **live-walk (structural)** | step 11 *structural field-compare*: `seal.algorithm` ("ed25519") vs the fixture's `resolved_public_key_type` ("rsa-3072") → `algorithm/key-type mismatch at signature verification`. No crypto — a string compare on two fixture fields the walk reads. |
+| N022 format v1.1 | **live-walk** | step 1 format_version |
+| N023 format "V1" case-variant | **live-walk (prefix)** | step 1; the fixture quotes `"V1"` but N009/N022 leave the value unquoted — quoting is a per-fixture author choice diverging from the spec step-1 template (`format_version <X> …`). The walk asserts Status+Step+family-prefix; the quoting divergence is flagged to Heather (finding below). |
+| N004 signature garbage | **contract-only** | step 11 signature crypto — the garbage sig (`ZZZZ…`) does not decode to a 64-byte Ed25519 signature and there is no public key in the corpus; the genuine crypto rejection cannot run from the fixture alone. The baseline placeholder makes step 11 non-walkable for every fixture. |
+| N005 signature wrong tenant | **contract-only** | step 11 signature crypto — needs a real signature over the wrong-tenant sign_payload; the fixture carries only the baseline placeholder + a `signed_for_tenant_id` descriptor. |
+| N017 dual-algo partial coverage | **contract-only (v1.x)** | §4.3.2 case (b) PASS-WITH-ANOMALY; PQ posture descriptor, v1.x-deferred |
+| N018 dual-algo not in posture | **contract-only (v1.x)** | §4.3.2 case (c); PQ posture descriptor |
+| N019 dual-algo one-valid-one-invalid | **contract-only (v1.x)** | §4.3.2 case (e); PQ posture descriptor |
+| N021 routing event tampered | **contract-only (v1.x)** | §4.4.1 routing-in-canonical-bytes; v1.x-disposition per INDEX |
+| N024 acquirer-HSM sig mismatch | **contract-only** | §10.24 succession; `entries=0`, bespoke `successor_envelope` block, no walkable base chain |
+| N025 backfill merkle corrupted | **live-walk (§10.42)** | exercises wave-2 `verify.RecomputeBackfillMerkleRoot`; the corrupted backfill root recompute rejects → `backfill merkle root mismatch at backfill seq <N>` |
+| N026 additional_verifications invalid | **contract-only** | §10.12 strict-mode verifier-output validation (exit 3); `entries=0`, `verdict_object` block — not a chain-integrity check |
+| N027 state-machine illegal transition | **contract-only** | §10.43 claim state-machine; `entries=0`, `transitions_table` + `walk` blocks |
+| N028 adjuster anchor missing link | **contract-only** | §10.45; `entries=0`, `cedent_anchor`/`reinsurer_anchor` blocks |
+| N029 bordereau out of order | **contract-only** | §10.46; `entries=0`, `lifecycle` block |
+| N031 retrieval merkle tampered | **contract-only** | §10.49 retrieval-set Merkle; `entries=0`, `retrieval_set` block (a §10.x Merkle distinct from the base chain Merkle) |
+| N032 HITL signature bad | **contract-only** | §10.50; `entries=5` BUT the base §7 walk PASSes — the tamper is to a HITL reviewer signature the base walk doesn't check; needs a §10.50 HITL-signature verifier path not built |
+| N034 decadal reseal anchor mismatch | **contract-only** | §10.54; `entries=0`, `decadal_reseal` block |
+| N035 challenge-response out of order | **contract-only** | §10.55; `entries=0`, `sequence` block |
+| N036 OTLP/JSON bytes encoding | **contract-only** | §4.4 receiver-decoder layer — **the MAC does NOT break in the fixture** (recompute `==` stored, verified); the pinned `payload_hash MAC mismatch` describes a receiver-side OTLP/JSON encoding refusal pending separate dispatch (per INDEX + Glenn 2026-05-21), not something the base walk produces from these bytes. Don't fake it. |
+| N037 leap-second captured_at | **contract-only** | §10.4 — the base §7 walk over the clean chain genuinely PASSes, but the pinned output is PASS **with a clock-skew anomaly line**; the anomaly requires a §10.4 captured_at-monotonicity capability not built in the verifier. The Status:PASS/exit-0 half is live; the anomaly line is the deferred half — asserted contract-only until §10.4 lands. |
+| N038 discovery production form | **contract-only (v1.x)** | §10.13.1 evidentiary-artifacts; `entries=0`, `production_manifest` block |
+
+**Counts:** live-walk **20** (N001-N003, N006-N016, N020, N022, N023, N025,
+N030, N033) · contract-only **18** (N004, N005, N017-N019, N021, N024,
+N026-N029, N031, N032, N034-N038) · of the contract-only set, 7 carry the
+v1.x-disposition (N017-N019, N021, N026, N036, N038). N023 and N020 are live
+with a documented mechanism caveat (prefix-match / structural-compare).
+
+## Findings surfaced (Heather / spec lane — NOT patched by me)
+
+1. **N023 format_version quoting divergence.** N023's pinned reason quotes the
+   value (`format_version "V1" not supported…`) but N009 (`v2`) and N022
+   (`v1.1`) leave it unquoted. The spec step-1 template (§7, line 1635) is
+   `format_version <X> not supported by this verifier (running v1)` — no quoting
+   prescribed. Either all three quote `<X>` or none do. The verifier renders one
+   canonical form; the fixture inconsistency means one of the three won't match
+   byte-exact. Recommend the spec/_lib pick a single rule and re-render all three.
+   The walk asserts N023 on the family-prefix + Status + Step until resolved.
+
+2. **N036 tamper-label vs bytes disagreement.** N036's `tamper.class` is
+   "OTLP/JSON bytes encoding" and the pinned reason is `payload_hash MAC mismatch
+   at seq 2`, but the fixture's `event_canonical_hex` was NOT mutated to break the
+   MAC — a live recompute yields `==` stored. The pinned reason describes a
+   receiver-decoder-layer refusal, not a base-§7 outcome from these bytes. This is
+   consistent with the INDEX note ("receiver-side OTLP/JSON bytes-encoding refusal
+   pending separate dispatch") — flagged so it's explicit that N036's live
+   assertion is deferred to the receiver-decoder wave, not the §7 walk.
+
+## Acceptance
+
+- `buildSeal` resolves `operational_events_log_root_hex` from the fixture; the
+  v1.0c form reconstructs from input alone (item 1, committed first).
+- A §7-walk driver over the `audit_file` shape asserts Status/Step/Reason/ExitCode
+  for the 20 live-walk negatives; the 18 contract-only retain the
+  reason-template self-consistency assertion with the per-vector classification
+  reason recorded.
+- 035 full sign_payload byte-compare completes IF Heather's `hkdf_inputs_digest_hex`
+  fix lands in 035's `input.json` during the run.
+- `go build` + `go vet` + `go test` green per module after each step.
+- No DRY violation: the walk reuses `core/hkdf`, `core/constants`,
+  `verify.MerkleLeafHash`/`MerkleTreeHash`, `verify.KeyFingerprint`,
+  `verify.RecomputeBackfillMerkleRoot` (N025) — no new crypto primitives.
+
+## Non-goals
+
+- Step 11 signature crypto over the corpus (no real Ed25519 key materialized).
+- §10.50 HITL / §10.43 state-machine / §10.4 leap-second / receiver-decoder
+  verifier paths (the contract-only extension reasons need capabilities not built;
+  each is recorded with its spec-section reason).
+- Rust (no benchmark; all hot work is SHA-256).
+
+## Risk / fork log
+
+- **D-W3-1:** the §7 walk stops at step 10 (no crypto-walkable signature). A
+  future real-key fixture would extend it to step 11. Reversible.
+- **D-W3-2:** reason-match is family-prefix + token-substitution, not raw
+  byte-equality, because the corpus's own `Reason-Template` carries `<N>` tokens.
+  The live walk's rendered reason equals the fixture's rendered `Reason` line for
+  the 20 live vectors (the strongest honest match); N023's quoting is the one
+  documented exception.
+- **N025 backfill leaf semantics:** N025 reuses wave-2's §10.42 recompute; a root
+  divergence there is the same "wrapped the subtree root as a leaf" class wave-2
+  pinned.

@@ -96,6 +96,11 @@ type sealFields struct {
 	DevMode             bool
 	KeyVersionsCanon    string
 	KMSHandleURIsDigest string
+	// OperationalEventsLogRoot is the v1.0c (§10.79) sibling-log Merkle
+	// root, bound as the 13th sign_payload field. Resolved from the seal
+	// block's operational_events_log_root_hex; empty for v1.0a/v1.0b seals
+	// where the field is absent.
+	OperationalEventsLogRoot string
 }
 
 // byteFormInput is the 018/019/020 layout: a seal block carrying the
@@ -112,6 +117,9 @@ type byteFormInput struct {
 		HKDFInputsDigest   string `json:"hkdf_inputs_digest_hex"`
 		Cadence            string `json:"cadence"`
 		DevMode            bool   `json:"dev_mode"`
+		// v1.0c (§10.79) sibling-log root. Absent on v1.0a/v1.0b seals;
+		// the _hex suffix matches merkle_root_hex / hkdf_inputs_digest_hex.
+		OperationalEventsLogRootHex string `json:"operational_events_log_root_hex"`
 	} `json:"seal"`
 	ComputedCanonicalFields struct {
 		KeyVersionsCanon    string `json:"key_versions_canon"`
@@ -130,17 +138,18 @@ type byteFormInput struct {
 // §10.42 recompute itself is gated by the backfill runner.
 type signPayloadInputsLayout struct {
 	SignPayloadInputs struct {
-		SignPayloadVersion  string `json:"sign_payload_version"`
-		Algorithm           string `json:"algorithm"`
-		FormatVersion       string `json:"format_version"`
-		TenantID            string `json:"tenant_id"`
-		SealDate            string `json:"seal_date"`
-		MerkleRootHex       string `json:"merkle_root_hex"`
-		HKDFInputsDigest    string `json:"hkdf_inputs_digest_hex"`
-		Cadence             string `json:"cadence"`
-		DevMode             bool   `json:"dev_mode"`
-		KeyVersionsCanon    string `json:"key_versions_canon"`
-		KMSHandleURIsDigest string `json:"kms_handle_uris_digest_hex"`
+		SignPayloadVersion       string `json:"sign_payload_version"`
+		Algorithm                string `json:"algorithm"`
+		FormatVersion            string `json:"format_version"`
+		TenantID                 string `json:"tenant_id"`
+		SealDate                 string `json:"seal_date"`
+		MerkleRootHex            string `json:"merkle_root_hex"`
+		HKDFInputsDigest         string `json:"hkdf_inputs_digest_hex"`
+		Cadence                  string `json:"cadence"`
+		DevMode                  bool   `json:"dev_mode"`
+		KeyVersionsCanon         string `json:"key_versions_canon"`
+		KMSHandleURIsDigest      string `json:"kms_handle_uris_digest_hex"`
+		OperationalEventsLogRoot string `json:"operational_events_log_root_hex"`
 	} `json:"sign_payload_inputs"`
 }
 
@@ -162,17 +171,18 @@ func resolveSealFields(raw []byte) (sealFields, error) {
 	var bf byteFormInput
 	if err := json.Unmarshal(raw, &bf); err == nil && bf.Seal.SignPayloadVersion != "" && bf.Seal.MerkleRootHex != "" {
 		return sealFields{
-			SignPayloadVersion:  bf.Seal.SignPayloadVersion,
-			Algorithm:           bf.Seal.Algorithm,
-			FormatVersion:       bf.Seal.FormatVersion,
-			TenantID:            bf.Seal.TenantID,
-			SealDate:            bf.Seal.SealDate,
-			MerkleRootHex:       bf.Seal.MerkleRootHex,
-			HKDFInputsDigest:    bf.Seal.HKDFInputsDigest,
-			Cadence:             bf.Seal.Cadence,
-			DevMode:             bf.Seal.DevMode,
-			KeyVersionsCanon:    bf.ComputedCanonicalFields.KeyVersionsCanon,
-			KMSHandleURIsDigest: bf.ComputedCanonicalFields.KMSHandleURIsDigest,
+			SignPayloadVersion:       bf.Seal.SignPayloadVersion,
+			Algorithm:                bf.Seal.Algorithm,
+			FormatVersion:            bf.Seal.FormatVersion,
+			TenantID:                 bf.Seal.TenantID,
+			SealDate:                 bf.Seal.SealDate,
+			MerkleRootHex:            bf.Seal.MerkleRootHex,
+			HKDFInputsDigest:         bf.Seal.HKDFInputsDigest,
+			Cadence:                  bf.Seal.Cadence,
+			DevMode:                  bf.Seal.DevMode,
+			KeyVersionsCanon:         bf.ComputedCanonicalFields.KeyVersionsCanon,
+			KMSHandleURIsDigest:      bf.ComputedCanonicalFields.KMSHandleURIsDigest,
+			OperationalEventsLogRoot: bf.Seal.OperationalEventsLogRootHex,
 		}, nil
 	}
 
@@ -184,17 +194,18 @@ func resolveSealFields(raw []byte) (sealFields, error) {
 			return sealFields{}, errDeferredReconstruction
 		}
 		return sealFields{
-			SignPayloadVersion:  in.SignPayloadVersion,
-			Algorithm:           in.Algorithm,
-			FormatVersion:       in.FormatVersion,
-			TenantID:            in.TenantID,
-			SealDate:            in.SealDate,
-			MerkleRootHex:       in.MerkleRootHex,
-			HKDFInputsDigest:    in.HKDFInputsDigest,
-			Cadence:             in.Cadence,
-			DevMode:             in.DevMode,
-			KeyVersionsCanon:    in.KeyVersionsCanon,
-			KMSHandleURIsDigest: in.KMSHandleURIsDigest,
+			SignPayloadVersion:       in.SignPayloadVersion,
+			Algorithm:                in.Algorithm,
+			FormatVersion:            in.FormatVersion,
+			TenantID:                 in.TenantID,
+			SealDate:                 in.SealDate,
+			MerkleRootHex:            in.MerkleRootHex,
+			HKDFInputsDigest:         in.HKDFInputsDigest,
+			Cadence:                  in.Cadence,
+			DevMode:                  in.DevMode,
+			KeyVersionsCanon:         in.KeyVersionsCanon,
+			KMSHandleURIsDigest:      in.KMSHandleURIsDigest,
+			OperationalEventsLogRoot: in.OperationalEventsLogRoot,
 		}, nil
 	}
 
@@ -278,7 +289,7 @@ func buildSeal(f sealFields) (signpayload.Seal, error) {
 		DevMode:                  f.DevMode,
 		KeyVersionsCanon:         f.KeyVersionsCanon,
 		KMSHandleURIsDigest:      f.KMSHandleURIsDigest,
-		OperationalEventsLogRoot: "", // no v1.0c vector materialized yet
+		OperationalEventsLogRoot: f.OperationalEventsLogRoot,
 	}, nil
 }
 
