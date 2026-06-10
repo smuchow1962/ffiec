@@ -21,8 +21,14 @@
 // against the .NET and Python reference implementations is the most
 // load-bearing thing in the cryptographic surface.
 //
-// Status: stub. The dispatcher lands in Commit 5 of the verifier
-// upgrade, alongside §7 step 11 signature verification.
+// Status: implemented (signpayload.go). Build(Seal) dispatches on
+// Seal.Version through one shared form-builder (the magic line + a
+// `\n`-joined ordered field slice per form), so the four forms share
+// the byte framing and differ only by their field lists — the DRY
+// shape the .NET + Python references also use. The v1.0b sign_payload
+// vectors (018, 019, 020, 035) gate it byte-for-byte. v1.0a / v1.0c
+// have no materialized vector yet; the dispatch is implemented and
+// unit-tested, the corpus pin lands when the spec-side fixtures do.
 //
 // Cross-implementation reference: the .NET reference at
 // Herald.Compliance/Audit/Chain/SignPayload.cs is the byte-form
