@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"sort"
 )
 
 // Result is the verifier's report. Each Step records one named check and
@@ -116,6 +117,17 @@ func Verify(led *Ledger, plan Plan) (*Result, error) {
 	// present on chain entries, the verifier validates them and records
 	// the outcome in AdditionalVerifications.
 	r.AdditionalVerifications = validateChainAttributes(led.Entries)
+
+	// §10.84 communication principal-preapproval ordering (FINRA Rule
+	// 2210). Also additive and non-gating; emitted only when the chain
+	// carries a retail communication event. Re-sort so the combined
+	// AdditionalVerifications stays in deterministic family-name order.
+	if av := validateCommunicationPreapproval(led.Entries); av != nil {
+		r.AdditionalVerifications = append(r.AdditionalVerifications, *av)
+		sort.Slice(r.AdditionalVerifications, func(i, j int) bool {
+			return r.AdditionalVerifications[i].Family < r.AdditionalVerifications[j].Family
+		})
+	}
 	return r, nil
 }
 
