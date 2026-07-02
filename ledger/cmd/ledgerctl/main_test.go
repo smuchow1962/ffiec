@@ -7,8 +7,10 @@ import (
 	"encoding/pem"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/mmpworks/ffiec/ledger/internal/examiner"
 	"github.com/mmpworks/ffiec/testkit/clitest"
@@ -106,7 +108,7 @@ func TestExaminerIssue_EndToEnd(t *testing.T) {
 		"--tenant", "tenant_b",
 		"--period-start", "2026-01-01",
 		"--period-end", "2026-06-14",
-		"--expires-at", "2026-06-22T17:00:00Z",
+		"--expires-at", futureExpiry(t),
 		"--correlation-id", "exam-2026-06-15-occ",
 		"--scope", "compliance.read",
 		"--issuance-key", keyPath,
@@ -192,7 +194,7 @@ func TestExaminerIssue_RequiresAtLeastOneTenant(t *testing.T) {
 		"--identity", "x",
 		"--period-start", "2026-01-01",
 		"--period-end", "2026-06-14",
-		"--expires-at", "2026-06-22T17:00:00Z",
+		"--expires-at", futureExpiry(t),
 		"--correlation-id", "c",
 		"--issuance-key", keyPath,
 		"--compliance-url", "https://example",
@@ -236,7 +238,7 @@ func TestExaminerIssue_RejectsBadScope(t *testing.T) {
 		"--tenant", "t",
 		"--period-start", "2026-01-01",
 		"--period-end", "2026-06-14",
-		"--expires-at", "2026-06-22T17:00:00Z",
+		"--expires-at", futureExpiry(t),
 		"--correlation-id", "c",
 		"--scope", "bogus.scope",
 		"--issuance-key", keyPath,
@@ -256,7 +258,7 @@ func TestExaminerIssue_RejectsMissingKeyFile(t *testing.T) {
 		"--tenant", "t",
 		"--period-start", "2026-01-01",
 		"--period-end", "2026-06-14",
-		"--expires-at", "2026-06-22T17:00:00Z",
+		"--expires-at", futureExpiry(t),
 		"--correlation-id", "c",
 		"--issuance-key", filepath.Join(dir, "does-not-exist.pem"),
 		"--compliance-url", "https://example",
@@ -327,6 +329,40 @@ func TestExaminerAudit_StillStubbed(t *testing.T) {
 	clitest.Run(Main, "examiner", "audit").
 		MustExit(t, 1).
 		StderrContains(t, "not yet implemented")
+}
+
+// ----- fixture-lapse guard ------------------------------------------------
+
+// futureExpiry returns an --expires-at value comfortably in the future
+// relative to the real wall clock. The CLI's issuer (examiner.Issue)
+// defaults Now to time.Now, so a black-box CLI fixture that hardcodes an
+// absolute expiry date silently lapses the day that date passes and turns
+// green tests red with no code change. Compute expiry relative to now
+// instead. (The examiner unit tests may hardcode expiry because they also
+// inject a fixed Now — a frozen clock plus a fixed expiry never lapses.)
+func futureExpiry(t *testing.T) string {
+	t.Helper()
+	return time.Now().Add(365 * 24 * time.Hour).UTC().Format(time.RFC3339)
+}
+
+// TestNoHardcodedExpiryLiteral_InCLIFixtures is the class-level regression
+// for the lapsed-fixture bug: it fails if any --expires-at in this file is
+// followed by a hardcoded absolute-date literal instead of futureExpiry(t).
+// The "not-a-date" negative fixture is not date-shaped and does not trip;
+// the relative-clock form is not a string literal and does not trip. The
+// needle is split around the comma so this guard cannot match its own
+// regex source.
+func TestNoHardcodedExpiryLiteral_InCLIFixtures(t *testing.T) {
+	src, err := os.ReadFile("main_test.go")
+	if err != nil {
+		t.Fatalf("read own source: %v", err)
+	}
+	re := regexp.MustCompile(`"--expires-at",` + `\s*"\d{4}-\d{2}-\d{2}`)
+	if loc := re.FindIndex(src); loc != nil {
+		line := 1 + strings.Count(string(src[:loc[0]]), "\n")
+		t.Fatalf("main_test.go:%d passes a hardcoded date to --expires-at; "+
+			"use futureExpiry(t) so the fixture cannot silently lapse", line)
+	}
 }
 
 // ----- helpers ------------------------------------------------------------
