@@ -25,13 +25,16 @@ import (
 // to retail communications; institutional and correspondence audiences
 // are outside Rule 2210's pre-approval requirement and are not checked.
 
-// preapprovalFamily is the AdditionalVerification family name for the
-// §10.84 check. On OK it corresponds to the §10.12 closed-enum marker
-// communication_principal_preapproval_verified; on failure the Note
-// carries the §10.84 anomaly line.
+// preapprovalFamily is the AdditionalVerification family name the §10.84
+// check reports under, mirroring the §14.6/§14.7/§14.8 additive-family
+// idiom: OK=true means every retail communication's registered-principal
+// approval preceded its send; on failure the Note carries the §10.84
+// anomaly line. The spec's §10.12 marker string
+// communication_principal_preapproval_verified is the verdict-layer name
+// for the OK state — like the §14.x family markers it is NOT emitted from
+// this file; the family-name → marker-string mapping is the verdict
+// serializer's job (see core/verdict).
 const preapprovalFamily = "audit.communication_preapproval"
-
-const preapprovalMarker = "communication_principal_preapproval_verified"
 
 // communication-send action_kind values §10.84 recognizes on a §14.8
 // downstream_action event. The set is small and closed for the §10.84
