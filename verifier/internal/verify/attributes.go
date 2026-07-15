@@ -17,15 +17,33 @@ type EventAttributes struct {
 
 	// §14.8 — audit.downstream_action.* family
 	DownstreamAction *DownstreamActionAttributes `json:"audit.downstream_action,omitempty"`
+
+	// §14.13 — audit.supervisory.* supervisory-context provenance.
+	// Presentation-only: the verifier surfaces it through the profile
+	// layer and never gates the integrity verdict on it (per §14.13 and
+	// the §7 determinism contract).
+	Supervisory *SupervisoryAttributes `json:"audit.supervisory,omitempty"`
+}
+
+// SupervisoryAttributes is §14.13. Every field is institution-asserted
+// provenance bound under the per-event MAC like any audit.* namespace;
+// the verifier records it for examiner-facing rendering and applies no
+// predicate to it. charter_type is present when the family is emitted;
+// the supervisor fields are conditional on the charter class.
+type SupervisoryAttributes struct {
+	CharterType                 string `json:"charter_type"`
+	PrimaryStateSupervisor      string `json:"primary_state_supervisor,omitempty"`
+	FederalPrudentialSupervisor string `json:"federal_prudential_supervisor,omitempty"`
+	DualSupervision             bool   `json:"dual_supervision,omitempty"`
 }
 
 // ActorAttributes is §14.6. When emitted, authenticated_user_id_hash
 // and authentication_method are required; session_id is RECOMMENDED;
 // delegation_chain is present when applicable.
 type ActorAttributes struct {
-	AuthenticatedUserIDHash string               `json:"authenticated_user_id_hash"`
-	AuthenticationMethod    string               `json:"authentication_method"`
-	SessionID               string               `json:"session_id,omitempty"`
+	AuthenticatedUserIDHash string                 `json:"authenticated_user_id_hash"`
+	AuthenticationMethod    string                 `json:"authentication_method"`
+	SessionID               string                 `json:"session_id,omitempty"`
 	DelegationChain         []DelegationChainEntry `json:"delegation_chain,omitempty"`
 }
 
@@ -46,8 +64,8 @@ type ReasoningAttributes struct {
 // DownstreamActionAttributes is §14.8. When emitted, all four fields
 // are required.
 type DownstreamActionAttributes struct {
-	ActionKind        string `json:"action_kind"`
-	SystemOfRecordID  string `json:"system_of_record_id"`
+	ActionKind         string `json:"action_kind"`
+	SystemOfRecordID   string `json:"system_of_record_id"`
 	ChangeRecordIDHash string `json:"change_record_id_hash"`
-	AppliedAtUTC      string `json:"applied_at_utc"`
+	AppliedAtUTC       string `json:"applied_at_utc"`
 }

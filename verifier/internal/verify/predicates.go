@@ -212,8 +212,8 @@ func ParseEventAttributes(eventPayloadJSON []byte) (*EventAttributes, error) {
 	if err := json.Unmarshal(eventPayloadJSON, &attrs); err != nil {
 		return nil, fmt.Errorf("parse event attributes: %w", err)
 	}
-	if attrs.Actor == nil && attrs.Reasoning == nil && attrs.DownstreamAction == nil {
-		return nil, nil // no attribute families present; nothing to validate
+	if attrs.Actor == nil && attrs.Reasoning == nil && attrs.DownstreamAction == nil && attrs.Supervisory == nil {
+		return nil, nil // no attribute families present; nothing to surface
 	}
 	return &attrs, nil
 }

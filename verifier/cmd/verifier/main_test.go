@@ -193,6 +193,45 @@ func TestVerify_HelpExitsZero(t *testing.T) {
 		StdoutContains(t, "ledger")
 }
 
+func TestVerify_UnknownProfileIsConfigError(t *testing.T) {
+	ledgerPath, pubPath, _ := makeFixtureFiles(t)
+	clitest.Run(Main,
+		"verify",
+		"--ledger", ledgerPath,
+		"--root-key", pubPath,
+		"--profile", "nonesuch",
+	).MustExit(t, 1).StderrContains(t, "unknown profile")
+}
+
+// The default (ffiec) profile on a chain with no supervisory family
+// reproduces the integrity core with no extra profile framing.
+func TestVerify_DefaultProfileEmitsNoProfileLine(t *testing.T) {
+	ledgerPath, pubPath, _ := makeFixtureFiles(t)
+	r := clitest.Run(Main,
+		"verify",
+		"--ledger", ledgerPath,
+		"--root-key", pubPath,
+	).MustSucceed(t)
+	r.StdoutContains(t, "PASS (structural)")
+	if strings.Contains(r.Stdout, "profile:") {
+		t.Errorf("default profile must not emit a profile line:\n%s", r.Stdout)
+	}
+}
+
+// A non-default profile surfaces its active-profile line without changing
+// the integrity verdict — presentation-only.
+func TestVerify_NonDefaultProfileShowsFramingNotVerdict(t *testing.T) {
+	ledgerPath, pubPath, _ := makeFixtureFiles(t)
+	r := clitest.Run(Main,
+		"verify",
+		"--ledger", ledgerPath,
+		"--root-key", pubPath,
+		"--profile", "tx-dob",
+	).MustSucceed(t)
+	r.StdoutContains(t, "profile:       tx-dob")
+	r.StdoutContains(t, "PASS (structural)") // verdict unchanged by the profile
+}
+
 // ----- walk ---------------------------------------------------------------
 
 func TestWalk_PrintsEveryEntryAndSeal(t *testing.T) {

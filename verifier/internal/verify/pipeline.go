@@ -25,6 +25,13 @@ type Result struct {
 	// entries are deterministic: one per distinct attribute family found
 	// across all chain entries, in family-name order.
 	AdditionalVerifications []AdditionalVerification
+
+	// Supervisory is the §14.13 audit.supervisory.* provenance aggregate,
+	// present only when the chain carried the family. It is presentation-
+	// only: it never affects StructuralPass, MACPass, or any step. A
+	// per-regulator profile layer renders it; the integrity verdict does
+	// not depend on it.
+	Supervisory *SupervisoryContext
 }
 
 // AdditionalVerification records one attribute-family validation
@@ -128,6 +135,10 @@ func Verify(led *Ledger, plan Plan) (*Result, error) {
 			return r.AdditionalVerifications[i].Family < r.AdditionalVerifications[j].Family
 		})
 	}
+
+	// §14.13 supervisory-context extraction. Presentation-only: it feeds
+	// the regulator profile layer and never gates the integrity verdict.
+	r.Supervisory = extractSupervisoryContext(led.Entries)
 	return r, nil
 }
 
