@@ -4,7 +4,7 @@
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![Go Version](https://img.shields.io/badge/go-1.23+-00ADD8.svg)](https://go.dev)
-[![Status](https://img.shields.io/badge/status-design%20phase-orange.svg)](docs/design/)
+[![Status](https://img.shields.io/badge/status-active-brightgreen.svg)](docs/design/)
 
 ---
 

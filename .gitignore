@@ -61,3 +61,6 @@ goreleaser/
 # Direnv
 .envrc
 .direnv/
+
+# Local-only working material, never published
+_wip/

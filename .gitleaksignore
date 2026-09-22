@@ -1,0 +1,40 @@
+# Accepted gitleaks findings, by fingerprint.
+#
+# Per the design rule in .gitleaks.toml: classes of false positive belong in that
+# file, individual accepted instances belong here.
+#
+# All six below are the generic-api-key heuristic firing on long hex strings in
+# documentation. Reviewed one by one on 2026-09-22, before the first public release.
+#
+# WHY THEY ARE NOT SECRETS
+#
+#   key_fingerprint, first_seen_key_fingerprint, ffiec.chain.key_fingerprint and
+#   key_fingerprint_v1_hex are FINGERPRINTS: truncated hashes over a PUBLIC key.
+#   Publishing one is the point of having one. It tells an examiner which signing
+#   key sealed a chain so the signature can be checked without contacting the
+#   institution. A fingerprint discloses nothing about the private key. If these
+#   were absent from the documentation the spec would be harder to implement.
+#
+#   docs/auditor-stories/ holds written scenarios about a FICTIONAL institution,
+#   Northbridge Federal Savings. Every identifier in them is invented for the
+#   narrative, the transactionKey value included.
+#
+#   docs/soc-pack/ and docs/feedback/ carry sample event JSON and review notes
+#   built from the same synthetic corpus.
+#
+# The four files carrying these values were moved to the local-only _wip/ tree on
+# 2026-09-22, so the working tree no longer contains them. The findings stay
+# reachable in history, which is why this file exists: a reader who runs gitleaks
+# against the public repo finds the same six, and finds the reason here.
+
+# docs/auditor-stories/01-northbridge-federal-savings.md — fictional bank narrative
+0b9e6f8ce9017ace2f00d954e3fc27688668fc4b:docs/auditor-stories/01-northbridge-federal-savings.md:generic-api-key:605
+0b9e6f8ce9017ace2f00d954e3fc27688668fc4b:docs/auditor-stories/01-northbridge-federal-savings.md:generic-api-key:636
+
+# docs/feedback/round-1{4,5}/01-cryptographic-engineer.md — key_fingerprint_v1_hex in review notes
+a0118680a78fb23091a566cf6b46c22671532687:docs/feedback/round-15/01-cryptographic-engineer.md:generic-api-key:93
+a0118680a78fb23091a566cf6b46c22671532687:docs/feedback/round-14/01-cryptographic-engineer.md:generic-api-key:49
+
+# docs/soc-pack/control-evidence-events.md — sample chain events
+a0118680a78fb23091a566cf6b46c22671532687:docs/soc-pack/control-evidence-events.md:generic-api-key:174
+a0118680a78fb23091a566cf6b46c22671532687:docs/soc-pack/control-evidence-events.md:generic-api-key:290
