@@ -73,6 +73,7 @@ jobs:
           go-version: ${{ matrix.go }}
           cache: true
       - name: go test
+        shell: bash
         # No root module (go.work workspace): name each module. Keep in step with go.work.
         run: go test -race -coverprofile=coverage.out ./cliutil/... ./core/... ./ledger/... ./testkit/... ./verifier/...        
       - name: upload coverage
