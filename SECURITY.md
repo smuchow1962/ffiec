@@ -4,7 +4,7 @@
 
 **Do not open a public GitHub issue for security vulnerabilities.**
 
-Email **security@tesseraseal.com** with:
+Report it privately through GitHub's private vulnerability reporting for this repository (the **Security** tab, then **Report a vulnerability**). Include:
 
 - A description of the vulnerability and its impact
 - Steps to reproduce, with a minimal test case if possible
@@ -48,15 +48,9 @@ We may shorten the embargo if the vulnerability is being exploited in the wild, 
 
 This project does not currently offer a bug bounty. We acknowledge reporters in the security advisory and the release notes.
 
-## PGP key
+## Encrypted reports
 
-Our PGP key for encrypted reports is available at:
-
-```
-https://tesseraseal.com/.well-known/security.txt
-```
-
-(Will be populated when public release ships.)
+GitHub private vulnerability reports are visible only to the repository maintainers. No separate PGP key is published.
 
 ## Hall of credit
 
