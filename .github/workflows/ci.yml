@@ -26,10 +26,37 @@ jobs:
             gofmt -l .
             exit 1
           fi
-      - name: golangci-lint
+      # This repo is a go.work workspace with no root module, so each module is linted
+      # from its own directory. Keep this list in step with go.work.
+      - name: golangci-lint (cliutil)
         uses: golangci/golangci-lint-action@v6
         with:
           version: v1.61
+          working-directory: cliutil
+          args: --timeout=5m
+      - name: golangci-lint (core)
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.61
+          working-directory: core
+          args: --timeout=5m
+      - name: golangci-lint (ledger)
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.61
+          working-directory: ledger
+          args: --timeout=5m
+      - name: golangci-lint (testkit)
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.61
+          working-directory: testkit
+          args: --timeout=5m
+      - name: golangci-lint (verifier)
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.61
+          working-directory: verifier
           args: --timeout=5m
 
   test:
@@ -46,7 +73,8 @@ jobs:
           go-version: ${{ matrix.go }}
           cache: true
       - name: go test
-        run: go test -race -coverprofile=coverage.out ./...
+        # No root module (go.work workspace): name each module. Keep in step with go.work.
+        run: go test -race -coverprofile=coverage.out ./cliutil/... ./core/... ./ledger/... ./testkit/... ./verifier/...        
       - name: upload coverage
         if: matrix.os == 'ubuntu-latest'
         uses: codecov/codecov-action@v4
