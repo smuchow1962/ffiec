@@ -12,12 +12,12 @@ import (
 //
 // This canonicalization is sufficient for the v1.0 bundle schema:
 //
-//   1. Encoding is via encoding/json on a fixed struct, so field order is
-//      stable across Go versions and matches the source declaration order.
-//   2. All fields are string, time.Time, or string-slice — no maps, no
-//      floats. The JSON encoder is byte-stable for this shape.
-//   3. signature_ed25519 carries `omitempty`; we clear it before encoding
-//      so the signing input is identical on issuer and verifier.
+//  1. Encoding is via encoding/json on a fixed struct, so field order is
+//     stable across Go versions and matches the source declaration order.
+//  2. All fields are string, time.Time, or string-slice — no maps, no
+//     floats. The JSON encoder is byte-stable for this shape.
+//  3. signature_ed25519 carries `omitempty`; we clear it before encoding
+//     so the signing input is identical on issuer and verifier.
 //
 // Upgrade note (cross-language conformance): once non-Go consumers verify
 // bundles directly (rather than going through verifier/), this function

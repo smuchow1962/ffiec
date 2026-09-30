@@ -235,7 +235,10 @@ func TestVerifyRejectsBadKeyLength(t *testing.T) {
 	}
 }
 
-type failingWriter struct{ errOn int; calls int }
+type failingWriter struct {
+	errOn int
+	calls int
+}
 
 func (w *failingWriter) Write(_ context.Context, _ OperationalEvent) error {
 	w.calls++

@@ -31,9 +31,9 @@ import (
 // ChainEntry is one event in the chain.
 type ChainEntry struct {
 	EntryID               string `json:"entry_id"`
-	PrevHash              string `json:"prev_hash"`               // base64 SHA-256, empty on genesis
-	EntryHash             string `json:"entry_hash"`              // base64 SHA-256
-	HMACSHA256            string `json:"hmac_sha256"`             // base64, 32 bytes
+	PrevHash              string `json:"prev_hash"`   // base64 SHA-256, empty on genesis
+	EntryHash             string `json:"entry_hash"`  // base64 SHA-256
+	HMACSHA256            string `json:"hmac_sha256"` // base64, 32 bytes
 	TenantBindingKDFLabel string `json:"tenant_binding_kdf_label"`
 	EventPayloadJCS       string `json:"event_payload_jcs"` // base64 of the canonical event bytes
 	MerkleLeafIndex       int    `json:"merkle_leaf_index"`

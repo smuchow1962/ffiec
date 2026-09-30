@@ -161,8 +161,8 @@ func TestParseFlags_BadFlagBecomesUsageError(t *testing.T) {
 
 func TestRequireFlags_MissingProducesSortedUsageError(t *testing.T) {
 	err := RequireFlags(map[string]string{
-		"alpha":  "",
-		"bravo":  "",
+		"alpha":   "",
+		"bravo":   "",
 		"charlie": "set",
 	})
 	if !IsUsage(err) {

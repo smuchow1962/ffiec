@@ -2,6 +2,7 @@ package jcs_test
 
 import (
 	"encoding/json"
+	"math"
 	"strings"
 	"testing"
 
@@ -27,7 +28,7 @@ func TestCanonicalize_Numbers(t *testing.T) {
 		{"exp_low_threshold", 1e-6, "0.000001"},
 		{"below_low_threshold", 1e-7, "1e-7"},
 		{"negative", -42.5, "-42.5"},
-		{"negative_zero", -0.0, "0"},
+		{"negative_zero", math.Copysign(0, -1), "0"}, // a literal -0.0 is +0 in Go
 		{"positive_zero", 0.0, "0"},
 	}
 	for _, tc := range cases {

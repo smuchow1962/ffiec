@@ -159,7 +159,8 @@ func checkFixtureConstants(fx *MasterFixture) Check {
 // equality with the fixture's pin.
 //
 // The construction is:
-//   SHA-256(HKDF_SALT || HKDFInfoBase || "|" || utf8(tenant_id) || length_LE32)
+//
+//	SHA-256(HKDF_SALT || HKDFInfoBase || "|" || utf8(tenant_id) || length_LE32)
 func checkHKDFInputsDigest(fx *MasterFixture) Check {
 	infoForTenant := []byte(constants.HKDFInfoBase + constants.InfoTenantSeparator + fx.Inputs.TenantID)
 	lengthLE32 := make([]byte, 4)

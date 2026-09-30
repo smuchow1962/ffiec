@@ -23,9 +23,9 @@ type EventAttributes struct {
 // and authentication_method are required; session_id is RECOMMENDED;
 // delegation_chain is present when applicable.
 type ActorAttributes struct {
-	AuthenticatedUserIDHash string               `json:"authenticated_user_id_hash"`
-	AuthenticationMethod    string               `json:"authentication_method"`
-	SessionID               string               `json:"session_id,omitempty"`
+	AuthenticatedUserIDHash string                 `json:"authenticated_user_id_hash"`
+	AuthenticationMethod    string                 `json:"authentication_method"`
+	SessionID               string                 `json:"session_id,omitempty"`
 	DelegationChain         []DelegationChainEntry `json:"delegation_chain,omitempty"`
 }
 
@@ -46,8 +46,8 @@ type ReasoningAttributes struct {
 // DownstreamActionAttributes is §14.8. When emitted, all four fields
 // are required.
 type DownstreamActionAttributes struct {
-	ActionKind        string `json:"action_kind"`
-	SystemOfRecordID  string `json:"system_of_record_id"`
+	ActionKind         string `json:"action_kind"`
+	SystemOfRecordID   string `json:"system_of_record_id"`
 	ChangeRecordIDHash string `json:"change_record_id_hash"`
-	AppliedAtUTC      string `json:"applied_at_utc"`
+	AppliedAtUTC       string `json:"applied_at_utc"`
 }

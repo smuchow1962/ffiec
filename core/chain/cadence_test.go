@@ -19,9 +19,9 @@ var invalidCadences = []Cadence{
 	Cadence(" daily"),
 	Cadence("daily "),
 	Cadence("PER_SECOND"),
-	Cadence("daily\n"), // trailing-newline (line-terminator-leakage rejection)
+	Cadence("daily\n"),    // trailing-newline (line-terminator-leakage rejection)
 	Cadence("per-second"), // hyphen-instead-of-underscore mistake
-	Cadence("perSecond"), // camelCase mistake
+	Cadence("perSecond"),  // camelCase mistake
 }
 
 // validCadences is the complete §10.27 enumeration in the order the spec
