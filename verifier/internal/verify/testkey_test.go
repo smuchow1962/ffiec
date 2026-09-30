@@ -28,8 +28,6 @@ const (
 	defaultTestKeyDir = `E:\dev\testing\private-keys\tesseraseal`
 	// seedHexFile holds the 32-byte private seed as hex (LOCAL ONLY).
 	seedHexFile = "test-signing-key.seed.hex"
-	// pubHexFile holds the 32-byte public key as hex (publishable).
-	pubHexFile = "test-signing-key.pub.hex"
 	// publishedPubHex is the corpus's published public key. A loaded seed
 	// whose derived public key differs from this is a key-rotation error,
 	// not a silent test pass.
@@ -74,16 +72,4 @@ func loadTestSigningKey(t *testing.T) ed25519.PrivateKey {
 			got, publishedPubHex)
 	}
 	return priv
-}
-
-// publishedTestPublicKey returns the corpus-published public key, parsed
-// through the verifier's own ParsePublicKeyHex entry point. It needs no
-// private material, so it never skips.
-func publishedTestPublicKey(t *testing.T) ed25519.PublicKey {
-	t.Helper()
-	pub, err := ParsePublicKeyHex(publishedPubHex)
-	if err != nil {
-		t.Fatalf("parse published public key: %v", err)
-	}
-	return pub
 }

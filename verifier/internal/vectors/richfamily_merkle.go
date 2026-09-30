@@ -7,17 +7,6 @@ import (
 	"github.com/mmpworks/ffiec/verifier/internal/verify"
 )
 
-// disclosure is the shared shape of one audit-path disclosure across the
-// 023 (flat §10.31) and 026 (hierarchical §10.37) vectors. 023 carries
-// `audit_path` + `merkle_root_hex` at the tree level; 026 carries
-// `concatenated_path` + a top-level `top_root_hex`. Both fold through
-// the same verify.FoldAuditPath, so the decode normalizes to this shape.
-type disclosure struct {
-	LeafLabel   string
-	LeafHashHex string
-	Path        []verify.AuditPathStep
-}
-
 // pathStepJSON is one audit-path step as the corpus pins it.
 type pathStepJSON struct {
 	SiblingHex string `json:"sibling_hex"`

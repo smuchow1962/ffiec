@@ -122,28 +122,28 @@ type MasterFixture struct {
 // spec/test-vectors/README.md. The pinned tenant + IKM values let
 // every implementation reproduce the expected outputs deterministically.
 type FixtureInputs struct {
-	HKDFSalt       string `json:"HKDF_SALT"`
-	HKDFInfoBase   string `json:"HKDF_INFO_BASE"`
-	TenantID       string `json:"tenant_id"`
-	RunID          string `json:"run_id"`
-	IKMv1Hex       string `json:"ikm_v1_hex"`
-	IKMv2Hex       string `json:"ikm_v2_hex"`
-	SealDate       string `json:"seal_date"`
-	Algorithm      string `json:"algorithm"`
-	FormatVersion  string `json:"format_version"`
+	HKDFSalt      string `json:"HKDF_SALT"`
+	HKDFInfoBase  string `json:"HKDF_INFO_BASE"`
+	TenantID      string `json:"tenant_id"`
+	RunID         string `json:"run_id"`
+	IKMv1Hex      string `json:"ikm_v1_hex"`
+	IKMv2Hex      string `json:"ikm_v2_hex"`
+	SealDate      string `json:"seal_date"`
+	Algorithm     string `json:"algorithm"`
+	FormatVersion string `json:"format_version"`
 }
 
 // FixtureExpected mirrors chain_vectors.json's "expected" block.
 // The hex-encoded byte values are the conformance pins.
 type FixtureExpected struct {
-	SessionKeyV1Hex      string `json:"session_key_v1_hex"`
-	SessionKeyV2Hex      string `json:"session_key_v2_hex"`
-	KeyFingerprintV1Hex  string `json:"key_fingerprint_v1_hex"`
-	KeyFingerprintV2Hex  string `json:"key_fingerprint_v2_hex"`
-	HKDFInputsDigestHex  string `json:"hkdf_inputs_digest_hex"`
-	MerkleRootSingleHex  string `json:"merkle_root_single_hex"`
-	MerkleRootRotationHex string `json:"merkle_root_rotation_hex"`
-	SignPayloadSingleHex string `json:"sign_payload_single_hex"`
+	SessionKeyV1Hex        string `json:"session_key_v1_hex"`
+	SessionKeyV2Hex        string `json:"session_key_v2_hex"`
+	KeyFingerprintV1Hex    string `json:"key_fingerprint_v1_hex"`
+	KeyFingerprintV2Hex    string `json:"key_fingerprint_v2_hex"`
+	HKDFInputsDigestHex    string `json:"hkdf_inputs_digest_hex"`
+	MerkleRootSingleHex    string `json:"merkle_root_single_hex"`
+	MerkleRootRotationHex  string `json:"merkle_root_rotation_hex"`
+	SignPayloadSingleHex   string `json:"sign_payload_single_hex"`
 	SignPayloadRotationHex string `json:"sign_payload_rotation_hex"`
 }
 
