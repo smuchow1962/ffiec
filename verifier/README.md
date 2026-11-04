@@ -82,6 +82,13 @@ verifier verify \
   --root-key    ./institution.seal.pub.pem \
   --master-key  ./ikm.bin
 
+# Walk an on-disk NDJSON audit file, as a chain sink writes it during capture.
+# With no key this is witness mode: steps 1-6, and no MAC check.
+verifier verify --audit-file ./custody.ndjson
+
+# The same walk with the key: steps 1-9. --master-key-hex reads hex text; --master-key reads raw bytes.
+verifier verify --audit-file ./custody.ndjson --master-key-hex ./custody.ikm
+
 # Print every chain entry in order, plus the seal record.
 verifier walk --ledger ./tenant-day.ledger
 
@@ -98,6 +105,8 @@ verifier gen-fixture \
 ```
 
 `verify` produces a deterministic report on stdout: one line per named step (`chain-linkage`, `merkle-root`, `seal-signature`, `per-event-mac`), each marked `[PASS]` or `[FAIL]`, with an overall verdict.
+
+`verify --audit-file` prints the §7 normative output and uses the §10.12 exit codes: `0` for a pass, `1` for a failed step, `2` for a file the walk cannot begin, `3` for a key it cannot read. A pass lists under `Anomaly:` what the walk did not establish. An audit file carries no seal, so steps 10 and 11 do not run, and the first anomaly says that a cut at the end of the file cannot be detected. The §7 `Verdict-Object` line is not printed yet.
 
 The structural-only path completes whether or not `--master-key` is supplied. The MAC step records itself as skipped when no IKM is available, so the report is always complete.
 
