@@ -14,14 +14,23 @@ func runVerify(args []string, stdout, stderr io.Writer) error {
 	fs := flag.NewFlagSet("verify", flag.ContinueOnError)
 	fs.SetOutput(io.Discard)
 	var (
-		ledgerPath = fs.String("ledger", "", "Path to the tenant-day ledger file (required)")
-		rootKey    = fs.String("root-key", "", "Path to the institution's seal-signing Ed25519 PUBLIC PEM (required)")
+		ledgerPath = fs.String("ledger", "", "Path to the tenant-day ledger file (required, unless --audit-file)")
+		rootKey    = fs.String("root-key", "", "Path to the institution's seal-signing Ed25519 PUBLIC PEM (required, unless --audit-file)")
 		masterKey  = fs.String("master-key", "", "Optional path to the master IKM bytes (raw 32B file). Enables full per-event verification.")
+		auditFile  = fs.String("audit-file", "", "Path to an on-disk NDJSON audit file. Runs the §7 walk over it. With no key, runs witness mode.")
+		keyHex     = fs.String("master-key-hex", "", "With --audit-file: path to the master IKM as hex text, in place of --master-key.")
+		keyVersion = fs.Int("key-version", 1, "With --audit-file: the key_version the supplied IKM belongs to.")
 	)
 	if stop, err := cliutil.ParseFlags(fs, args, stdout, progName); err != nil {
 		return err
 	} else if stop {
 		return nil
+	}
+	if *auditFile != "" {
+		if *masterKey != "" && *keyHex != "" {
+			return cliutil.Usagef("--master-key and --master-key-hex: use one")
+		}
+		return runVerifyAuditFile(auditFileOptions{path: *auditFile, masterKey: *masterKey, keyHexFile: *keyHex, keyVersion: *keyVersion}, stdout)
 	}
 	if err := cliutil.RequireFlags(map[string]string{
 		"ledger":   *ledgerPath,

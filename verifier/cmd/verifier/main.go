@@ -8,11 +8,13 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
 
 	"github.com/mmpworks/ffiec/cliutil"
+	"github.com/mmpworks/ffiec/verifier/internal/exitcodes"
 )
 
 const progName = "verifier"
@@ -23,7 +25,8 @@ Usage:
   verifier <command> [flags]
 
 Commands:
-  verify       Run the structural (and optional full) verification procedure.
+  verify       Run the structural (and optional full) verification procedure,
+               over a ledger, or over an NDJSON audit file with --audit-file.
   walk         Print every chain entry from a ledger in order.
   diff         Diff two ledger files; report any chain or seal divergence.
   gen-fixture  Generate a self-consistent demo ledger + seal-key pair.
@@ -40,13 +43,22 @@ func main() {
 //
 //	0 on success
 //	1 on a runtime error (including verification failure)
-//	2 on a usage / argument error
+//	2 on a usage / argument error, or an audit file the walk cannot begin
+//	3 on a key an audit-file walk cannot read (§10.12 configuration error)
 func Main(args []string, _ io.Reader, stdout, stderr io.Writer) int {
 	if len(args) < 1 {
 		fmt.Fprint(stderr, usageRoot)
 		return 2
 	}
-	return cliutil.ReportAndExit(progName, stderr, dispatch(args, stdout, stderr))
+	err := dispatch(args, stdout, stderr)
+	var walked *exitError
+	if errors.As(err, &walked) {
+		if walked.code == int(exitcodes.ConfigurationError) {
+			fmt.Fprintf(stderr, "%s: %s\n", progName, walked.message)
+		}
+		return walked.code
+	}
+	return cliutil.ReportAndExit(progName, stderr, err)
 }
 
 func dispatch(args []string, stdout, stderr io.Writer) error {

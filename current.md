@@ -1,6 +1,17 @@
 # Current State
 _as of 2026-09-22_
 
+## VERIFIER READS ON-DISK AUDIT FILES (2026-11-03)
+
+`verifier verify --audit-file` walks the NDJSON a chain sink writes during capture: steps 1-9 with
+a key, steps 1-6 in witness mode. The walk now also runs step 3a, checks the run half of step 4 when
+the header names a chain, and uses the spec's `seq out of order` reason at step 6. Conformance tests
+skip silently unless `FFIEC_PUBLIC_VECTORS_DIR` points at `ffiec-public/spec/test-vectors`.
+
+Still open against §7: the `Verdict-Object` line (`core/verdict` is a stub), the JCS self-test, and
+`--strict` refusal of `plaintext-` keys. An audit file has no seal, so a cut at the end of the file
+passes; the output says so on an `Anomaly:` line.
+
 ## PUBLIC AS OF 2026-09-22
 
 **This repository is PUBLIC.** Steve's reasoning, and it is the project's own premise: the

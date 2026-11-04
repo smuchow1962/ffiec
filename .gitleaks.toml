@@ -47,6 +47,7 @@ targetRules = [
 paths = [
     '''(^|/)tests?/''',
     '''(^|/)test-vectors/''',
+    '''(^|/)testdata/''',
     '''(^|/)fixtures?/''',
     '''(^|/)benchmarks?/''',
     '''(^|/)test-harness/''',

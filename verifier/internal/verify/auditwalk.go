@@ -6,6 +6,7 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
+	"regexp"
 
 	"github.com/mmpworks/ffiec/core/constants"
 	"github.com/mmpworks/ffiec/core/hkdf"
@@ -22,11 +23,11 @@ import (
 // (prev_hash || canonical) under the tenant-derived session key. The two
 // chain shapes are not interchangeable, so each carries its own walk.
 //
-// The walk is verifier capability, not a test-only construct: a future
-// `verifier verify --audit-file` CLI mode drives WalkAuditFile and prints
-// the Outcome's normative triple. The conformance gate consumes the same
-// function so the corpus asserts live verifier behavior, not a re-derived
-// answer key.
+// The walk is verifier capability, not a test-only construct. `verifier
+// verify --audit-file` drives the same steps over an on-disk NDJSON file
+// (auditndjson.go), which has no seal yet. The conformance gate consumes
+// this function so the corpus asserts live verifier behavior, not a
+// re-derived answer key.
 //
 // Scope: steps 1-11. Steps 1-10 are the crypto-walkable core (no key
 // needed). Step 11 (the §4.3 Ed25519 seal signature) runs when the caller
@@ -57,6 +58,7 @@ type AuditFile struct {
 type AuditHeader struct {
 	FormatVersion       string `json:"format_version"`
 	TenantID            string `json:"tenant_id"`
+	ChainID             string `json:"chain_id"`
 	SealDate            string `json:"seal_date"`
 	GenesisHashHex      string `json:"genesis_hash_hex"`
 	HKDFInputsDigestHex string `json:"hkdf_inputs_digest_hex"`
@@ -72,6 +74,7 @@ type AuditEntry struct {
 	KeyVersion        int                    `json:"key_version"`
 	KeyFingerprintHex string                 `json:"key_fingerprint_hex"`
 	FormatVersion     string                 `json:"format_version"`
+	KMSHandleURI      string                 `json:"kms_handle_uri"`
 	Event             map[string]interface{} `json:"event"`
 	EventCanonicalHex string                 `json:"event_canonical_hex"`
 	PrevHashHex       string                 `json:"prev_hash_hex"`
@@ -186,6 +189,9 @@ func WalkAuditFileWithKey(af *AuditFile, ikms IKMRegistry, pub ed25519.PublicKey
 	if out := checkGenesis(af.Header); out.Status == "FAIL" {
 		return out
 	}
+	if out := checkTenantClass(af.Header); out.Status == "FAIL" {
+		return out
+	}
 	if out := walkEntries(af, ikms); out.Status == "FAIL" {
 		return out
 	}
@@ -262,6 +268,18 @@ func checkGenesis(h AuditHeader) Outcome {
 	return pass()
 }
 
+// tenantClass is the §3 tenant_id character class.
+var tenantClass = regexp.MustCompile(`^[A-Za-z0-9_.\-]{1,255}$`)
+
+// checkTenantClass is §7 step 3a. It catches a header rewritten with an
+// arbitrary string, and a chain from an SDK that skipped the §3 check.
+func checkTenantClass(h AuditHeader) Outcome {
+	if !tenantClass.MatchString(h.TenantID) {
+		return fail("3a", "tenant_id violates §3 character class")
+	}
+	return pass()
+}
+
 // walkEntries runs steps 4-9 in (run_id, seq) file order, threading the
 // structurally-walked expected_prev_hash forward. The MAC at step 9 uses
 // expected_prev (the walked value), NOT entry.prev_hash, per the §7 step
@@ -285,13 +303,7 @@ func walkEntries(af *AuditFile, ikms IKMRegistry) Outcome {
 // (MAC), because step 9's expected MAC depends on the IKM step 7 resolved
 // and step 8 confirmed.
 func walkEntry(h AuditHeader, e *AuditEntry, expectedSeq int, expectedPrev string, ikms IKMRegistry) Outcome {
-	if out := checkBinding(h, e, expectedSeq); out.Status == "FAIL" {
-		return out
-	}
-	if out := checkEntryFormat(h, e, expectedSeq); out.Status == "FAIL" {
-		return out
-	}
-	if out := checkStructuralLink(e, expectedSeq, expectedPrev); out.Status == "FAIL" {
+	if out := walkEntryStructure(h, e, expectedSeq, expectedPrev); out.Status == "FAIL" {
 		return out
 	}
 	ikm, ok := ikms[e.KeyVersion]
@@ -306,15 +318,42 @@ func walkEntry(h AuditHeader, e *AuditEntry, expectedSeq int, expectedPrev strin
 	return checkMAC(h, e, ikm, expectedPrev, expectedSeq)
 }
 
+// walkEntryStructure runs steps 4-6 for one entry. These need no key, so
+// witness mode runs them alone.
+func walkEntryStructure(h AuditHeader, e *AuditEntry, expectedSeq int, expectedPrev string) Outcome {
+	if out := checkBinding(h, e, expectedSeq); out.Status == "FAIL" {
+		return out
+	}
+	if out := checkEntryFormat(h, e, expectedSeq); out.Status == "FAIL" {
+		return out
+	}
+	return checkStructuralLink(e, expectedSeq, expectedPrev)
+}
+
 // checkBinding is §7 step 4: the per-entry cross-chain-lift defence. The
-// event's tenant_id MUST match the header tenant_id (the corpus's
-// run_id binding is checked structurally via seq at step 6).
+// event's tenant_id MUST match the header tenant_id, and its run_id MUST
+// match the header chain_id. The corpus headers carry no chain_id, so the
+// run half applies when the header names a chain, as an on-disk file does.
 func checkBinding(h AuditHeader, e *AuditEntry, expectedSeq int) Outcome {
 	if eventTenantID(e) != h.TenantID {
 		return fail("4", fmt.Sprintf(
 			"cross-chain lift detected at seq %d (event.tenant_id mismatch)", expectedSeq))
 	}
+	if h.ChainID != "" && eventRunID(e) != h.ChainID {
+		return fail("4", fmt.Sprintf(
+			"cross-chain lift detected at seq %d (event.run_id mismatch)", expectedSeq))
+	}
 	return pass()
+}
+
+// eventRunID reads the event object's run_id, returning "" when absent or
+// non-string so a missing binding surfaces as a step-4 mismatch.
+func eventRunID(e *AuditEntry) string {
+	v, ok := e.Event["run_id"].(string)
+	if !ok {
+		return ""
+	}
+	return v
 }
 
 // eventTenantID reads the event object's tenant_id, returning "" when
@@ -337,15 +376,15 @@ func checkEntryFormat(h AuditHeader, e *AuditEntry, expectedSeq int) Outcome {
 }
 
 // checkStructuralLink is §7 step 6. prev_hash is checked first (the
-// chain-link reason); seq ordering is the secondary check. Both surface
-// at the same step with the chain-link reason because the corpus's
-// reorder/substitution tampers break the prev_hash linkage.
+// chain-link reason) because the corpus's reorder/substitution tampers
+// break the prev_hash linkage. A good link with the wrong seq takes the
+// spec's second reason.
 func checkStructuralLink(e *AuditEntry, expectedSeq int, expectedPrev string) Outcome {
 	if e.PrevHashHex != expectedPrev {
 		return fail("6", fmt.Sprintf("chain link broken at seq %d", expectedSeq))
 	}
 	if e.Seq != expectedSeq {
-		return fail("6", fmt.Sprintf("chain link broken at seq %d", expectedSeq))
+		return fail("6", fmt.Sprintf("seq out of order at seq %d", expectedSeq))
 	}
 	return pass()
 }
