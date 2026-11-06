@@ -44,9 +44,10 @@ const (
 	StructuralInputError Code = 2
 
 	// ConfigurationError — the verifier was invoked without a
-	// required argument (e.g., --master-key under --strict), the
-	// algorithm is unknown, or the posture flag does not match the
-	// chain's posture. Also emitted by the §7 pre-flight JCS
+	// required argument (e.g., --master-key under --strict), or the
+	// posture flag does not match the chain's posture. A seal naming an
+	// algorithm this verifier cannot check is Fail, at §7 step 11: the
+	// field is unsigned. Also emitted by the §7 pre-flight JCS
 	// self-test on a JCS implementation mismatch.
 	ConfigurationError Code = 3
 )
