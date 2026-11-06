@@ -118,7 +118,7 @@ func resolveCorpusPublicKey(vectorDir string) (ed25519.PublicKey, error) {
 }
 
 // publicKeyCandidatePaths is the ordered list resolveCorpusPublicKey
-// searches: corpus root, then the vector directory, then the local-only
+// searches: the corpus's _keys folder, corpus root, then the vector directory, then the local-only
 // test-key directory (env-var override or default).
 func publicKeyCandidatePaths(vectorDir string) []string {
 	// vectorDir is <corpus>/negative/<slot>; the corpus root is two up.
@@ -128,6 +128,7 @@ func publicKeyCandidatePaths(vectorDir string) []string {
 		keyDir = defaultTestKeyDir
 	}
 	return []string{
+		filepath.Join(corpusRoot, "_keys", publicKeyHexFile),
 		filepath.Join(corpusRoot, publicKeyHexFile),
 		filepath.Join(vectorDir, publicKeyHexFile),
 		filepath.Join(keyDir, publicKeyHexFile),
