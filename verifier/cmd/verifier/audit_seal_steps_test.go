@@ -144,6 +144,31 @@ func TestSeal_AlgorithmItCannotVerifyFails(t *testing.T) {
 		StdoutContains(t, algorithmFail)
 }
 
+// This verifier checks one signature. A seal that lists several must never read PASS, because
+// a forged seal could list a bad second signature, or leave one out, and nothing here would see it.
+func TestSeal_CarryingASignaturesListIsRefused(t *testing.T) {
+	lines := sampleLines(t)
+	seal := sealFor(t, lines, load(t, lines).Header.TenantID, institutionKey())
+	second := map[string]any{"algorithm": "ml-dsa-65", "public_key_id": "k2", "signature": base64.StdEncoding.EncodeToString(make([]byte, 64))}
+	first := map[string]any{"algorithm": "ed25519", "public_key_id": "k1", "signature": seal["signature_b64"]}
+	for name, list := range map[string]any{
+		"a bad second signature": []any{first, second},
+		"one signature":          []any{first},
+		"an empty list":          []any{},
+		"null":                   nil,
+	} {
+		t.Run(name, func(t *testing.T) {
+			withList := map[string]any{"signatures": list}
+			for k, v := range seal {
+				withList[k] = v
+			}
+			withKey(sampleFile, writeSeal(t, withList), samplePubKey).
+				MustExit(t, 2).
+				StdoutContains(t, "Status: FAIL\nStep: pre-flight\nReason: seal carries a signatures list, and this verifier does not check one yet: dual-algorithm checks are not built\n")
+		})
+	}
+}
+
 func TestSeal_EmptySealIsStructural(t *testing.T) {
 	empty := filepath.Join(t.TempDir(), "seal.json")
 	if err := os.WriteFile(empty, []byte("{}\n"), 0o600); err != nil {

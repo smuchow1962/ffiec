@@ -42,6 +42,16 @@ func LoadAuditSeal(raw []byte) (AuditSeal, Outcome) {
 	if seal.MerkleRootHex == "" {
 		return AuditSeal{}, structuralFail("pre-flight", "seal names no merkle_root_hex")
 	}
+	var list struct {
+		Signatures json.RawMessage `json:"signatures"`
+	}
+	if err := json.Unmarshal(raw, &list); err != nil {
+		return AuditSeal{}, structuralFail("pre-flight", fmt.Sprintf("malformed seal: %v", err))
+	}
+	if list.Signatures != nil {
+		// Reading only signature_b64 would pass a seal whose second signature is bad, or stripped.
+		return AuditSeal{}, structuralFail("pre-flight", "seal carries a signatures list, and this verifier does not check one yet: dual-algorithm checks are not built")
+	}
 	return seal, pass()
 }
 
