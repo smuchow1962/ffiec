@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/binary"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"regexp"
 
@@ -110,10 +111,12 @@ type AuditSeal struct {
 
 	// v1.0b / v1.0c sign_payload additions, threaded through to the
 	// reconstruction when the seal's version binds them.
-	KeyVersions              []int  `json:"key_versions"`
-	KeyVersionsCanon         string `json:"key_versions_canon"`
-	KMSHandleURIsDigestHex   string `json:"kms_handle_uris_digest_hex"`
-	OperationalEventsLogRoot string `json:"operational_events_log_root_hex"`
+	KeyVersions      []int  `json:"key_versions"`
+	KeyVersionsCanon string `json:"key_versions_canon"`
+	// SignaturesList is the §4.2 dual-algorithm list. Only its presence is read: nil means absent.
+	SignaturesList           json.RawMessage `json:"signatures"`
+	KMSHandleURIsDigestHex   string          `json:"kms_handle_uris_digest_hex"`
+	OperationalEventsLogRoot string          `json:"operational_events_log_root_hex"`
 }
 
 // Outcome is the §7 normative verifier output triple plus the §10.12

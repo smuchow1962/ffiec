@@ -10,6 +10,8 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/mmpworks/ffiec/verifier/internal/exitcodes"
 )
 
 // §7 steps 10 and 11 over an on-disk NDJSON audit file. The chain sink writes the
@@ -41,16 +43,6 @@ func LoadAuditSeal(raw []byte) (AuditSeal, Outcome) {
 	}
 	if seal.MerkleRootHex == "" {
 		return AuditSeal{}, structuralFail("pre-flight", "seal names no merkle_root_hex")
-	}
-	var list struct {
-		Signatures json.RawMessage `json:"signatures"`
-	}
-	if err := json.Unmarshal(raw, &list); err != nil {
-		return AuditSeal{}, structuralFail("pre-flight", fmt.Sprintf("malformed seal: %v", err))
-	}
-	if list.Signatures != nil {
-		// Reading only signature_b64 would pass a seal whose second signature is bad, or stripped.
-		return AuditSeal{}, structuralFail("pre-flight", "seal carries a signatures list, and this verifier does not check one yet: dual-algorithm checks are not built")
 	}
 	return seal, pass()
 }
@@ -85,15 +77,38 @@ func checkSeal(af *AuditFile, pub ed25519.PublicKey) Outcome {
 		func() Outcome { return checkMerkleRootAudit(af) },
 		func() Outcome { return checkSealCoversFile(af) },
 		func() Outcome { return checkSealAlgorithm(af.Seal) },
-		func() Outcome { return CheckSealSignatureV1(af.Seal, pub) },
+		func() Outcome { return checkSealSingleSignature(af.Seal, pub) },
 		func() Outcome { return checkSealKeyVersions(af) },
 		func() Outcome { return checkSealKMSDigest(af) },
+		func() Outcome { return refuseSealSignaturesList(af.Seal) },
 	} {
 		if out := check(); out.Status == "FAIL" {
 			return out
 		}
 	}
 	return pass()
+}
+
+// checkSealSingleSignature checks signature_b64. A seal that holds only a signatures list
+// has none to check here, and refuseSealSignaturesList answers for it. Any seal that holds
+// signature_b64 gets the check, so a bad one stays an integrity finding behind a list.
+func checkSealSingleSignature(seal AuditSeal, pub ed25519.PublicKey) Outcome {
+	if seal.SignaturesList != nil && seal.SignatureB64 == "" {
+		return pass()
+	}
+	return CheckSealSignatureV1(seal, pub)
+}
+
+// refuseSealSignaturesList runs last, so no finding can hide behind it: anyone who can edit
+// the seal file can add a list, and §10.12 routes exit 1 and exit 3 to different people.
+// Passing would claim a dual-algorithm check that never ran. Failing with exit 1 would call
+// a genuine dual-signed seal a tamper. So this is exit 3: the verifier cannot judge it.
+func refuseSealSignaturesList(seal AuditSeal) Outcome {
+	if seal.SignaturesList == nil {
+		return pass()
+	}
+	return Outcome{Status: "FAIL", Step: "11", ExitCode: int(exitcodes.ConfigurationError),
+		Reason: "seal carries a signatures list, and this verifier does not check one yet: dual-algorithm checks are not built"}
 }
 
 // checkSealCoversFile refuses a seal signed for another tenant or other HKDF inputs.
