@@ -16,7 +16,7 @@ import (
 
 const (
 	keyVersionsFail = "Status: FAIL\nStep: 11\nReason: seal.key_versions does not match per-event key_version distribution\n"
-	algorithmFail   = "Status: FAIL\nStep: 11\nReason: algorithm/key-type mismatch at signature verification\n"
+	algorithmFail   = "Status: FAIL\nStep: 11\nReason: algorithm \"dilithium3\" not supported by this verifier (running v1.0c)\n"
 
 	signaturesListRefused = "Status: FAIL\nStep: 11\nReason: seal carries a signatures list, and this verifier does not check one yet: dual-algorithm checks are not built\n"
 )
