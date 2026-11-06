@@ -70,6 +70,7 @@ The verifier follows the spec §7 twelve-step procedure. Each step's failure pro
 | 9 | `payload_hash MAC mismatch at seq N` | Recomputed MAC differs from stored MAC | Severe; content tampering | Scenario 1 |
 | 10 | `merkle root mismatch — ledger contents do not produce sealed root` | Day's events don't produce the sealed root | Severe; possible server-side history rewrite | Scenario 2 |
 | 11 | `signature verification failed` (or `algorithm/key-type mismatch`) | Daily seal signature didn't verify | Severe; possible HSM key compromise | Scenario 3 |
+| 11 | `algorithm "<identifier>" not supported by this verifier (running v1.0c)` | The seal names an algorithm this verifier cannot check. The field is unsigned, so the seal may have been edited, or a newer verifier may be needed | Severe until explained: check the seal against the institution's signed copy | Scenario 3 |
 | 12 | `cadence mismatch` | Recorded cadence doesn't match the institution's claimed cadence | Observation; control-description-accuracy issue | Scenario 5 variant |
 | 12 | `dev-mode seal in production verification — refused` | Production seal signed with software key (compile-time exclusion bypassed) | Severe; misconfiguration | Scenario 6 |
 | (file pre-flight) | `audit file ends mid-line — possible mid-write crash` | SDK process died mid-append (writer crash recovery) | Operational, NOT tampering — Medium severity | Scenario 9 |

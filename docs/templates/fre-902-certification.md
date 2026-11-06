@@ -274,7 +274,7 @@ This table is reproduced verbatim from Specification §10.12 to support the AUSA
 | 0 | PASS or PASS-STRUCTURALLY (witness mode). The verifier completed and the chain (or the structural subset under witness mode) verified. |
 | 1 | FAIL. The chain failed integrity verification at one of the §7 steps. The reason and step number appear on stdout per the normative output format. |
 | 2 | Structural / input error. The verifier could not begin the §7 procedure: file unreadable, JSON malformed, mandatory header field missing entirely, or file empty. |
-| 3 | Configuration error. The verifier was invoked without a required argument, the algorithm is unknown, or the posture flag does not match the chain's posture. |
+| 3 | Configuration error. The verifier was invoked without a required argument, or the posture flag does not match the chain's posture. A seal naming an algorithm the verifier cannot check is exit 1, at step 11. |
 
 A `0` exit code with `Status: PASS` is an unambiguous integrity confirmation. A `0` exit code with `Status: PASS-STRUCTURALLY, key-bound verification skipped` is a witness-mode confirmation — structural integrity verified, key-bound verification deferred (the IKM was not provided, typically because the examiner is operating under the regulator-trust boundary). A `1` exit code is an integrity finding the institution must disposition before proceeding. Exit codes `2` and `3` are deployment / configuration problems, NOT integrity findings.
 
