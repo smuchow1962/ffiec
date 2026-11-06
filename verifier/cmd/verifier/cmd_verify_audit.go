@@ -38,7 +38,7 @@ type auditFileOptions struct {
 // The walk has 4 shapes: with or without the master key, and with or without a
 // seal. Each flag pair is checked before any file is read, so a wrong command
 // line never looks like a verdict on the chain.
-func runVerifyAuditFile(opts auditFileOptions, stdout io.Writer) error {
+func runVerifyAuditFile(opts auditFileOptions, stdout, stderr io.Writer) error {
 	if (opts.sealPath == "") != (opts.rootKey == "") {
 		return configError("--seal and --root-key: use both or neither. A seal means nothing without the public key that checks it")
 	}
@@ -74,7 +74,12 @@ func runVerifyAuditFile(opts auditFileOptions, stdout io.Writer) error {
 	}
 	af.Seal = seal
 	anomalies := append(verify.SealAnomalies(seal), verify.NDJSONAnomalies(af, raw)...)
-	return printOutcome(stdout, walkSealed(af, ikms, pub), anomalies)
+	outcome := walkSealed(af, ikms, pub)
+	if outcome.Status != "FAIL" {
+		// Stderr, because §7 fixes what stdout holds.
+		fmt.Fprintf(stderr, "Seal checked: tenant_id %s, seal_date %s\n", seal.TenantID, seal.SealDate)
+	}
+	return printOutcome(stdout, outcome, anomalies)
 }
 
 func walkUnsealed(af *verify.AuditFile, ikms verify.IKMRegistry) verify.Outcome {

@@ -56,6 +56,9 @@ import (
 func CheckSealSignatureV1(seal AuditSeal, pub ed25519.PublicKey) Outcome {
 	const reason = "signature verification failed"
 
+	if _, err := signpayload.ParseVersion(seal.SignPayloadVersion); err != nil {
+		return fail("11", err.Error())
+	}
 	if len(pub) != ed25519.PublicKeySize {
 		return fail("11", reason)
 	}

@@ -110,6 +110,7 @@ type AuditSeal struct {
 
 	// v1.0b / v1.0c sign_payload additions, threaded through to the
 	// reconstruction when the seal's version binds them.
+	KeyVersions              []int  `json:"key_versions"`
 	KeyVersionsCanon         string `json:"key_versions_canon"`
 	KMSHandleURIsDigestHex   string `json:"kms_handle_uris_digest_hex"`
 	OperationalEventsLogRoot string `json:"operational_events_log_root_hex"`

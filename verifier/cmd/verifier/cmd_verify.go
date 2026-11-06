@@ -31,7 +31,10 @@ func runVerify(args []string, stdout, stderr io.Writer) error {
 		if *masterKey != "" && *keyHex != "" {
 			return cliutil.Usagef("--master-key and --master-key-hex: use one")
 		}
-		return runVerifyAuditFile(auditFileOptions{path: *auditFile, masterKey: *masterKey, keyHexFile: *keyHex, keyVersion: *keyVersion, sealPath: *seal, rootKey: *rootKey}, stdout)
+		return runVerifyAuditFile(auditFileOptions{path: *auditFile, masterKey: *masterKey, keyHexFile: *keyHex, keyVersion: *keyVersion, sealPath: *seal, rootKey: *rootKey}, stdout, stderr)
+	}
+	if *seal != "" {
+		return cliutil.Usagef("--seal: needs --audit-file. --ledger files carry their seal inside")
 	}
 	if err := cliutil.RequireFlags(map[string]string{
 		"ledger":   *ledgerPath,

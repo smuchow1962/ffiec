@@ -75,6 +75,7 @@ func sealWithDigest(t *testing.T, lines [][]byte, tenant, digest string, priv ed
 		"hkdf_inputs_digest_hex": digest,
 		"cadence":                "daily",
 		"dev_mode":               true,
+		"key_versions":           []int{1},
 		"sign_payload_version":   "v1.0a",
 		"sign_payload_hex":       hex.EncodeToString(payload),
 		"signature_b64":          base64.StdEncoding.EncodeToString(ed25519.Sign(priv, payload)),

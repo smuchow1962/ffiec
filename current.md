@@ -14,7 +14,9 @@ output says so on an `Anomaly:` line.
 
 `--seal` with `--root-key` runs steps 10 and 11 on that file (2026-11-06, Steve's choice). The seal is
 one JSON object with the vectors' `audit_file.seal` field names. Not yet checked: that the seal's
-`seal_date` matches the events, because the NDJSON header has no seal date.
+`seal_date` matches the events, because the NDJSON header has no seal date. The operational-events
+root on a v1.0c seal is reported as not walked: §10.79 says a standard walk does not walk it, and §7
+step 11 and §4.3 say the verifier rejects a mismatch. That spec conflict is open with Heather.
 
 ## PUBLIC AS OF 2026-09-22
 
