@@ -98,9 +98,10 @@ func sealSignatureLiveReady(seal verify.AuditSeal, pub ed25519.PublicKey) bool {
 // the private seed.
 //
 // Search order:
-//  1. <corpusDir>/test-signing-key.pub.hex   (published with the corpus)
-//  2. <vectorDir>/test-signing-key.pub.hex   (per-vector publication)
-//  3. $TESSERASEAL_TEST_KEY_DIR/test-signing-key.pub.hex (or the default)
+//  1. <corpusDir>/_keys/test-signing-key.pub.hex   (published with the corpus)
+//  2. <corpusDir>/test-signing-key.pub.hex
+//  3. <vectorDir>/test-signing-key.pub.hex   (per-vector publication)
+//  4. $TESSERASEAL_TEST_KEY_DIR/test-signing-key.pub.hex (or the default)
 func resolveCorpusPublicKey(vectorDir string) (ed25519.PublicKey, error) {
 	candidates := publicKeyCandidatePaths(vectorDir)
 	for _, p := range candidates {

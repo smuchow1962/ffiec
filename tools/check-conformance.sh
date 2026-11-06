@@ -13,9 +13,16 @@ set -u
 here="$(cd "$(dirname "$0")" && pwd)"
 expected="$here/conformance-expected.txt"
 jcs_expected=61
+# A floor: a new test may raise the total, and a corpus test that goes away must not pass unseen.
+total_floor=184
 
 if [ -z "${FFIEC_PUBLIC_VECTORS_DIR:-}" ]; then
   echo "conformance: FFIEC_PUBLIC_VECTORS_DIR is not set" >&2
+  exit 2
+fi
+# With no expected lines, the comparison below would have nothing to fail on.
+if [ ! -s "$expected" ]; then
+  echo "conformance: no expected lines in: $expected" >&2
   exit 2
 fi
 # The tests fall back to a sibling checkout when this folder has no fixture, which
@@ -58,6 +65,10 @@ while IFS= read -r line || [ -n "$line" ]; do
   fi
 done <"$expected"
 if [ "$missing" -ne 0 ]; then
+  exit 1
+fi
+if [ "$passed" -lt "$total_floor" ]; then
+  echo "conformance: $passed tests passed, expected at least $total_floor" >&2
   exit 1
 fi
 if [ "$jcs" -ne "$jcs_expected" ]; then
