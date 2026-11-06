@@ -89,18 +89,36 @@ func checkSeal(af *AuditFile, pub ed25519.PublicKey) Outcome {
 	return pass()
 }
 
-// checkSealSingleSignature checks signature_b64. A seal that holds only a signatures list
-// has none to check here, and refuseSealSignaturesList answers for it. Any seal that holds
-// signature_b64 gets the check, so a bad one stays an integrity finding behind a list.
+// checkSealSingleSignature checks the one signature this verifier can judge: signature_b64,
+// or else the list's ed25519 entry. A seal with neither fails here, so a forged root stays an
+// integrity finding, whatever an editor of the unsigned file does to the list.
 func checkSealSingleSignature(seal AuditSeal, pub ed25519.PublicKey) Outcome {
-	if seal.SignaturesList != nil && seal.SignatureB64 == "" {
-		return pass()
+	if seal.SignatureB64 == "" {
+		seal.SignatureB64 = ed25519EntryOf(seal.SignaturesList)
 	}
 	return CheckSealSignatureV1(seal, pub)
 }
 
-// refuseSealSignaturesList runs last, so no finding can hide behind it: anyone who can edit
-// the seal file can add a list, and §10.12 routes exit 1 and exit 3 to different people.
+// ed25519EntryOf returns the list's ed25519 signature, or "" when it holds none.
+func ed25519EntryOf(list json.RawMessage) string {
+	var entries []struct {
+		Algorithm string `json:"algorithm"`
+		Signature string `json:"signature"`
+	}
+	if err := json.Unmarshal(list, &entries); err != nil {
+		return ""
+	}
+	for _, entry := range entries {
+		if entry.Algorithm == sealAlgorithmEd25519 {
+			return entry.Signature
+		}
+	}
+	return ""
+}
+
+// refuseSealSignaturesList runs last, once the ed25519 signature has verified, so no finding
+// can hide behind it: anyone who can edit the seal file can add a list, and §10.12 routes
+// exit 1 and exit 3 to different people.
 // Passing would claim a dual-algorithm check that never ran. Failing with exit 1 would call
 // a genuine dual-signed seal a tamper. So this is exit 3: the verifier cannot judge it.
 func refuseSealSignaturesList(seal AuditSeal) Outcome {

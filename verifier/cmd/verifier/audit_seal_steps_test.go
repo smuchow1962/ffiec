@@ -180,6 +180,49 @@ func TestSeal_HoldingOnlyASignaturesListIsRefused(t *testing.T) {
 	withKey(sampleFile, writeSeal(t, seal), samplePubKey).MustExit(t, 3).StdoutContains(t, signaturesListRefused)
 }
 
+// Someone with no signing key cuts an event and recomputes the root. Whatever they do with the
+// signature fields, the forgery stays exit 1: nothing in an unsigned file may move it to exit 3.
+func TestSeal_ForgedRootStaysAFindingWithAnyList(t *testing.T) {
+	lines := sampleLines(t)
+	cut := lines[:len(lines)-1]
+	forger := seededKey("the writer's own")
+	for name, list := range map[string]any{
+		"an empty list":              []any{},
+		"null":                       nil,
+		"a forged ed25519 entry":     []any{map[string]any{"algorithm": "ed25519", "signature": "use-forged"}},
+		"no ed25519 entry":           []any{map[string]any{"algorithm": "ml-dsa-65", "signature": "AAAA"}},
+		"an entry with no signature": []any{map[string]any{"algorithm": "ed25519"}},
+		"not a list":                 "ed25519",
+	} {
+		t.Run(name, func(t *testing.T) {
+			seal := sealFor(t, cut, load(t, cut).Header.TenantID, forger)
+			forged := seal["signature_b64"]
+			delete(seal, "signature_b64")
+			if entries, ok := list.([]any); ok && len(entries) == 1 {
+				if entry := entries[0].(map[string]any); entry["signature"] == "use-forged" {
+					entry["signature"] = forged
+				}
+			}
+			seal["signatures"] = list
+			sealFile := writeSeal(t, seal)
+			file := writeLines(t, cut)
+			withKey(file, sealFile, samplePubKey).MustExit(t, 1).StdoutContains(t, signatureFail)
+			clitest.Run(Main, "verify", "--audit-file", file, "--seal", sealFile, "--root-key", samplePubKey).
+				MustExit(t, 1).
+				StdoutContains(t, signatureFail)
+		})
+	}
+}
+
+// A valid Ed25519 signature filed under another algorithm's name is not the ed25519 entry.
+func TestSeal_ListEntryCountsOnlyUnderItsOwnAlgorithm(t *testing.T) {
+	lines := sampleLines(t)
+	seal := sealFor(t, lines, load(t, lines).Header.TenantID, institutionKey())
+	seal["signatures"] = []any{map[string]any{"algorithm": "ml-dsa-65", "signature": seal["signature_b64"]}}
+	delete(seal, "signature_b64")
+	withKey(sampleFile, writeSeal(t, seal), samplePubKey).MustExit(t, 1).StdoutContains(t, signatureFail)
+}
+
 // One unsigned field must not turn an integrity finding into "the verifier cannot judge this".
 func TestSeal_SignaturesListHidesNoFinding(t *testing.T) {
 	lines := sampleLines(t)
