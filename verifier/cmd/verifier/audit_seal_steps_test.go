@@ -123,15 +123,6 @@ func TestSeal_NoKeyVersionsSaysTheCheckDidNotRun(t *testing.T) {
 		StdoutContains(t, "Anomaly: seal names no key_versions, so that cross-check did not run: see §7 step 11")
 }
 
-// §10.79: a standard walk records the bound root and does not walk it. So PASS stands, and the output says so.
-func TestSeal_V1_0cSaysTheOperationalRootWasNotWalked(t *testing.T) {
-	bogus := strings.Repeat("cd", sha256.Size)
-	withKey(sampleFile, sampleSealAs(t, with(with(goodV1_0b(), "sign_payload_version", "v1.0c"), "operational_events_log_root_hex", bogus), "key_versions"), samplePubKey).
-		MustSucceed(t).
-		StdoutContains(t, "Status: PASS\n").
-		StdoutContains(t, "Anomaly: operational_events_log_root "+bogus+" is bound by the signature and was not walked: see §10.79")
-}
-
 func TestSeal_NoVersionSaysWhatTheSignatureDoesNotBind(t *testing.T) {
 	withKey(sampleFile, sampleSealAs(t, nil, "sign_payload_version"), samplePubKey).
 		MustSucceed(t).

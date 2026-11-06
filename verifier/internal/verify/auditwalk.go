@@ -427,10 +427,14 @@ func checkMAC(h AuditHeader, e *AuditEntry, ikm []byte, expectedPrev string, exp
 }
 
 // checkMerkleRootAudit is §7 step 10: recompute the RFC 6962 root over the
-// entries' payload_hash leaves and compare against the seal's merkle_root.
+// payload_hash leaves of the entries the seal's root covers (inSealRoot), and
+// compare against the seal's merkle_root.
 func checkMerkleRootAudit(af *AuditFile) Outcome {
 	leaves := make([][]byte, 0, len(af.Entries))
 	for i := range af.Entries {
+		if !inSealRoot(af.Seal, &af.Entries[i]) {
+			continue
+		}
 		ph, err := hex.DecodeString(af.Entries[i].PayloadHashHex)
 		if err != nil {
 			return fail("10", "merkle root mismatch — ledger contents do not produce sealed root")
