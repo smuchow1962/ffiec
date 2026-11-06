@@ -89,6 +89,10 @@ verifier verify --audit-file ./custody.ndjson
 # The same walk with the key: steps 1-9. --master-key-hex reads hex text; --master-key reads raw bytes.
 verifier verify --audit-file ./custody.ndjson --master-key-hex ./custody.ikm
 
+# The same walk with the day's seal: steps 1-11. Without the key: steps 1-6, 10 and 11.
+# Take --root-key from a source other than whoever handed you the file.
+verifier verify   --audit-file      ./custody.ndjson   --seal            ./seal-2026-11-04.json   --root-key        ./institution.seal.pub.pem   --master-key-hex  ./custody.ikm
+
 # Print every chain entry in order, plus the seal record.
 verifier walk --ledger ./tenant-day.ledger
 
@@ -105,6 +109,19 @@ verifier gen-fixture \
 ```
 
 `verify` produces a deterministic report on stdout: one line per named step (`chain-linkage`, `merkle-root`, `seal-signature`, `per-event-mac`), each marked `[PASS]` or `[FAIL]`, with an overall verdict.
+
+Try the seal on the published sample. Its keys come from published test seeds, so it proves nothing about any institution, and the output says so on its `Anomaly:` lines.
+
+```bash
+cd cmd/verifier/testdata
+verifier verify \
+  --audit-file      simulator-custody.golden \
+  --seal            simulator-custody-seal.json \
+  --root-key        simulator-custody-seal-pub.pem \
+  --master-key-hex  simulator-custody-key.hex
+```
+
+The seal file is one JSON object with the field names of the `audit_file.seal` block in the conformance vectors. `--root-key` is the only source of the public key. No field in the audit file or the seal can supply it, so a reader who takes the key from the file's holder has checked nothing.
 
 `verify --audit-file` prints the §7 normative output and uses the §10.12 exit codes: `0` for a pass, `1` for a failed step, `2` for a file the walk cannot begin, `3` for a key it cannot read. A pass lists under `Anomaly:` what the walk did not establish. An audit file carries no seal, so steps 10 and 11 do not run, and the first anomaly says that a cut at the end of the file cannot be detected. The §7 `Verdict-Object` line is not printed yet.
 

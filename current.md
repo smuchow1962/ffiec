@@ -9,8 +9,12 @@ the header names a chain, and uses the spec's `seq out of order` reason at step 
 skip silently unless `FFIEC_PUBLIC_VECTORS_DIR` points at `ffiec-public/spec/test-vectors`.
 
 Still open against §7: the `Verdict-Object` line (`core/verdict` is a stub), the JCS self-test, and
-`--strict` refusal of `plaintext-` keys. An audit file has no seal, so a cut at the end of the file
-passes; the output says so on an `Anomaly:` line.
+`--strict` refusal of `plaintext-` keys. With no seal, a cut at the end of the file passes, and the
+output says so on an `Anomaly:` line.
+
+`--seal` with `--root-key` runs steps 10 and 11 on that file (2026-11-06, Steve's choice). The seal is
+one JSON object with the vectors' `audit_file.seal` field names. Not yet checked: that the seal's
+`seal_date` matches the events, because the NDJSON header has no seal date.
 
 ## PUBLIC AS OF 2026-09-22
 

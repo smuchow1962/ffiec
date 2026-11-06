@@ -1,12 +1,14 @@
 package main
 
 import (
+	"crypto/ed25519"
 	"encoding/hex"
 	"fmt"
 	"io"
 	"os"
 	"strings"
 
+	"github.com/mmpworks/ffiec/cliutil"
 	"github.com/mmpworks/ffiec/verifier/internal/exitcodes"
 	"github.com/mmpworks/ffiec/verifier/internal/verify"
 )
@@ -26,11 +28,20 @@ type auditFileOptions struct {
 	masterKey  string
 	keyHexFile string
 	keyVersion int
+	sealPath   string
+	rootKey    string
 }
 
 // runVerifyAuditFile walks an NDJSON audit file and prints the §7 output: the
 // status, then the step and reason on a failure, or anomaly lines on a pass.
+//
+// The walk has 4 shapes: with or without the master key, and with or without a
+// seal. Each flag pair is checked before any file is read, so a wrong command
+// line never looks like a verdict on the chain.
 func runVerifyAuditFile(opts auditFileOptions, stdout io.Writer) error {
+	if (opts.sealPath == "") != (opts.rootKey == "") {
+		return configError("--seal and --root-key: use both or neither. A seal means nothing without the public key that checks it")
+	}
 	raw, err := os.ReadFile(opts.path)
 	if err != nil {
 		return printOutcome(stdout, structuralOutcome(fmt.Sprintf("cannot read file: %v", err)), nil)
@@ -40,17 +51,56 @@ func runVerifyAuditFile(opts auditFileOptions, stdout io.Writer) error {
 		return printOutcome(stdout, loaded, nil)
 	}
 
-	var outcome verify.Outcome
-	if opts.masterKey == "" && opts.keyHexFile == "" {
-		outcome = verify.WalkAuditChainWitness(af)
-	} else {
-		ikm, keyErr := readKey(opts)
-		if keyErr != nil {
-			return keyErr
-		}
-		outcome = verify.WalkAuditChain(af, verify.IKMRegistry{opts.keyVersion: ikm})
+	ikms, keyErr := readRegistry(opts)
+	if keyErr != nil {
+		return keyErr
 	}
-	return printOutcome(stdout, outcome, verify.NDJSONAnomalies(af, raw))
+	if opts.sealPath == "" {
+		anomalies := append([]string{verify.NoSealAnomaly}, verify.NDJSONAnomalies(af, raw)...)
+		return printOutcome(stdout, walkUnsealed(af, ikms), anomalies)
+	}
+
+	pub, keyErr := cliutil.LoadEd25519PublicPEM(opts.rootKey)
+	if keyErr != nil {
+		return configError("--root-key: %v", keyErr)
+	}
+	sealRaw, err := os.ReadFile(opts.sealPath)
+	if err != nil {
+		return printOutcome(stdout, structuralOutcome(fmt.Sprintf("cannot read seal: %v", err)), nil)
+	}
+	seal, sealLoaded := verify.LoadAuditSeal(sealRaw)
+	if sealLoaded.Status == "FAIL" {
+		return printOutcome(stdout, sealLoaded, nil)
+	}
+	af.Seal = seal
+	anomalies := append(verify.SealAnomalies(seal), verify.NDJSONAnomalies(af, raw)...)
+	return printOutcome(stdout, walkSealed(af, ikms, pub), anomalies)
+}
+
+func walkUnsealed(af *verify.AuditFile, ikms verify.IKMRegistry) verify.Outcome {
+	if ikms == nil {
+		return verify.WalkAuditChainWitness(af)
+	}
+	return verify.WalkAuditChain(af, ikms)
+}
+
+func walkSealed(af *verify.AuditFile, ikms verify.IKMRegistry, pub ed25519.PublicKey) verify.Outcome {
+	if ikms == nil {
+		return verify.WalkAuditChainWitnessSealed(af, pub)
+	}
+	return verify.WalkAuditChainSealed(af, ikms, pub)
+}
+
+// readRegistry returns nil when the caller supplied no master key: witness mode.
+func readRegistry(opts auditFileOptions) (verify.IKMRegistry, error) {
+	if opts.masterKey == "" && opts.keyHexFile == "" {
+		return nil, nil
+	}
+	ikm, err := readKey(opts)
+	if err != nil {
+		return nil, err
+	}
+	return verify.IKMRegistry{opts.keyVersion: ikm}, nil
 }
 
 // readKey loads the IKM. A key the verifier cannot read is a §10.12
