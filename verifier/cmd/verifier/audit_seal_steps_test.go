@@ -17,6 +17,8 @@ import (
 const (
 	keyVersionsFail = "Status: FAIL\nStep: 11\nReason: seal.key_versions does not match per-event key_version distribution\n"
 	algorithmFail   = "Status: FAIL\nStep: 11\nReason: algorithm/key-type mismatch at signature verification\n"
+
+	signaturesListRefused = "Status: FAIL\nStep: 11\nReason: seal carries a signatures list, and this verifier does not check one yet: dual-algorithm checks are not built\n"
 )
 
 func text(seal map[string]any, field string) string {
@@ -142,6 +144,106 @@ func TestSeal_AlgorithmItCannotVerifyFails(t *testing.T) {
 	withKey(sampleFile, sampleSealAs(t, map[string]any{"algorithm": "dilithium3"}), samplePubKey).
 		MustExit(t, 1).
 		StdoutContains(t, algorithmFail)
+}
+
+// This verifier checks one signature. A seal that lists several must never read PASS, because
+// a forged seal could list a bad second signature, or leave one out, and nothing here would see it.
+func TestSeal_CarryingASignaturesListIsRefused(t *testing.T) {
+	lines := sampleLines(t)
+	seal := sealFor(t, lines, load(t, lines).Header.TenantID, institutionKey())
+	second := map[string]any{"algorithm": "ml-dsa-65", "public_key_id": "k2", "signature": base64.StdEncoding.EncodeToString(make([]byte, 64))}
+	first := map[string]any{"algorithm": "ed25519", "public_key_id": "k1", "signature": seal["signature_b64"]}
+	for name, list := range map[string]any{
+		"a bad second signature": []any{first, second},
+		"one signature":          []any{first},
+		"an empty list":          []any{},
+		"null":                   nil,
+	} {
+		t.Run(name, func(t *testing.T) {
+			withList := map[string]any{"signatures": list}
+			for k, v := range seal {
+				withList[k] = v
+			}
+			withKey(sampleFile, writeSeal(t, withList), samplePubKey).
+				MustExit(t, 3).
+				StdoutContains(t, signaturesListRefused)
+		})
+	}
+}
+
+// A seal holding only the list has no single signature to check, and still reads as refused.
+func TestSeal_HoldingOnlyASignaturesListIsRefused(t *testing.T) {
+	lines := sampleLines(t)
+	seal := sealFor(t, lines, load(t, lines).Header.TenantID, institutionKey())
+	seal["signatures"] = []any{map[string]any{"algorithm": "ed25519", "signature": seal["signature_b64"]}}
+	delete(seal, "signature_b64")
+	withKey(sampleFile, writeSeal(t, seal), samplePubKey).MustExit(t, 3).StdoutContains(t, signaturesListRefused)
+}
+
+// Someone with no signing key cuts an event and recomputes the root. Whatever they do with the
+// signature fields, the forgery stays exit 1: nothing in an unsigned file may move it to exit 3.
+func TestSeal_ForgedRootStaysAFindingWithAnyList(t *testing.T) {
+	lines := sampleLines(t)
+	cut := lines[:len(lines)-1]
+	forger := seededKey("the writer's own")
+	for name, list := range map[string]any{
+		"an empty list":              []any{},
+		"null":                       nil,
+		"a forged ed25519 entry":     []any{map[string]any{"algorithm": "ed25519", "signature": "use-forged"}},
+		"no ed25519 entry":           []any{map[string]any{"algorithm": "ml-dsa-65", "signature": "AAAA"}},
+		"an entry with no signature": []any{map[string]any{"algorithm": "ed25519"}},
+		"not a list":                 "ed25519",
+	} {
+		t.Run(name, func(t *testing.T) {
+			seal := sealFor(t, cut, load(t, cut).Header.TenantID, forger)
+			forged := seal["signature_b64"]
+			delete(seal, "signature_b64")
+			if entries, ok := list.([]any); ok && len(entries) == 1 {
+				if entry := entries[0].(map[string]any); entry["signature"] == "use-forged" {
+					entry["signature"] = forged
+				}
+			}
+			seal["signatures"] = list
+			sealFile := writeSeal(t, seal)
+			file := writeLines(t, cut)
+			withKey(file, sealFile, samplePubKey).MustExit(t, 1).StdoutContains(t, signatureFail)
+			clitest.Run(Main, "verify", "--audit-file", file, "--seal", sealFile, "--root-key", samplePubKey).
+				MustExit(t, 1).
+				StdoutContains(t, signatureFail)
+		})
+	}
+}
+
+// A valid Ed25519 signature filed under another algorithm's name is not the ed25519 entry.
+func TestSeal_ListEntryCountsOnlyUnderItsOwnAlgorithm(t *testing.T) {
+	lines := sampleLines(t)
+	seal := sealFor(t, lines, load(t, lines).Header.TenantID, institutionKey())
+	seal["signatures"] = []any{map[string]any{"algorithm": "ml-dsa-65", "signature": seal["signature_b64"]}}
+	delete(seal, "signature_b64")
+	withKey(sampleFile, writeSeal(t, seal), samplePubKey).MustExit(t, 1).StdoutContains(t, signatureFail)
+}
+
+// One unsigned field must not turn an integrity finding into "the verifier cannot judge this".
+func TestSeal_SignaturesListHidesNoFinding(t *testing.T) {
+	lines := sampleLines(t)
+	list := []any{}
+	seal := sealFor(t, lines, load(t, lines).Header.TenantID, institutionKey())
+	seal["signatures"] = list
+	withKey(writeLines(t, lines[:len(lines)-1]), writeSeal(t, seal), samplePubKey).MustExit(t, 1).StdoutContains(t, rootMismatch)
+
+	badSignature := sealFor(t, lines, load(t, lines).Header.TenantID, seededKey("the writer's own"))
+	badSignature["signatures"] = list
+	withKey(sampleFile, writeSeal(t, badSignature), samplePubKey).MustExit(t, 1).StdoutContains(t, signatureFail)
+
+	otherTenant := sealFor(t, lines, "another-tenant", institutionKey())
+	otherTenant["signatures"] = list
+	withKey(sampleFile, writeSeal(t, otherTenant), samplePubKey).MustExit(t, 1).StdoutContains(t, signatureFail)
+
+	cut := writeLines(t, lines[:len(lines)-1])
+	noSingle := sealFor(t, lines, load(t, lines).Header.TenantID, institutionKey())
+	noSingle["signatures"] = list
+	delete(noSingle, "signature_b64")
+	withKey(cut, writeSeal(t, noSingle), samplePubKey).MustExit(t, 1).StdoutContains(t, rootMismatch)
 }
 
 func TestSeal_EmptySealIsStructural(t *testing.T) {
