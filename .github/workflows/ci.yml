@@ -88,17 +88,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # The vectors live in the public spec repo. This pin holds a tree where every
+      # vector's files are present. Moving it to main is the condition for closing
+      # mmpworks/SR-26.2-Model-Risk-Management#12. tools/conformance-expected.txt goes with it.
+      - uses: actions/checkout@v4
+        with:
+          repository: mmpworks/SR-26.2-Model-Risk-Management
+          ref: 8e85a248c4fa179127e925776040454e937ddee1
+          path: ffiec-public
       - uses: actions/setup-go@v5
         with:
           go-version: '1.23'
           cache: true
       - name: run spec test vectors
-        run: |
-          if [ -d spec/test-vectors ]; then
-            go test ./spec/test-vectors/... -v
-          else
-            echo "No test vectors yet — design phase"
-          fi
+        env:
+          FFIEC_PUBLIC_VECTORS_DIR: ${{ github.workspace }}/ffiec-public/spec/test-vectors
+        run: bash tools/check-conformance.sh
 
   build:
     name: build
@@ -112,5 +117,5 @@ jobs:
       - name: build all
         run: |
           go build ./core/...
-          go build -o /tmp/ledger ./ledger/cmd/ledger 2>/dev/null || echo "ledger main not yet present"
-          go build -o /tmp/verifier ./verifier/cmd/verifier 2>/dev/null || echo "verifier main not yet present"
+          go build -o /tmp/ledger ./ledger/cmd/ledger
+          go build -o /tmp/verifier ./verifier/cmd/verifier
