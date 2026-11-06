@@ -20,6 +20,7 @@ func runVerify(args []string, stdout, stderr io.Writer) error {
 		auditFile  = fs.String("audit-file", "", "Path to an on-disk NDJSON audit file. Runs the §7 walk over it. With no key, runs witness mode.")
 		keyHex     = fs.String("master-key-hex", "", "With --audit-file: path to the master IKM as hex text, in place of --master-key.")
 		keyVersion = fs.Int("key-version", 1, "With --audit-file: the key_version the supplied IKM belongs to.")
+		seal       = fs.String("seal", "", "With --audit-file: path to the day's seal record as JSON. Runs steps 10 and 11. Needs --root-key.")
 	)
 	if stop, err := cliutil.ParseFlags(fs, args, stdout, progName); err != nil {
 		return err
@@ -30,7 +31,10 @@ func runVerify(args []string, stdout, stderr io.Writer) error {
 		if *masterKey != "" && *keyHex != "" {
 			return cliutil.Usagef("--master-key and --master-key-hex: use one")
 		}
-		return runVerifyAuditFile(auditFileOptions{path: *auditFile, masterKey: *masterKey, keyHexFile: *keyHex, keyVersion: *keyVersion}, stdout)
+		return runVerifyAuditFile(auditFileOptions{path: *auditFile, masterKey: *masterKey, keyHexFile: *keyHex, keyVersion: *keyVersion, sealPath: *seal, rootKey: *rootKey}, stdout, stderr)
+	}
+	if *seal != "" {
+		return cliutil.Usagef("--seal: needs --audit-file. --ledger files carry their seal inside")
 	}
 	if err := cliutil.RequireFlags(map[string]string{
 		"ledger":   *ledgerPath,

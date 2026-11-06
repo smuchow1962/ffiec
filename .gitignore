@@ -30,6 +30,8 @@ desktop.ini
 .env
 .env.local
 *.pem
+# A public key from a published test seed: the sample the verifier README runs.
+!verifier/cmd/verifier/testdata/simulator-custody-seal-pub.pem
 *.key
 *.crt
 *.p12

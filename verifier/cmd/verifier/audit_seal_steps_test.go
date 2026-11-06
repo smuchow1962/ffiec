@@ -1,0 +1,167 @@
+package main
+
+import (
+	"crypto/ed25519"
+	"crypto/sha256"
+	"encoding/base64"
+	"encoding/hex"
+	"os"
+	"path/filepath"
+	"strings"
+	"testing"
+
+	"github.com/mmpworks/ffiec/core/signpayload"
+	"github.com/mmpworks/ffiec/testkit/clitest"
+)
+
+const (
+	keyVersionsFail = "Status: FAIL\nStep: 11\nReason: seal.key_versions does not match per-event key_version distribution\n"
+	algorithmFail   = "Status: FAIL\nStep: 11\nReason: algorithm/key-type mismatch at signature verification\n"
+)
+
+func text(seal map[string]any, field string) string {
+	s, _ := seal[field].(string)
+	return s
+}
+
+// resign signs seal's fields as they now stand, under its own sign_payload_version.
+func resign(t *testing.T, seal map[string]any, priv ed25519.PrivateKey) map[string]any {
+	t.Helper()
+	version, err := signpayload.ParseVersion(text(seal, "sign_payload_version"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	devMode, _ := seal["dev_mode"].(bool)
+	payload, err := signpayload.Build(signpayload.Seal{
+		Version: version, Algorithm: text(seal, "algorithm"), FormatVersion: text(seal, "format_version"),
+		TenantID: text(seal, "tenant_id"), SealDate: text(seal, "seal_date"), MerkleRootHex: text(seal, "merkle_root_hex"),
+		HKDFInputsDigest: text(seal, "hkdf_inputs_digest_hex"), Cadence: text(seal, "cadence"), DevMode: devMode,
+		KeyVersionsCanon: text(seal, "key_versions_canon"), KMSHandleURIsDigest: text(seal, "kms_handle_uris_digest_hex"),
+		OperationalEventsLogRoot: text(seal, "operational_events_log_root_hex"),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	seal["sign_payload_hex"] = hex.EncodeToString(payload)
+	seal["signature_b64"] = base64.StdEncoding.EncodeToString(ed25519.Sign(priv, payload))
+	return seal
+}
+
+// sampleSealAs returns the sample's seal with changes applied and signed by the institution key.
+func sampleSealAs(t *testing.T, changes map[string]any, remove ...string) string {
+	t.Helper()
+	lines := sampleLines(t)
+	seal := sealFor(t, lines, load(t, lines).Header.TenantID, institutionKey())
+	for k, v := range changes {
+		seal[k] = v
+	}
+	for _, k := range remove {
+		delete(seal, k)
+	}
+	return writeSeal(t, resign(t, seal, institutionKey()))
+}
+
+// goodV1_0b holds the true values for the sample: 36 entries under key version 1, all plaintext-dev.
+func goodV1_0b() map[string]any {
+	digest := sha256.Sum256([]byte("plaintext-dev"))
+	return map[string]any{
+		"sign_payload_version":       "v1.0b",
+		"key_versions_canon":         "1",
+		"kms_handle_uris_digest_hex": hex.EncodeToString(digest[:]),
+	}
+}
+
+func with(base map[string]any, field string, value any) map[string]any {
+	out := map[string]any{field: value}
+	for k, v := range base {
+		if k != field {
+			out[k] = v
+		}
+	}
+	return out
+}
+
+func TestSeal_UnknownVersionUsesTheSpecReason(t *testing.T) {
+	lines := sampleLines(t)
+	seal := sealFor(t, lines, load(t, lines).Header.TenantID, institutionKey())
+	seal["sign_payload_version"] = "v1.0d"
+	withKey(sampleFile, writeSeal(t, seal), samplePubKey).
+		MustExit(t, 1).
+		StdoutContains(t, "Status: FAIL\nStep: 11\nReason: sign_payload_version \"v1.0d\" not supported by this verifier (running v1.0c)\n")
+}
+
+func TestSeal_V1_0bTrueValuesPass(t *testing.T) {
+	withKey(sampleFile, sampleSealAs(t, goodV1_0b(), "key_versions"), samplePubKey).
+		MustSucceed(t).
+		StdoutContains(t, "Status: PASS\n").
+		StdoutLacks(t, "key_versions")
+}
+
+// A genuine signature over a false list. The institution signed it, so only the entries can show it false.
+func TestSeal_V1_0bFalseKeyVersionsFail(t *testing.T) {
+	withKey(sampleFile, sampleSealAs(t, with(goodV1_0b(), "key_versions_canon", "99"), "key_versions"), samplePubKey).
+		MustExit(t, 1).
+		StdoutContains(t, keyVersionsFail)
+}
+
+// §4.3: a flip in the day's kms_handle_uri values "produces a signature failure".
+func TestSeal_V1_0bFalseKMSDigestFails(t *testing.T) {
+	withKey(sampleFile, sampleSealAs(t, with(goodV1_0b(), "kms_handle_uris_digest_hex", strings.Repeat("ab", sha256.Size)), "key_versions"), samplePubKey).
+		MustExit(t, 1).
+		StdoutContains(t, signatureFail)
+}
+
+func TestSeal_KeyVersionsListIsCrossChecked(t *testing.T) {
+	withKey(sampleFile, sampleSealAs(t, map[string]any{"key_versions": []int{1, 99}}), samplePubKey).
+		MustExit(t, 1).
+		StdoutContains(t, keyVersionsFail)
+}
+
+func TestSeal_NoKeyVersionsSaysTheCheckDidNotRun(t *testing.T) {
+	withKey(sampleFile, sampleSealAs(t, nil, "key_versions"), samplePubKey).
+		MustSucceed(t).
+		StdoutContains(t, "Anomaly: seal names no key_versions, so that cross-check did not run: see §7 step 11")
+}
+
+// §10.79: a standard walk records the bound root and does not walk it. So PASS stands, and the output says so.
+func TestSeal_V1_0cSaysTheOperationalRootWasNotWalked(t *testing.T) {
+	bogus := strings.Repeat("cd", sha256.Size)
+	withKey(sampleFile, sampleSealAs(t, with(with(goodV1_0b(), "sign_payload_version", "v1.0c"), "operational_events_log_root_hex", bogus), "key_versions"), samplePubKey).
+		MustSucceed(t).
+		StdoutContains(t, "Status: PASS\n").
+		StdoutContains(t, "Anomaly: operational_events_log_root "+bogus+" is bound by the signature and was not walked: see §10.79")
+}
+
+func TestSeal_NoVersionSaysWhatTheSignatureDoesNotBind(t *testing.T) {
+	withKey(sampleFile, sampleSealAs(t, nil, "sign_payload_version"), samplePubKey).
+		MustSucceed(t).
+		StdoutContains(t, "Anomaly: seal has no sign_payload_version, so its signature does not bind cadence or dev_mode: see §4.3")
+}
+
+func TestSeal_AlgorithmItCannotVerifyFails(t *testing.T) {
+	withKey(sampleFile, sampleSealAs(t, map[string]any{"algorithm": "dilithium3"}), samplePubKey).
+		MustExit(t, 1).
+		StdoutContains(t, algorithmFail)
+}
+
+func TestSeal_EmptySealIsStructural(t *testing.T) {
+	empty := filepath.Join(t.TempDir(), "seal.json")
+	if err := os.WriteFile(empty, []byte("{}\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	withKey(sampleFile, empty, samplePubKey).MustExit(t, 2).StdoutContains(t, "Step: pre-flight\nReason: seal names no merkle_root_hex\n")
+}
+
+func TestSeal_NeedsTheAuditFile(t *testing.T) {
+	clitest.Run(Main, "verify", "--ledger", "any.ledger", "--root-key", samplePubKey, "--seal", sampleSeal).
+		MustFail(t).
+		StderrContains(t, "--seal")
+}
+
+// The seal's date and tenant go to stderr, because §7 fixes what stdout holds.
+func TestSeal_NamesWhatItCheckedOnStderr(t *testing.T) {
+	withKey(sampleFile, sampleSeal, samplePubKey).
+		MustSucceed(t).
+		StderrContains(t, "Seal checked: tenant_id PUMP-01, seal_date "+sampleSealDay+"\n").
+		StdoutLacks(t, "Seal checked")
+}

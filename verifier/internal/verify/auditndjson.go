@@ -13,7 +13,7 @@ import (
 
 // §7 over the on-disk NDJSON audit file: one header line, then one event per
 // line with its audit_chain stamp. This is the file a chain sink writes during
-// capture, before any daily seal exists.
+// capture, before any daily seal exists. auditseal.go adds the seal steps.
 
 // WitnessStatus is the §7 witness-mode status line.
 const WitnessStatus = "PASS-STRUCTURALLY, key-bound verification skipped"
@@ -152,7 +152,7 @@ func base64ToHex(s string) string {
 
 // WalkAuditChain runs the keyed walk for a file with no seal: the pre-flight and
 // steps 1-9. Steps 10 and 11 need a seal. Without one, a cut at the end of the
-// file is undetectable, which is why NDJSONAnomalies always names that gap.
+// file is undetectable, which is why the caller adds NoSealAnomaly on this path.
 func WalkAuditChain(af *AuditFile, ikms IKMRegistry) Outcome {
 	if out := walkHeaderSteps(af); out.Status == "FAIL" {
 		return out
@@ -198,9 +198,7 @@ func walkHeaderSteps(af *AuditFile) Outcome {
 // NDJSONAnomalies lists what a clean walk of this file did not establish, one
 // line each, for the §7 anomaly lines under a passing status. raw is the file's bytes.
 func NDJSONAnomalies(af *AuditFile, raw []byte) []string {
-	anomalies := []string{
-		"no daily seal supplied: steps 10 and 11 did not run, so a cut at the end of the file cannot be detected",
-	}
+	var anomalies []string
 	devKeys, noKind := 0, 0
 	for i := range af.Entries {
 		if strings.HasPrefix(af.Entries[i].KMSHandleURI, "plaintext-") {
