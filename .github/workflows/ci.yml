@@ -90,7 +90,7 @@ jobs:
       - uses: actions/checkout@v4
       # The vectors live in the public spec repo. This pin holds a tree where every
       # vector's files are present. Moving it to main is the condition for closing
-      # mmpworks/SR-26.2-Model-Risk-Management#12.
+      # mmpworks/SR-26.2-Model-Risk-Management#12. tools/conformance-expected.txt goes with it.
       - uses: actions/checkout@v4
         with:
           repository: mmpworks/SR-26.2-Model-Risk-Management
@@ -117,5 +117,5 @@ jobs:
       - name: build all
         run: |
           go build ./core/...
-          go build -o /tmp/ledger ./ledger/cmd/ledger 2>/dev/null || echo "ledger main not yet present"
-          go build -o /tmp/verifier ./verifier/cmd/verifier 2>/dev/null || echo "verifier main not yet present"
+          go build -o /tmp/ledger ./ledger/cmd/ledger
+          go build -o /tmp/verifier ./verifier/cmd/verifier

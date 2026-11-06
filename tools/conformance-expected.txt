@@ -1,0 +1,7 @@
+backfill corpus gate: 2/2 checks passed across 1 vector(s)
+canonical corpus gate: 63/63 checks passed across 27 vectors
+negative corpus gate: 38 asserted, 0 skipped (0 required-but-stub) across 38 INDEX rows
+live-walk: 20 always-live (§7/§10.42/step-11-structural) + 2 step-11-signature live; contract-only: 16
+rich-family corpus gate: 31/31 checks passed across 6 vector(s)
+conformance gate: 6/6 checks passed
+sign_payload corpus gate: 10/10 checks passed across 5 vectors (0 deferred to backfill-Merkle tier)
