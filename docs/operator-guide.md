@@ -528,7 +528,7 @@ Spec §10.12 normates the verifier CLI's exit-code contract. Operations teams sc
 | `0` | PASS or PASS-STRUCTURALLY (witness mode). The verifier completed and the chain (or the structural subset under witness mode) verified |
 | `1` | FAIL. The chain failed integrity verification at one of the §7 steps. The reason and step number appear on stdout per the normative output format |
 | `2` | Structural / input error. The verifier could not parse the file, required headers were missing, or the file format is unsupported by the verifier version |
-| `3` | Configuration error. The verifier was invoked without a required argument (e.g., `--master-key` under `--strict`), the algorithm is unknown, or the posture flag does not match the chain's posture |
+| `3` | Configuration error. The verifier was invoked without a required argument (e.g., `--master-key` under `--strict`) or the posture flag does not match the chain's posture. A seal naming an algorithm the verifier cannot check is exit `1`, at step 11. |
 | `≥ 4` | Vendor-specific diagnostics. Examiner harnesses and SOC sample-comparison scripts MUST treat exit codes ≥ 4 as opaque diagnostic output and MUST NOT branch on them; the normative reason string on stdout is the load-bearing signal |
 
 The verifier's stdout format is also normative per spec §7. For a failed run the output is three lines: `Status: FAIL`, `Step: N`, `Reason: <text>`. For PASS the output is `Status: PASS` (one line). For witness mode the output is `Status: PASS-STRUCTURALLY, key-bound verification skipped` (one line). Field labels are exact (capitalization, colon, single-space separator); examiner harnesses parse the first three lines and ignore any additional diagnostic lines the implementation appends.

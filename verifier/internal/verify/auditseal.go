@@ -140,9 +140,11 @@ func checkSealCoversFile(af *AuditFile) Outcome {
 	return pass()
 }
 
+// checkSealAlgorithm uses the §4.3.2 reason. This is exit 1: the field is read before any
+// signature is verified, so it must not move a forged seal out of exit 1.
 func checkSealAlgorithm(seal AuditSeal) Outcome {
 	if seal.Algorithm != sealAlgorithmEd25519 {
-		return fail("11", "algorithm/key-type mismatch at signature verification")
+		return fail("11", fmt.Sprintf("algorithm %q not supported by this verifier (running v1.0c)", seal.Algorithm))
 	}
 	return pass()
 }
