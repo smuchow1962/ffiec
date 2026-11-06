@@ -45,7 +45,7 @@ const testKeyDirEnvVar = "TESSERASEAL_TEST_KEY_DIR"
 
 // defaultTestKeyDir is the local-only key directory the public key falls
 // back to when the corpus has not yet published pub.hex.
-const defaultTestKeyDir = `E:\dev\testing\private-keys\tesseraseal`
+const defaultTestKeyDir = "../../../.test-keys/tesseraseal"
 
 // assertSealSignatureWalk drives the live §7 step-11 signature walk over
 // the N004/N005 fixture when it is live-ready, or falls back to the
