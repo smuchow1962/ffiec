@@ -16,7 +16,7 @@ import (
 // public-key material (CheckSealSignatureV1 takes an ed25519.PublicKey).
 // These helpers exist for TESTS that must SIGN a fixture to drive the
 // positive step-11 path. They read the seed from TESSERASEAL_TEST_KEY_DIR
-// (default E:\dev\testing\private-keys\tesseraseal) and SKIP with a clear
+// (default <repo>/.test-keys/tesseraseal, ignored by git) and SKIP with a clear
 // message when the seed is absent, so CI without the key still runs the
 // rest of the suite green.
 
@@ -25,7 +25,7 @@ const (
 	testKeyDirEnvVar = "TESSERASEAL_TEST_KEY_DIR"
 	// defaultTestKeyDir is the local-only key directory the corpus
 	// generators and these tests read by convention.
-	defaultTestKeyDir = `E:\dev\testing\private-keys\tesseraseal`
+	defaultTestKeyDir = "../../../.test-keys/tesseraseal"
 	// seedHexFile holds the 32-byte private seed as hex (LOCAL ONLY).
 	seedHexFile = "test-signing-key.seed.hex"
 	// publishedPubHex is the corpus's published public key. A loaded seed

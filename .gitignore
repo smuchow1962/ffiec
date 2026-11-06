@@ -66,3 +66,6 @@ goreleaser/
 
 # Local-only working material, never published
 _wip/
+
+# Local-only test signing keys. Tests skip when these are absent.
+.test-keys/
