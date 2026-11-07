@@ -43,7 +43,7 @@ func runVerify(args []string, stdout, stderr io.Writer) error {
 	if len(seals) > 0 {
 		return cliutil.Usagef("--seal: needs --audit-file. --ledger files carry their seal inside")
 	}
-	if *posture != "" || *strict || *minVersion != "" {
+	if policyFlagGiven(fs) {
 		return cliutil.Usagef("--posture, --strict and --min-sign-payload-version: need --audit-file. The --ledger walk does not apply them yet")
 	}
 	if err := cliutil.RequireFlags(map[string]string{

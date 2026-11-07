@@ -116,6 +116,17 @@ func TestLedgerOutput_AFieldCannotForgeALine(t *testing.T) {
 	}
 }
 
+// The --ledger walk applies no posture and no floor, so it refuses these flags. An empty value must
+// not slip past that refusal and read as a run that applied them.
+func TestLedger_RefusesPolicyFlagsEvenWhenEmpty(t *testing.T) {
+	f := genLedger(t)
+	for _, flag := range []string{"--posture=", "--min-sign-payload-version=", "--posture=ed25519", "--strict"} {
+		t.Run(flag, func(t *testing.T) {
+			clitest.Run(Main, "verify", "--root-key", f.pub, "--ledger", f.path, flag).MustExit(t, 2)
+		})
+	}
+}
+
 // Richard's probe. diff said "ledgers identical" at exit 0 over edits it did not compare.
 func TestDiff_IdenticalMeansEveryByte(t *testing.T) {
 	f := genLedger(t)

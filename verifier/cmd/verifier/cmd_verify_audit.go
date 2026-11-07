@@ -168,6 +168,15 @@ func emptyPolicyFlag(fs *flag.FlagSet) error {
 	return err
 }
 
+// policyFlagGiven reports whether the command line named a policy flag, whatever its value.
+func policyFlagGiven(fs *flag.FlagSet) bool {
+	given := false
+	fs.Visit(func(f *flag.Flag) {
+		given = given || f.Name == "posture" || f.Name == "min-sign-payload-version" || f.Name == "strict"
+	})
+	return given
+}
+
 // sealPolicyOf applies §10.12's exit 3 rules for --strict and --posture. --strict requires the
 // key, the seal and a posture source, because it promises every check ran, and a run without
 // one of them cannot keep that promise.
