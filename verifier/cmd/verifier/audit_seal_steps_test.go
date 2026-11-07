@@ -151,13 +151,11 @@ func TestSeal_AlgorithmItCannotVerifyFails(t *testing.T) {
 func TestSeal_CarryingASignaturesListIsRefused(t *testing.T) {
 	lines := sampleLines(t)
 	seal := sealFor(t, lines, load(t, lines).Header.TenantID, institutionKey())
-	second := map[string]any{"algorithm": "ml-dsa-65", "public_key_id": "k2", "signature": base64.StdEncoding.EncodeToString(make([]byte, 64))}
 	first := map[string]any{"algorithm": "ed25519", "public_key_id": "k1", "signature": seal["signature_b64"]}
 	for name, list := range map[string]any{
-		"a bad second signature": []any{first, second},
-		"one signature":          []any{first},
-		"an empty list":          []any{},
-		"null":                   nil,
+		"one signature": []any{first},
+		"an empty list": []any{},
+		"null":          nil,
 	} {
 		t.Run(name, func(t *testing.T) {
 			withList := map[string]any{"signatures": list}

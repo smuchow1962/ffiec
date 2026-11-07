@@ -91,7 +91,10 @@ verifier verify --audit-file ./custody.ndjson --master-key-hex ./custody.ikm
 
 # The same walk with the day's seal: steps 1-11. Without the key: steps 1-6, 10 and 11.
 # Take --root-key from a source other than whoever handed you the file.
-verifier verify   --audit-file      ./custody.ndjson   --seal            ./seal-2026-11-04.json   --root-key        ./institution.seal.pub.pem   --master-key-hex  ./custody.ikm
+verifier verify   --audit-file      ./custody.ndjson   --seal            ./seal-2026-11-04.json   --root-key        ./institution.seal.pub.pem   --master-key-hex  ./custody.ikm   --posture         ed25519
+
+# The same run, where a posture problem fails. It needs the key, the seal and --posture.
+verifier verify   --audit-file      ./custody.ndjson   --seal            ./seal-2026-11-04.json   --root-key        ./institution.seal.pub.pem   --master-key-hex  ./custody.ikm   --posture         ed25519   --strict
 
 # Print every chain entry in order, plus the seal record.
 verifier walk --ledger ./tenant-day.ledger
@@ -135,6 +138,40 @@ The structural-only path completes whether or not `--master-key` is supplied. Th
 - **Failure surfaces are loud.** Every failure is named, localised to the entry that tripped, and accompanied by the recomputed value next to the claimed value. The verifier never silently passes a partial verification.
 - **Independent of the institution.** The verifier reads only the ledger bytes and the published public key. It does not call the institution's vendor, the institution's HSM, or any third party. The institution's only role is to hand over the ledger.
 - **Fingerprint pinning.** The verifier confirms the supplied public key matches the seal's `signing_key_fingerprint` before accepting the signature. A verifier pointed at the wrong public key fails closed instead of silently validating a different signer.
+
+## Algorithm posture
+
+`--posture` lists the signature algorithms the institution declares. Take the list from the institution's CC8.1 control description, and never from the seal. A seal field can be edited, and no signature binds it.
+
+| Input with a seal | Result |
+|---|---|
+| No `--posture` | `Status: PASS-WITH-ANOMALY`, exit 0: a stripped signature cannot be detected. A witness run keeps its own status and prints the anomaly line. |
+| No `--posture`, with `--strict` | Exit 3 |
+| The list names the seal's one algorithm | `Status: PASS`, in both modes |
+| The list names a second algorithm, and the seal lacks it | `Status: PASS-WITH-ANOMALY`, exit 0. With `--strict`: exit 1 |
+| The seal names an algorithm the list lacks | `Status: PASS-WITH-ANOMALY`, exit 0. With `--strict`: exit 1 |
+| The seal carries a `signatures` list that the posture agrees with | Exit 3: this verifier cannot check a second signature |
+
+Exit 3 here does not show that a second signature exists. The list is unsigned, so anyone who can edit the seal file can add an entry with no key, and that moves a stripped seal from exit 1 to exit 3. Before you rely on such a seal, obtain a verifier that checks the second signature.
+
+Exit 0 alone does not show a clean result. Read the `Status:` and `Anomaly:` lines.
+
+`--strict` also refuses, with exit 1 at step 12, a seal with `dev_mode` true and a seal over any entry whose `kms_handle_uri` begins with `plaintext-`. Without `--strict`, these print anomaly lines.
+
+## Sign-payload floor
+
+`--min-sign-payload-version v1.0b` fails a seal below that version with exit 1, before signature dispatch. Take the value from the institution's CC8.1. A seal's own `declared_sign_payload_floor` field is also honoured, but no signature binds it, so an editor can remove it. Use the flag. Only the flag protects against that edit.
+
+## Limits against spec 0.4.0
+
+The spec published first, and this verifier follows it in steps. It does not yet do the following:
+
+1. **File set.** The audit-file walk takes one `--audit-file` and one `--seal`. The several-file, several-seal rules of §7 step 10 are not built: selection by `received_at`, the entry outside every seal, the fork, and exit 3 on a seal that is not daily.
+2. **Operational root.** A v1.0c seal's `operational_events_log_root` is not recomputed. The run prints an anomaly that says so.
+3. **Dual-algorithm signatures.** Cases (a) and (e) of §7 step 11 are not built, so such a seal is exit 3, and exit 3 proves nothing about its list. Go 1.26.2's standard library has no ML-DSA package (`go doc crypto/mldsa` finds none).
+4. **Posture sources.** Only the command-line list is built, which is source (iii) of case (c).
+5. **`--ledger` walk.** It applies no posture and no floor, and it refuses `--posture`, `--strict` and `--min-sign-payload-version`.
+6. **`--strict` rules not built.** Step 12a (the GenAI model identifier check) does not run, and `seal.cadence` is not compared with a claimed cadence, because no input names one. A `--strict` run prints both as anomaly lines. The tenant key registry and flat-file floor sources are not built.
 
 ## Cross-references
 

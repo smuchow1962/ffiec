@@ -21,6 +21,9 @@ func runVerify(args []string, stdout, stderr io.Writer) error {
 		keyHex     = fs.String("master-key-hex", "", "With --audit-file: path to the master IKM as hex text, in place of --master-key.")
 		keyVersion = fs.Int("key-version", 1, "With --audit-file: the key_version the supplied IKM belongs to.")
 		seal       = fs.String("seal", "", "With --audit-file: path to the day's seal record as JSON. Runs steps 10 and 11. Needs --root-key.")
+		posture    = fs.String("posture", "", "With --seal: the institution's declared algorithm list, comma-separated, from a source outside the seal. Example: ed25519,dilithium3.")
+		strict     = fs.Bool("strict", false, "With --audit-file: a posture problem fails with exit 1 and does not warn. Needs the master key, --seal, --root-key and --posture.")
+		minVersion = fs.String("min-sign-payload-version", "", "With --seal: the institution's floor, from a source outside the seal. A seal below it fails.")
 	)
 	if stop, err := cliutil.ParseFlags(fs, args, stdout, progName); err != nil {
 		return err
@@ -31,10 +34,13 @@ func runVerify(args []string, stdout, stderr io.Writer) error {
 		if *masterKey != "" && *keyHex != "" {
 			return cliutil.Usagef("--master-key and --master-key-hex: use one")
 		}
-		return runVerifyAuditFile(auditFileOptions{path: *auditFile, masterKey: *masterKey, keyHexFile: *keyHex, keyVersion: *keyVersion, sealPath: *seal, rootKey: *rootKey}, stdout, stderr)
+		return runVerifyAuditFile(auditFileOptions{path: *auditFile, masterKey: *masterKey, keyHexFile: *keyHex, keyVersion: *keyVersion, sealPath: *seal, rootKey: *rootKey, posture: *posture, strict: *strict, minVersion: *minVersion}, stdout, stderr)
 	}
 	if *seal != "" {
 		return cliutil.Usagef("--seal: needs --audit-file. --ledger files carry their seal inside")
+	}
+	if *posture != "" || *strict || *minVersion != "" {
+		return cliutil.Usagef("--posture, --strict and --min-sign-payload-version: need --audit-file. The --ledger walk does not apply them yet")
 	}
 	if err := cliutil.RequireFlags(map[string]string{
 		"ledger":   *ledgerPath,

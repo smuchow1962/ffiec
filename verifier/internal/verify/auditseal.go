@@ -49,38 +49,47 @@ func LoadAuditSeal(raw []byte) (AuditSeal, Outcome) {
 
 // WalkAuditChainSealed runs the keyed walk and then the seal steps: the pre-flight
 // and steps 1-11. af.Seal holds the seal.
-func WalkAuditChainSealed(af *AuditFile, ikms IKMRegistry, pub ed25519.PublicKey) Outcome {
+func WalkAuditChainSealed(af *AuditFile, ikms IKMRegistry, pub ed25519.PublicKey, policy SealPolicy) Outcome {
 	if out := WalkAuditChain(af, ikms); out.Status == "FAIL" {
 		return out
 	}
-	return checkSeal(af, pub)
+	if out := checkSeal(af, pub, policy); out.Status == "FAIL" {
+		return out
+	}
+	return judgeSeal(af, policy)
 }
 
 // WalkAuditChainWitnessSealed runs the no-key walk and then the seal steps: the
 // pre-flight and steps 1-6, 10 and 11. Steps 10 and 11 need no master key. Steps 7-9
-// do, so a pass here stays a witness pass.
-func WalkAuditChainWitnessSealed(af *AuditFile, pub ed25519.PublicKey) Outcome {
+// do, so a pass here stays a witness pass: a posture warning adds its anomaly lines and
+// leaves the witness status, because PASS-WITH-ANOMALY would imply that the MACs were checked.
+func WalkAuditChainWitnessSealed(af *AuditFile, pub ed25519.PublicKey, policy SealPolicy) Outcome {
 	witness := WalkAuditChainWitness(af)
 	if witness.Status == "FAIL" {
 		return witness
 	}
-	if out := checkSeal(af, pub); out.Status == "FAIL" {
+	if out := checkSeal(af, pub, policy); out.Status == "FAIL" {
 		return out
 	}
+	judged := judgeSeal(af, policy)
+	if judged.Status == "FAIL" {
+		return judged
+	}
+	witness.Anomalies = judged.Anomalies
 	return witness
 }
 
 // checkSeal stops at the first failure, as §7 does, and SealAnomalies names what it
 // did not check. A list of checks in §7 order keeps this auditor-readable.
-func checkSeal(af *AuditFile, pub ed25519.PublicKey) Outcome {
+func checkSeal(af *AuditFile, pub ed25519.PublicKey, policy SealPolicy) Outcome {
 	for _, check := range []func() Outcome{
 		func() Outcome { return checkMerkleRootAudit(af) },
 		func() Outcome { return checkSealCoversFile(af) },
+		func() Outcome { return checkSealFloor(af.Seal, policy) },
 		func() Outcome { return checkSealAlgorithm(af.Seal) },
 		func() Outcome { return checkSealSingleSignature(af.Seal, pub) },
 		func() Outcome { return checkSealKeyVersions(af) },
 		func() Outcome { return checkSealKMSDigest(af) },
-		func() Outcome { return refuseSealSignaturesList(af.Seal) },
 	} {
 		if out := check(); out.Status == "FAIL" {
 			return out
@@ -116,8 +125,8 @@ func ed25519EntryOf(list json.RawMessage) string {
 	return ""
 }
 
-// refuseSealSignaturesList runs last, once the ed25519 signature has verified, so no finding
-// can hide behind it: anyone who can edit the seal file can add a list, and §10.12 routes
+// refuseSealSignaturesList runs from JudgeSealPosture, once the ed25519 signature has verified, so
+// no finding can hide behind it: anyone who can edit the seal file can add a list, and §10.12 routes
 // exit 1 and exit 3 to different people.
 // Passing would claim a dual-algorithm check that never ran. Failing with exit 1 would call
 // a genuine dual-signed seal a tamper. So this is exit 3: the verifier cannot judge it.

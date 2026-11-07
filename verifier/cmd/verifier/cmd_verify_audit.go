@@ -30,6 +30,9 @@ type auditFileOptions struct {
 	keyVersion int
 	sealPath   string
 	rootKey    string
+	posture    string
+	strict     bool
+	minVersion string
 }
 
 // runVerifyAuditFile walks an NDJSON audit file and prints the §7 output: the
@@ -41,6 +44,10 @@ type auditFileOptions struct {
 func runVerifyAuditFile(opts auditFileOptions, stdout, stderr io.Writer) error {
 	if (opts.sealPath == "") != (opts.rootKey == "") {
 		return configError("--seal and --root-key: use both or neither. A seal means nothing without the public key that checks it")
+	}
+	policy, flagErr := sealPolicyOf(opts)
+	if flagErr != nil {
+		return flagErr
 	}
 	raw, err := os.ReadFile(opts.path)
 	if err != nil {
@@ -74,7 +81,10 @@ func runVerifyAuditFile(opts auditFileOptions, stdout, stderr io.Writer) error {
 	}
 	af.Seal = seal
 	anomalies := append(verify.SealAnomalies(seal), verify.NDJSONAnomalies(af, raw)...)
-	outcome := walkSealed(af, ikms, pub)
+	if policy.Strict {
+		anomalies = append(anomalies, verify.StrictNotRun...)
+	}
+	outcome := walkSealed(af, ikms, pub, policy)
 	if outcome.Status != "FAIL" {
 		// Stderr, because §7 fixes what stdout holds.
 		fmt.Fprintf(stderr, "Seal checked: tenant_id %s, seal_date %s\n", seal.TenantID, seal.SealDate)
@@ -89,11 +99,43 @@ func walkUnsealed(af *verify.AuditFile, ikms verify.IKMRegistry) verify.Outcome 
 	return verify.WalkAuditChain(af, ikms)
 }
 
-func walkSealed(af *verify.AuditFile, ikms verify.IKMRegistry, pub ed25519.PublicKey) verify.Outcome {
+func walkSealed(af *verify.AuditFile, ikms verify.IKMRegistry, pub ed25519.PublicKey, policy verify.SealPolicy) verify.Outcome {
 	if ikms == nil {
-		return verify.WalkAuditChainWitnessSealed(af, pub)
+		return verify.WalkAuditChainWitnessSealed(af, pub, policy)
 	}
-	return verify.WalkAuditChainSealed(af, ikms, pub)
+	return verify.WalkAuditChainSealed(af, ikms, pub, policy)
+}
+
+// sealPolicyOf applies §10.12's exit 3 rules for --strict and --posture. --strict requires the
+// key, the seal and a posture source, because it promises every check ran, and a run without
+// one of them cannot keep that promise.
+func sealPolicyOf(opts auditFileOptions) (verify.SealPolicy, error) {
+	policy := verify.SealPolicy{Strict: opts.strict, MinSignPayloadVersion: opts.minVersion}
+	if opts.minVersion != "" && (opts.sealPath == "" || !verify.IsSignPayloadFloor(opts.minVersion)) {
+		return policy, configError("--min-sign-payload-version: needs --seal, and one of v1.0a, v1.0b or v1.0c")
+	}
+	if opts.posture != "" {
+		if opts.sealPath == "" {
+			return policy, configError("--posture: needs --seal. It is a list to compare a seal with")
+		}
+		posture, err := verify.ParseAlgorithmPosture(opts.posture)
+		if err != nil {
+			return policy, configError("--posture: %v", err)
+		}
+		policy.Posture = posture
+	}
+	if !opts.strict {
+		return policy, nil
+	}
+	switch {
+	case opts.masterKey == "" && opts.keyHexFile == "":
+		return policy, configError("--strict: needs --master-key or --master-key-hex")
+	case opts.sealPath == "":
+		return policy, configError("--strict: needs --seal and --root-key")
+	case policy.Posture == nil:
+		return policy, configError("--strict: needs --posture. With no posture source a verifier cannot tell a stripped signature from a single-algorithm seal")
+	}
+	return policy, nil
 }
 
 // readRegistry returns nil when the caller supplied no master key: witness mode.
@@ -139,12 +181,19 @@ func structuralOutcome(reason string) verify.Outcome {
 
 func printOutcome(w io.Writer, out verify.Outcome, anomalies []string) error {
 	fmt.Fprintf(w, "Status: %s\n", out.Status)
-	if out.Status == "FAIL" {
+	if out.Step != "" {
 		fmt.Fprintf(w, "Step: %s\nReason: %s\n", out.Step, out.Reason)
+	}
+	printAnomalies(w, out.Anomalies)
+	if out.Status == "FAIL" {
 		return &exitError{code: out.ExitCode, message: out.Reason}
 	}
+	printAnomalies(w, anomalies)
+	return nil
+}
+
+func printAnomalies(w io.Writer, anomalies []string) {
 	for _, a := range anomalies {
 		fmt.Fprintf(w, "Anomaly: %s\n", a)
 	}
-	return nil
 }
