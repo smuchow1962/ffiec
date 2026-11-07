@@ -33,4 +33,13 @@ func TestOperationalRoot_MatchesVector027(t *testing.T) {
 	}
 }
 
+// §4.4 makes kms_handle_uri optional, so an entry with none adds nothing to the §4.3 digest form.
+func TestKMSDigest_AnAbsentURIIsNotAValue(t *testing.T) {
+	withAbsent := &AuditFile{Entries: []AuditEntry{{}, {KMSHandleURI: "aws-kms:a"}}}
+	onlyPresent := &AuditFile{Entries: []AuditEntry{{KMSHandleURI: "aws-kms:a"}}}
+	if kmsHandleURIsDigest(withAbsent) != kmsHandleURIsDigest(onlyPresent) {
+		t.Fatal("an entry with no kms_handle_uri changed the digest")
+	}
+}
+
 const emptyTreeRootForTest = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"

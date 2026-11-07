@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/binary"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"regexp"
 
@@ -47,6 +48,10 @@ type AuditFile struct {
 	Entries []AuditEntry `json:"entries"`
 	Seal    AuditSeal    `json:"seal"`
 
+	// UnstampedRecords counts records with none of the chain stamp. They have no leaf, no MAC and
+	// no root over them, so they are outside the verified evidence, and an anomaly line counts them.
+	UnstampedRecords int `json:"-"`
+
 	// NDJSONTruncated, when non-nil, carries the mid-write-truncation
 	// fixture marker (§7 implementation note). The corpus represents a
 	// truncated file structurally rather than as raw bytes, so the
@@ -79,6 +84,13 @@ type AuditEntry struct {
 	EventCanonicalHex string                 `json:"event_canonical_hex"`
 	PrevHashHex       string                 `json:"prev_hash_hex"`
 	PayloadHashHex    string                 `json:"payload_hash_hex"`
+	// ReceivedAt and LateBinding select the entry's seal (§7 step 10). The ledger stamps them
+	// after ingest, so they are outside the MAC (§4.2.2).
+	ReceivedAt  string `json:"received_at"`
+	LateBinding bool   `json:"late_binding"`
+	// PartialStampLine is the file line of a record with only some of the chain stamp. Step 6
+	// refuses it. Zero means the record has the whole stamp.
+	PartialStampLine int `json:"-"`
 }
 
 // AuditSeal is the daily seal block (step 10 input + the §4.3 step-11
@@ -110,10 +122,12 @@ type AuditSeal struct {
 
 	// v1.0b / v1.0c sign_payload additions, threaded through to the
 	// reconstruction when the seal's version binds them.
-	KeyVersions              []int  `json:"key_versions"`
-	KeyVersionsCanon         string `json:"key_versions_canon"`
-	KMSHandleURIsDigestHex   string `json:"kms_handle_uris_digest_hex"`
-	OperationalEventsLogRoot string `json:"operational_events_log_root_hex"`
+	KeyVersions      []int  `json:"key_versions"`
+	KeyVersionsCanon string `json:"key_versions_canon"`
+	// SignaturesList is the §4.2 dual-algorithm list. Only its presence is read: nil means absent.
+	SignaturesList           json.RawMessage `json:"signatures"`
+	KMSHandleURIsDigestHex   string          `json:"kms_handle_uris_digest_hex"`
+	OperationalEventsLogRoot string          `json:"operational_events_log_root_hex"`
 }
 
 // Outcome is the §7 normative verifier output triple plus the §10.12
@@ -125,6 +139,10 @@ type Outcome struct {
 	Step     string
 	Reason   string
 	ExitCode int
+	// Anomalies are the lines this outcome itself requires on stdout, as vectors N017 and N018 pin.
+	Anomalies []string
+	// File names the supplied file a per-file step failed in. §7 fixes stdout, so it goes to stderr.
+	File string
 }
 
 // pass is the clean-walk outcome (status PASS, exit 0, no step/reason).
@@ -327,6 +345,9 @@ func walkEntryStructure(h AuditHeader, e *AuditEntry, expectedSeq int, expectedP
 	}
 	if out := checkEntryFormat(h, e, expectedSeq); out.Status == "FAIL" {
 		return out
+	}
+	if e.PartialStampLine > 0 {
+		return fail("6", fmt.Sprintf("partial chain stamp at line %d", e.PartialStampLine))
 	}
 	return checkStructuralLink(e, expectedSeq, expectedPrev)
 }

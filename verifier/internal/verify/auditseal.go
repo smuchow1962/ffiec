@@ -10,6 +10,8 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/mmpworks/ffiec/verifier/internal/exitcodes"
 )
 
 // §7 steps 10 and 11 over an on-disk NDJSON audit file. The chain sink writes the
@@ -50,37 +52,15 @@ func LoadAuditSeal(raw []byte) (AuditSeal, Outcome) {
 	return seal, pass()
 }
 
-// WalkAuditChainSealed runs the keyed walk and then the seal steps: the pre-flight
-// and steps 1-11. af.Seal holds the seal.
-func WalkAuditChainSealed(af *AuditFile, ikms IKMRegistry, pub ed25519.PublicKey) Outcome {
-	if out := WalkAuditChain(af, ikms); out.Status == "FAIL" {
-		return out
-	}
-	return checkSeal(af, pub)
-}
-
-// WalkAuditChainWitnessSealed runs the no-key walk and then the seal steps: the
-// pre-flight and steps 1-6, 10 and 11. Steps 10 and 11 need no master key. Steps 7-9
-// do, so a pass here stays a witness pass.
-func WalkAuditChainWitnessSealed(af *AuditFile, pub ed25519.PublicKey) Outcome {
-	witness := WalkAuditChainWitness(af)
-	if witness.Status == "FAIL" {
-		return witness
-	}
-	if out := checkSeal(af, pub); out.Status == "FAIL" {
-		return out
-	}
-	return witness
-}
-
 // checkSeal stops at the first failure, as §7 does, and SealAnomalies names what it
-// did not check. A list of checks in §7 order keeps this auditor-readable.
-func checkSeal(af *AuditFile, pub ed25519.PublicKey) Outcome {
+// did not check. A list of checks in §7 order keeps this auditor-readable. af holds one
+// seal and that seal's selection. headers are the headers of every supplied file.
+func checkSeal(af *AuditFile, headers []AuditHeader, pub ed25519.PublicKey) Outcome {
 	for _, check := range []func() Outcome{
 		func() Outcome { return checkMerkleRootAudit(af) },
-		func() Outcome { return checkSealCoversFile(af) },
+		func() Outcome { return checkSealCoversFiles(af.Seal, headers) },
 		func() Outcome { return checkSealAlgorithm(af.Seal) },
-		func() Outcome { return CheckSealSignatureV1(af.Seal, pub) },
+		func() Outcome { return checkSealSingleSignature(af.Seal, pub) },
 		func() Outcome { return checkSealOperationalRoot(af) },
 		func() Outcome { return checkSealKeyVersions(af) },
 		func() Outcome { return checkSealKMSDigest(af) },
@@ -92,20 +72,65 @@ func checkSeal(af *AuditFile, pub ed25519.PublicKey) Outcome {
 	return pass()
 }
 
-// checkSealCoversFile refuses a seal signed for another tenant or other HKDF inputs.
+// checkSealSingleSignature checks the one signature this verifier can judge: signature_b64,
+// or else the list's ed25519 entry. A seal with neither fails here, so a forged root stays an
+// integrity finding, whatever an editor of the unsigned file does to the list.
+func checkSealSingleSignature(seal AuditSeal, pub ed25519.PublicKey) Outcome {
+	if seal.SignatureB64 == "" {
+		seal.SignatureB64 = ed25519EntryOf(seal.SignaturesList)
+	}
+	return CheckSealSignatureV1(seal, pub)
+}
+
+// ed25519EntryOf returns the list's ed25519 signature, or "" when it holds none.
+func ed25519EntryOf(list json.RawMessage) string {
+	var entries []struct {
+		Algorithm string `json:"algorithm"`
+		Signature string `json:"signature"`
+	}
+	if err := json.Unmarshal(list, &entries); err != nil {
+		return ""
+	}
+	for _, entry := range entries {
+		if entry.Algorithm == sealAlgorithmEd25519 {
+			return entry.Signature
+		}
+	}
+	return ""
+}
+
+// refuseSealSignaturesList runs from JudgeSealPosture, once the ed25519 signature has verified, so
+// no finding can hide behind it: anyone who can edit the seal file can add a list, and §10.12 routes
+// exit 1 and exit 3 to different people.
+// Passing would claim a dual-algorithm check that never ran. Failing with exit 1 would call
+// a genuine dual-signed seal a tamper. So this is exit 3: the verifier cannot judge it.
+func refuseSealSignaturesList(seal AuditSeal) Outcome {
+	if seal.SignaturesList == nil {
+		return pass()
+	}
+	return Outcome{Status: "FAIL", Step: "11", ExitCode: int(exitcodes.ConfigurationError),
+		Reason: "seal carries a signatures list, and this verifier does not check one yet: dual-algorithm checks are not built"}
+}
+
+// checkSealCoversFiles refuses a seal signed for another tenant or other HKDF inputs.
 // The signature binds the seal's own fields, and only this comparison binds those
-// fields to this file. It uses the step 11 reason because the signature is then
-// genuine for some other seal, the same failure negative vector N005 pins.
-func checkSealCoversFile(af *AuditFile) Outcome {
-	if af.Seal.TenantID != af.Header.TenantID || af.Seal.HKDFInputsDigestHex != af.Header.HKDFInputsDigestHex {
-		return fail("11", "signature verification failed")
+// fields to each supplied file, so a set that mixes tenants fails here. It uses the
+// step 11 reason because the signature is then genuine for some other seal, the same
+// failure negative vector N005 pins.
+func checkSealCoversFiles(seal AuditSeal, headers []AuditHeader) Outcome {
+	for _, header := range headers {
+		if seal.TenantID != header.TenantID || seal.HKDFInputsDigestHex != header.HKDFInputsDigestHex {
+			return fail("11", "signature verification failed")
+		}
 	}
 	return pass()
 }
 
+// checkSealAlgorithm uses the §4.3.2 reason. This is exit 1: the field is read before any
+// signature is verified, so it must not move a forged seal out of exit 1.
 func checkSealAlgorithm(seal AuditSeal) Outcome {
 	if seal.Algorithm != sealAlgorithmEd25519 {
-		return fail("11", "algorithm/key-type mismatch at signature verification")
+		return fail("11", fmt.Sprintf("algorithm %q not supported by this verifier (running v1.0c)", seal.Algorithm))
 	}
 	return pass()
 }
@@ -197,7 +222,10 @@ func canonKeyVersions(versions []int) string {
 func kmsHandleURIsDigest(af *AuditFile) string {
 	uris := make([]string, 0, 1)
 	for i := range af.Entries {
-		uris = append(uris, af.Entries[i].KMSHandleURI)
+		// §4.4 makes the field optional, and an absent URI is not a value in this list.
+		if af.Entries[i].KMSHandleURI != "" {
+			uris = append(uris, af.Entries[i].KMSHandleURI)
+		}
 	}
 	sort.Strings(uris)
 	sum := sha256.Sum256([]byte(strings.Join(slices.Compact(uris), "\n")))

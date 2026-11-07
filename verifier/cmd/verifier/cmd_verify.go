@@ -17,24 +17,30 @@ func runVerify(args []string, stdout, stderr io.Writer) error {
 		ledgerPath = fs.String("ledger", "", "Path to the tenant-day ledger file (required, unless --audit-file)")
 		rootKey    = fs.String("root-key", "", "Path to the institution's seal-signing Ed25519 PUBLIC PEM (required, unless --audit-file)")
 		masterKey  = fs.String("master-key", "", "Optional path to the master IKM bytes (raw 32B file). Enables full per-event verification.")
-		auditFile  = fs.String("audit-file", "", "Path to an on-disk NDJSON audit file. Runs the §7 walk over it. With no key, runs witness mode.")
 		keyHex     = fs.String("master-key-hex", "", "With --audit-file: path to the master IKM as hex text, in place of --master-key.")
 		keyVersion = fs.Int("key-version", 1, "With --audit-file: the key_version the supplied IKM belongs to.")
-		seal       = fs.String("seal", "", "With --audit-file: path to the day's seal record as JSON. Runs steps 10 and 11. Needs --root-key.")
+		posture    = fs.String("posture", "", "With --seal: the institution's declared algorithm list, comma-separated, from a source outside the seal. Example: ed25519,dilithium3.")
+		strict     = fs.Bool("strict", false, "With --audit-file: a posture problem fails with exit 1 and does not warn. Needs the master key, --seal, --root-key and --posture.")
 	)
+	var auditFiles, seals repeatedFlag
+	fs.Var(&auditFiles, "audit-file", "Path to an on-disk NDJSON audit file, once per run. Runs the §7 walk over them. With no key, runs witness mode.")
+	fs.Var(&seals, "seal", "With --audit-file: path to a day's seal record as JSON, once per day. Runs steps 10 and 11. Needs --root-key.")
 	if stop, err := cliutil.ParseFlags(fs, args, stdout, progName); err != nil {
 		return err
 	} else if stop {
 		return nil
 	}
-	if *auditFile != "" {
+	if len(auditFiles) > 0 {
 		if *masterKey != "" && *keyHex != "" {
 			return cliutil.Usagef("--master-key and --master-key-hex: use one")
 		}
-		return runVerifyAuditFile(auditFileOptions{path: *auditFile, masterKey: *masterKey, keyHexFile: *keyHex, keyVersion: *keyVersion, sealPath: *seal, rootKey: *rootKey}, stdout, stderr)
+		return runVerifyAuditFile(auditFileOptions{paths: auditFiles, masterKey: *masterKey, keyHexFile: *keyHex, keyVersion: *keyVersion, sealPaths: seals, rootKey: *rootKey, posture: *posture, strict: *strict}, stdout, stderr)
 	}
-	if *seal != "" {
+	if len(seals) > 0 {
 		return cliutil.Usagef("--seal: needs --audit-file. --ledger files carry their seal inside")
+	}
+	if *posture != "" || *strict {
+		return cliutil.Usagef("--posture and --strict: need --audit-file. The --ledger walk does not apply a posture yet")
 	}
 	if err := cliutil.RequireFlags(map[string]string{
 		"ledger":   *ledgerPath,

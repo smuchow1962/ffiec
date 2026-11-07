@@ -190,8 +190,10 @@ func writePub(t *testing.T, priv ed25519.PrivateKey) string {
 	return p
 }
 
+// withKey names a single-algorithm posture, so these tests read the chain and seal result
+// with no posture warning. audit_seal_posture_test.go covers the posture.
 func withKey(file, seal, pub string) clitest.Result {
-	return clitest.Run(Main, "verify", "--audit-file", file, "--seal", seal, "--root-key", pub, "--master-key-hex", sampleKey)
+	return clitest.Run(Main, "verify", "--audit-file", file, "--seal", seal, "--root-key", pub, "--master-key-hex", sampleKey, "--posture", "ed25519")
 }
 
 // TestSampleSealIsCurrent keeps the committed sample honest: the seal in testdata

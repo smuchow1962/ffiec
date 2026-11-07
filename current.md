@@ -12,9 +12,9 @@ Still open against §7: the `Verdict-Object` line (`core/verdict` is a stub), th
 `--strict` refusal of `plaintext-` keys. With no seal, a cut at the end of the file passes, and the
 output says so on an `Anomaly:` line.
 
-`--seal` with `--root-key` runs steps 10 and 11 on that file (2026-11-06, Steve's choice). The seal is
-one JSON object with the vectors' `audit_file.seal` field names. Not yet checked: that the seal's
-`seal_date` matches the events, because the NDJSON header has no seal date. On a v1.0c seal, the walk
+`--seal` with `--root-key` runs steps 10 and 11 (2026-11-06, Steve's choice). `--audit-file` and `--seal`
+repeat, and each seal covers the entries of its date, per spec 0.4.0 step 10. `verifier/README.md` lists
+where the code still lags the spec. On a v1.0c seal, the walk
 follows spec 0.4.0: step 10 leaves out operational entries, and the operational-events root is always
 recomputed over the file's operational entries. `sibling_log_root_verified` has no output line until
 `core/verdict` is built. The CI `conformance` job runs the vectors at a pinned spec commit.
