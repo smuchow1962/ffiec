@@ -109,6 +109,16 @@ func rootOf(t *testing.T, af *verify.AuditFile) string {
 func rewriteWithKey(t *testing.T, lines [][]byte) [][]byte {
 	t.Helper()
 	const editedLine = 3
+	return restamp(t, lines, func(n int, whole map[string]any) {
+		if n == editedLine {
+			whole["message"] = "this event's text was changed by the key holder"
+		}
+	})
+}
+
+// restamp applies edit to each event and then makes every tag and link again, under the sample key.
+func restamp(t *testing.T, lines [][]byte, edit func(n int, whole map[string]any)) [][]byte {
+	t.Helper()
 	af := load(t, lines)
 	keyHex, err := os.ReadFile(sampleKey)
 	if err != nil {
@@ -125,11 +135,9 @@ func rewriteWithKey(t *testing.T, lines [][]byte) [][]byte {
 	prev := make([]byte, sha256.Size)
 	for n := 1; n < len(lines); n++ {
 		whole := decodeLine(t, lines[n])
-		if n == editedLine {
-			whole["message"] = "this event's text was changed by the key holder"
-		}
 		stamp := whole["audit_chain"].(map[string]any)
 		delete(whole, "audit_chain")
+		edit(n, whole)
 		canonical, err := jcs.Canonicalize(whole)
 		if err != nil {
 			t.Fatal(err)

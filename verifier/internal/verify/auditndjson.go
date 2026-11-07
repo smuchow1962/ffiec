@@ -50,13 +50,31 @@ func LoadAuditNDJSON(raw []byte) (*AuditFile, Outcome) {
 		if af.NDJSONTruncated != nil && i == len(lines)-2 {
 			break // The cut line. The pre-flight refuses this file before any entry matters.
 		}
-		entry, err := loadNDJSONEntry(line)
+		entry, stampFields, err := loadNDJSONEntry(line)
 		if err != nil {
 			return nil, structuralFail("pre-flight", fmt.Sprintf("malformed entry at line %d: %v", i+2, err))
 		}
-		af.Entries = append(af.Entries, entry)
+		af.addRecord(entry, stampFields, i+2)
 	}
 	return af, pass()
+}
+
+// chainStampFields is the chain stamp of the unknown-kind section's rule 6. format_version is the
+// dispatch field, and the other stamp table fields are optional provenance, so neither counts.
+var chainStampFields = []string{"seq", "prev_hash", "payload_hash", "key_version", "key_fingerprint"}
+
+// addRecord applies rule 6. A v1 record with none of the stamp is counted and left out of every
+// step. A record with no format_version stays in the walk, where step 5 fails it, and a partial
+// stamp stays in the walk, where step 6 fails it.
+func (af *AuditFile) addRecord(entry AuditEntry, stampFields, line int) {
+	if stampFields == 0 && entry.FormatVersion != "" && entry.FormatVersion == af.Header.FormatVersion {
+		af.UnstampedRecords++
+		return
+	}
+	if stampFields > 0 && stampFields < len(chainStampFields) {
+		entry.PartialStampLine = line
+	}
+	af.Entries = append(af.Entries, entry)
 }
 
 func loadNDJSONHeader(line []byte) (AuditHeader, Outcome) {
@@ -94,22 +112,28 @@ func loadNDJSONHeader(line []byte) (AuditHeader, Outcome) {
 	}, pass()
 }
 
-func loadNDJSONEntry(line []byte) (AuditEntry, error) {
+// loadNDJSONEntry returns the record and how many chain stamp fields it holds. A record with no
+// audit_chain block holds none, and it has no format_version.
+func loadNDJSONEntry(line []byte) (AuditEntry, int, error) {
 	decoder := json.NewDecoder(bytes.NewReader(line))
 	decoder.UseNumber()
 	var whole map[string]any
 	if err := decoder.Decode(&whole); err != nil {
-		return AuditEntry{}, err
+		return AuditEntry{}, 0, err
 	}
-	stampValue, ok := whole["audit_chain"].(map[string]any)
-	if !ok {
-		return AuditEntry{}, fmt.Errorf("no audit_chain block")
+	stampValue, _ := whole["audit_chain"].(map[string]any)
+	stampFields := 0
+	for _, field := range chainStampFields {
+		if _, held := stampValue[field]; held {
+			stampFields++
+		}
 	}
 
 	canonicalInput, err := macInput(line, whole)
 	if err != nil {
-		return AuditEntry{}, err
+		return AuditEntry{}, 0, err
 	}
+	lateBinding, _ := stampValue["late_binding"].(bool)
 	return AuditEntry{
 		Seq:               stampInt(stampValue, "seq"),
 		RunID:             stringField(whole, "run_id"),
@@ -121,7 +145,19 @@ func loadNDJSONEntry(line []byte) (AuditEntry, error) {
 		EventCanonicalHex: hex.EncodeToString(canonicalInput),
 		PrevHashHex:       base64ToHex(stringField(stampValue, "prev_hash")),
 		PayloadHashHex:    base64ToHex(stringField(stampValue, "payload_hash")),
-	}, nil
+		ReceivedAt:        stringField(stampValue, "received_at"),
+		LateBinding:       lateBinding,
+		CapturedAt:        capturedAtOf(stampValue, whole),
+	}, stampFields, nil
+}
+
+// capturedAtOf reads captured_at from the stamp, or else from the event. It is forensic, so the
+// walk reports it and trusts nothing to it.
+func capturedAtOf(stamp, whole map[string]any) string {
+	if value := stringField(stamp, "captured_at"); value != "" {
+		return value
+	}
+	return stringField(whole, "captured_at")
 }
 
 // macInput returns the bytes step 9 recomputes over, and removes the stamp from
@@ -232,6 +268,9 @@ func NDJSONAnomalies(af *AuditFile, raw []byte) []string {
 	}
 	if bytes.Contains(raw, []byte("\r\n")) {
 		anomalies = append(anomalies, "CRLF line endings: §4.1 terminates each entry with a single 0x0A")
+	}
+	if af.UnstampedRecords > 0 {
+		anomalies = append(anomalies, fmt.Sprintf("unstamped records: %d", af.UnstampedRecords))
 	}
 	return anomalies
 }

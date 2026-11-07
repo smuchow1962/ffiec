@@ -27,6 +27,11 @@ const NoSealAnomaly = "no daily seal supplied: steps 10 and 11 did not run, so a
 const sealAlgorithmEd25519 = "ed25519"
 
 const (
+	chainKindOperational    = "operational"
+	operationalRootMismatch = "operational events log root mismatch — sibling-log contents do not produce sealed root"
+)
+
+const (
 	signPayloadPreAmendment = ""
 	signPayloadV1_0b        = "v1.0b"
 	signPayloadV1_0c        = "v1.0c"
@@ -47,47 +52,17 @@ func LoadAuditSeal(raw []byte) (AuditSeal, Outcome) {
 	return seal, pass()
 }
 
-// WalkAuditChainSealed runs the keyed walk and then the seal steps: the pre-flight
-// and steps 1-11. af.Seal holds the seal.
-func WalkAuditChainSealed(af *AuditFile, ikms IKMRegistry, pub ed25519.PublicKey, policy SealPolicy) Outcome {
-	if out := WalkAuditChain(af, ikms); out.Status == "FAIL" {
-		return out
-	}
-	if out := checkSeal(af, pub, policy); out.Status == "FAIL" {
-		return out
-	}
-	return judgeSeal(af, policy)
-}
-
-// WalkAuditChainWitnessSealed runs the no-key walk and then the seal steps: the
-// pre-flight and steps 1-6, 10 and 11. Steps 10 and 11 need no master key. Steps 7-9
-// do, so a pass here stays a witness pass: a posture warning adds its anomaly lines and
-// leaves the witness status, because PASS-WITH-ANOMALY would imply that the MACs were checked.
-func WalkAuditChainWitnessSealed(af *AuditFile, pub ed25519.PublicKey, policy SealPolicy) Outcome {
-	witness := WalkAuditChainWitness(af)
-	if witness.Status == "FAIL" {
-		return witness
-	}
-	if out := checkSeal(af, pub, policy); out.Status == "FAIL" {
-		return out
-	}
-	judged := judgeSeal(af, policy)
-	if judged.Status == "FAIL" {
-		return judged
-	}
-	witness.Anomalies = judged.Anomalies
-	return witness
-}
-
 // checkSeal stops at the first failure, as §7 does, and SealAnomalies names what it
-// did not check. A list of checks in §7 order keeps this auditor-readable.
-func checkSeal(af *AuditFile, pub ed25519.PublicKey, policy SealPolicy) Outcome {
+// did not check. A list of checks in §7 order keeps this auditor-readable. af holds one
+// seal and that seal's selection. headers are the headers of every supplied file.
+func checkSeal(af *AuditFile, headers []AuditHeader, pub ed25519.PublicKey, policy SealPolicy) Outcome {
 	for _, check := range []func() Outcome{
 		func() Outcome { return checkMerkleRootAudit(af) },
-		func() Outcome { return checkSealCoversFile(af) },
+		func() Outcome { return checkSealCoversFiles(af.Seal, headers) },
 		func() Outcome { return checkSealFloor(af.Seal, policy) },
 		func() Outcome { return checkSealAlgorithm(af.Seal) },
 		func() Outcome { return checkSealSingleSignature(af.Seal, pub) },
+		func() Outcome { return checkSealOperationalRoot(af) },
 		func() Outcome { return checkSealKeyVersions(af) },
 		func() Outcome { return checkSealKMSDigest(af) },
 	} {
@@ -138,13 +113,16 @@ func refuseSealSignaturesList(seal AuditSeal) Outcome {
 		Reason: "seal carries a signatures list, and this verifier does not check one yet: dual-algorithm checks are not built"}
 }
 
-// checkSealCoversFile refuses a seal signed for another tenant or other HKDF inputs.
+// checkSealCoversFiles refuses a seal signed for another tenant or other HKDF inputs.
 // The signature binds the seal's own fields, and only this comparison binds those
-// fields to this file. It uses the step 11 reason because the signature is then
-// genuine for some other seal, the same failure negative vector N005 pins.
-func checkSealCoversFile(af *AuditFile) Outcome {
-	if af.Seal.TenantID != af.Header.TenantID || af.Seal.HKDFInputsDigestHex != af.Header.HKDFInputsDigestHex {
-		return fail("11", "signature verification failed")
+// fields to each supplied file, so a set that mixes tenants fails here. It uses the
+// step 11 reason because the signature is then genuine for some other seal, the same
+// failure negative vector N005 pins.
+func checkSealCoversFiles(seal AuditSeal, headers []AuditHeader) Outcome {
+	for _, header := range headers {
+		if seal.TenantID != header.TenantID || seal.HKDFInputsDigestHex != header.HKDFInputsDigestHex {
+			return fail("11", "signature verification failed")
+		}
 	}
 	return pass()
 }
@@ -183,6 +161,42 @@ func checkSealKMSDigest(af *AuditFile) Outcome {
 	return pass()
 }
 
+// checkSealOperationalRoot is the v1.0c check of §4.3 and §10.79. It runs on every v1.0c
+// seal. Zero operational entries give the empty-tree root, so a true empty day passes, and
+// a cut of all of them at the tail fails: step 10 excludes these entries and cannot see it.
+// The leaf input is the canonical bytes step 9 hashes, unlike step 10's payload_hash.
+func checkSealOperationalRoot(af *AuditFile) Outcome {
+	if af.Seal.SignPayloadVersion != signPayloadV1_0c {
+		return pass()
+	}
+	leaves := make([][]byte, 0)
+	for i := range af.Entries {
+		if !isOperational(&af.Entries[i]) {
+			continue
+		}
+		canonical, err := hex.DecodeString(af.Entries[i].EventCanonicalHex)
+		if err != nil {
+			return fail("11", operationalRootMismatch)
+		}
+		leaves = append(leaves, MerkleLeafHash(canonical))
+	}
+	if hex.EncodeToString(MerkleTreeHash(leaves)) != af.Seal.OperationalEventsLogRoot {
+		return fail("11", operationalRootMismatch)
+	}
+	return pass()
+}
+
+// inSealRoot is the §7 step 10 population. A v1.0c seal's merkle_root leaves out the
+// operational entries, and every earlier form covers every entry. An entry with no
+// chain_kind counts as captured.
+func inSealRoot(seal AuditSeal, e *AuditEntry) bool {
+	return seal.SignPayloadVersion != signPayloadV1_0c || !isOperational(e)
+}
+
+func isOperational(e *AuditEntry) bool {
+	return e.Event["chain_kind"] == chainKindOperational
+}
+
 func bindsEntryLists(seal AuditSeal) bool {
 	return seal.SignPayloadVersion == signPayloadV1_0b || seal.SignPayloadVersion == signPayloadV1_0c
 }
@@ -209,7 +223,10 @@ func canonKeyVersions(versions []int) string {
 func kmsHandleURIsDigest(af *AuditFile) string {
 	uris := make([]string, 0, 1)
 	for i := range af.Entries {
-		uris = append(uris, af.Entries[i].KMSHandleURI)
+		// §4.4 makes the field optional, and an absent URI is not a value in this list.
+		if af.Entries[i].KMSHandleURI != "" {
+			uris = append(uris, af.Entries[i].KMSHandleURI)
+		}
 	}
 	sort.Strings(uris)
 	sum := sha256.Sum256([]byte(strings.Join(slices.Compact(uris), "\n")))
@@ -227,9 +244,6 @@ func SealAnomalies(seal AuditSeal) []string {
 	}
 	if !bindsEntryLists(seal) && seal.KeyVersions == nil {
 		anomalies = append(anomalies, "seal names no key_versions, so that cross-check did not run: see §7 step 11")
-	}
-	if seal.SignPayloadVersion == signPayloadV1_0c {
-		anomalies = append(anomalies, fmt.Sprintf("operational_events_log_root %s is bound by the signature and was not walked: see §10.79", seal.OperationalEventsLogRoot))
 	}
 	return anomalies
 }

@@ -124,9 +124,9 @@ verifier verify \
   --master-key-hex  simulator-custody-key.hex
 ```
 
-The seal file is one JSON object with the field names of the `audit_file.seal` block in the conformance vectors. A seal that carries a `signatures` list exits 3 after every other check, because dual-algorithm checks are not built. A seal covers a tenant-day, and this command reads one file, so a day with 2 runs fails at step 10 on a correct seal. Step 11 here means the signature, the `key_versions` cross-check, and for `v1.0b` and `v1.0c` seals the KMS handle digest. An `Anomaly:` line names each check that did not run: the operational-events root on a `v1.0c` seal is recorded and not walked (§10.79), and a seal with no key version list skips that cross-check. `--root-key` is the only source of the public key. No field in the audit file or the seal can supply it, so a reader who takes the key from the file's holder has checked nothing.
+The seal file is one JSON object with the field names of the `audit_file.seal` block in the conformance vectors. Step 11 here means the signature, the `key_versions` cross-check, and for `v1.0b` and `v1.0c` seals the KMS handle digest. A `v1.0c` seal's root leaves out `chain_kind = "operational"` entries, and step 11 checks those entries against the operational-events root on every run, so cutting them all still fails. An `Anomaly:` line names a check that did not run: a seal with no key version list skips that cross-check. `--root-key` is the only source of the public key. No field in the audit file or the seal can supply it, so a reader who takes the key from the file's holder has checked nothing.
 
-`verify --audit-file` prints the §7 normative output and uses the §10.12 exit codes: `0` for a pass, `1` for a failed step, `2` for a file the walk cannot begin, `3` for a key it cannot read. A pass lists under `Anomaly:` what the walk did not establish. An audit file carries no seal, so steps 10 and 11 do not run, and the first anomaly says that a cut at the end of the file cannot be detected. The §7 `Verdict-Object` line is not printed yet.
+`verify --audit-file` prints the §7 normative output and uses the §10.12 exit codes: `0` for a pass, `1` for a failed step, `2` for a file the walk cannot begin, `3` for a key it cannot read, a flag rule, or a seal it cannot judge. A pass lists under `Anomaly:` what the walk did not establish. With no `--seal`, steps 10 and 11 do not run, and the first anomaly says that a cut at the end of the file cannot be detected. The §7 `Verdict-Object` line is not printed yet.
 
 The structural-only path completes whether or not `--master-key` is supplied. The MAC step records itself as skipped when no IKM is available, so the report is always complete.
 
@@ -138,6 +138,33 @@ The structural-only path completes whether or not `--master-key` is supplied. Th
 - **Failure surfaces are loud.** Every failure is named, localised to the entry that tripped, and accompanied by the recomputed value next to the claimed value. The verifier never silently passes a partial verification.
 - **Independent of the institution.** The verifier reads only the ledger bytes and the published public key. It does not call the institution's vendor, the institution's HSM, or any third party. The institution's only role is to hand over the ledger.
 - **Fingerprint pinning.** The verifier confirms the supplied public key matches the seal's `signing_key_fingerprint` before accepting the signature. A verifier pointed at the wrong public key fails closed instead of silently validating a different signer.
+
+## Several files and seals
+
+`--audit-file` and `--seal` repeat. A day with 2 runs takes 2 files, because a run does not span files. A run that crosses midnight takes both days' seals.
+
+```bash
+verifier verify   --audit-file run-a.ndjson   --audit-file run-b.ndjson   --seal seal-2026-11-04.json   --seal seal-2026-11-05.json   --root-key institution.seal.pub.pem   --master-key-hex custody.ikm   --posture ed25519
+```
+
+An entry's seal is the UTC date of its `received_at`, plus one day when `late_binding` is true. In the file, both fields sit in the `audit_chain` block, outside the MAC. Each seal covers the entries of its date, and every entry must fall under a supplied seal.
+
+| Input | Result |
+|---|---|
+| A file for the day is missing, or an entry was cut | Exit 1 at step 10: the root does not match |
+| An entry's date matches no supplied seal | Exit 1 at step 10: `entry outside every supplied seal` |
+| 2 different files claim one run | Exit 1 at step 10: the §10.25 fork reason. Steps 10 and 11 do not run |
+| 2 byte-identical files, 2 seals for one date, or `received_at` on some entries only | Exit 2, before step 1 |
+| Several seals, and no entry has `received_at` | Exit 2, before step 1. With one seal, all entries count as its day, and the root decides |
+| A seal that is not daily | Its signature is checked. Exit 1 if it is bad, otherwise exit 3 |
+
+A record with `format_version` and none of `seq`, `prev_hash`, `payload_hash`, `key_version` and `key_fingerprint` has no leaf, no MAC and no root over it. It is outside the verified evidence, and the anomaly line `unstamped records: N` counts it. A record with some of the 5 fails at step 6. An added unstamped record stays exit 0, with `--strict` too: read its count.
+
+Late-binding entries print as `late-binding entries: N`, with each entry's `(run_id, seq, received_at, captured_at)`.
+
+**What a pass covers.** A sealed run prints `seal dates covered:`. The result is about those days only. If a run crosses midnight, and its later entries are cut from the end along with that day's seal, every supplied entry is covered and no step can fail. Compare the dates with the days you expected.
+
+**`kms_handle_uri` is provenance, outside the MAC.** On a `v1.0a` seal, no signature binds it, so an editor can change it. That includes clearing a `plaintext-` handle before `--strict` reads it. `v1.0b` and `v1.0c` bind the day's distinct values, so an edit that changes that set fails, and removing one entry's copy of a value others still hold does not. `dev_mode` is signed from `v1.0a` on.
 
 ## Algorithm posture
 
@@ -166,12 +193,13 @@ Exit 0 alone does not show a clean result. Read the `Status:` and `Anomaly:` lin
 
 The spec published first, and this verifier follows it in steps. It does not yet do the following:
 
-1. **File set.** The audit-file walk takes one `--audit-file` and one `--seal`. The several-file, several-seal rules of §7 step 10 are not built: selection by `received_at`, the entry outside every seal, the fork, and exit 3 on a seal that is not daily.
-2. **Operational root.** A v1.0c seal's `operational_events_log_root` is not recomputed. The run prints an anomaly that says so.
-3. **Dual-algorithm signatures.** Cases (a) and (e) of §7 step 11 are not built, so such a seal is exit 3, and exit 3 proves nothing about its list. Go 1.26.2's standard library has no ML-DSA package (`go doc crypto/mldsa` finds none).
-4. **Posture sources.** Only the command-line list is built, which is source (iii) of case (c).
-5. **`--ledger` walk.** It applies no posture and no floor, and it refuses `--posture`, `--strict` and `--min-sign-payload-version`.
-6. **`--strict` rules not built.** Step 12a (the GenAI model identifier check) does not run, and `seal.cadence` is not compared with a claimed cadence, because no input names one. A `--strict` run prints both as anomaly lines. The tenant key registry and flat-file floor sources are not built.
+1. **Hourly and weekly seals.** No signed field names their window, so a run with one exits 3 after its signature verifies. The spec tracks this as an open issue.
+2. **Dual-algorithm signatures.** Cases (a) and (e) of §7 step 11 are not built, so such a seal is exit 3, and exit 3 proves nothing about its list. Go 1.26.2's standard library has no ML-DSA package (`go doc crypto/mldsa` finds none).
+3. **Posture sources.** Only the command-line list is built, which is source (iii) of case (c).
+4. **Unknown record kinds.** A stamped record of a later kind is walked and covered by the roots. The `unknown wire-format kind present` line and the `additional_verifications` marker are not printed.
+5. **Keys.** One IKM per run, for the one `--key-version`. A set whose entries use several generations fails at step 7.
+6. **`--ledger` walk.** It applies no posture and no floor, takes one seal inside its file, and refuses `--posture`, `--strict` and `--min-sign-payload-version`.
+7. **`--strict` rules not built.** Step 12a (the GenAI model identifier check) does not run, and `seal.cadence` is not compared with a claimed cadence, because no input names one. A `--strict` run prints both as anomaly lines. The tenant key registry and flat-file floor sources are not built.
 
 ## Cross-references
 

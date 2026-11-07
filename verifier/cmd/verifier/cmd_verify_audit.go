@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"unicode"
 
 	"github.com/mmpworks/ffiec/cliutil"
 	"github.com/mmpworks/ffiec/verifier/internal/exitcodes"
@@ -24,86 +25,145 @@ func (e *exitError) Error() string { return e.message }
 
 // auditFileOptions are the verify flags for an on-disk NDJSON audit file.
 type auditFileOptions struct {
-	path       string
+	paths      []string
 	masterKey  string
 	keyHexFile string
 	keyVersion int
-	sealPath   string
+	sealPaths  []string
 	rootKey    string
 	posture    string
 	strict     bool
 	minVersion string
 }
 
-// runVerifyAuditFile walks an NDJSON audit file and prints the §7 output: the
+// repeatedFlag collects every use of a flag, in order.
+type repeatedFlag []string
+
+func (r *repeatedFlag) String() string { return strings.Join(*r, ",") }
+
+func (r *repeatedFlag) Set(value string) error {
+	*r = append(*r, value)
+	return nil
+}
+
+// runVerifyAuditFile walks one or more NDJSON audit files and prints the §7 output: the
 // status, then the step and reason on a failure, or anomaly lines on a pass.
 //
-// The walk has 4 shapes: with or without the master key, and with or without a
-// seal. Each flag pair is checked before any file is read, so a wrong command
-// line never looks like a verdict on the chain.
+// The walk has 4 shapes: with or without the master key, and with or without seals.
+// Each flag pair is checked before any file is read, so a wrong command line never
+// looks like a verdict on the chain.
 func runVerifyAuditFile(opts auditFileOptions, stdout, stderr io.Writer) error {
-	if (opts.sealPath == "") != (opts.rootKey == "") {
+	if (len(opts.sealPaths) == 0) != (opts.rootKey == "") {
 		return configError("--seal and --root-key: use both or neither. A seal means nothing without the public key that checks it")
 	}
 	policy, flagErr := sealPolicyOf(opts)
 	if flagErr != nil {
 		return flagErr
 	}
-	raw, err := os.ReadFile(opts.path)
-	if err != nil {
-		return printOutcome(stdout, structuralOutcome(fmt.Sprintf("cannot read file: %v", err)), nil)
-	}
-	af, loaded := verify.LoadAuditNDJSON(raw)
+	files, loaded := loadAuditFiles(opts.paths)
 	if loaded.Status == "FAIL" {
 		return printOutcome(stdout, loaded, nil)
 	}
-
 	ikms, keyErr := readRegistry(opts)
 	if keyErr != nil {
 		return keyErr
 	}
-	if opts.sealPath == "" {
-		anomalies := append([]string{verify.NoSealAnomaly}, verify.NDJSONAnomalies(af, raw)...)
-		return printOutcome(stdout, walkUnsealed(af, ikms), anomalies)
+	var pub ed25519.PublicKey
+	if opts.rootKey != "" {
+		if pub, keyErr = cliutil.LoadEd25519PublicPEM(opts.rootKey); keyErr != nil {
+			return configError("--root-key: %v", keyErr)
+		}
 	}
+	seals, sealsLoaded := loadSeals(opts.sealPaths)
+	if sealsLoaded.Status == "FAIL" {
+		return printOutcome(stdout, sealsLoaded, nil)
+	}
+	set := verify.FileSet{Files: files, Seals: seals}
+	if out := verify.PreflightFileSet(set); out.Status == "FAIL" {
+		return printOutcome(stdout, out, nil)
+	}
+	outcome := verify.WalkFileSet(set, ikms, pub, policy)
+	reportOnStderr(stderr, set, outcome)
+	return printOutcome(stdout, outcome, setAnomalies(set, policy))
+}
 
-	pub, keyErr := cliutil.LoadEd25519PublicPEM(opts.rootKey)
-	if keyErr != nil {
-		return configError("--root-key: %v", keyErr)
+func loadAuditFiles(paths []string) ([]verify.SuppliedFile, verify.Outcome) {
+	files := make([]verify.SuppliedFile, 0, len(paths))
+	for _, path := range paths {
+		raw, err := os.ReadFile(path)
+		if err != nil {
+			return nil, structuralOutcome(fmt.Sprintf("cannot read file: %v", err))
+		}
+		af, loaded := verify.LoadAuditNDJSON(raw)
+		if loaded.Status == "FAIL" {
+			return nil, loaded
+		}
+		files = append(files, verify.SuppliedFile{Name: path, Raw: raw, Audit: af})
 	}
-	sealRaw, err := os.ReadFile(opts.sealPath)
-	if err != nil {
-		return printOutcome(stdout, structuralOutcome(fmt.Sprintf("cannot read seal: %v", err)), nil)
+	return files, verify.Outcome{Status: "PASS"}
+}
+
+func loadSeals(paths []string) ([]verify.AuditSeal, verify.Outcome) {
+	seals := make([]verify.AuditSeal, 0, len(paths))
+	for _, path := range paths {
+		raw, err := os.ReadFile(path)
+		if err != nil {
+			return nil, structuralOutcome(fmt.Sprintf("cannot read seal: %v", err))
+		}
+		seal, loaded := verify.LoadAuditSeal(raw)
+		if loaded.Status == "FAIL" {
+			return nil, loaded
+		}
+		seals = append(seals, seal)
 	}
-	seal, sealLoaded := verify.LoadAuditSeal(sealRaw)
-	if sealLoaded.Status == "FAIL" {
-		return printOutcome(stdout, sealLoaded, nil)
+	return seals, verify.Outcome{Status: "PASS"}
+}
+
+// reportOnStderr carries what §7 leaves out of stdout: which seals were checked, and which of
+// several files a per-file step failed in.
+func reportOnStderr(stderr io.Writer, set verify.FileSet, outcome verify.Outcome) {
+	if outcome.File != "" && len(set.Files) > 1 {
+		fmt.Fprintf(stderr, "In file: %s\n", safeLine(outcome.File))
 	}
-	af.Seal = seal
-	anomalies := append(verify.SealAnomalies(seal), verify.NDJSONAnomalies(af, raw)...)
+	if outcome.Status == "FAIL" {
+		return
+	}
+	for _, seal := range set.Seals {
+		fmt.Fprintf(stderr, "Seal checked: tenant_id %s, seal_date %s\n", safeLine(seal.TenantID), safeLine(seal.SealDate))
+	}
+}
+
+// setAnomalies names what a clean walk did not establish. With several files or seals, each
+// line names the one it is about.
+func setAnomalies(set verify.FileSet, policy verify.SealPolicy) []string {
+	var anomalies []string
+	if len(set.Seals) == 0 {
+		anomalies = append(anomalies, verify.NoSealAnomaly)
+	} else {
+		anomalies = append(anomalies, verify.SealDatesLine(set.Seals))
+	}
+	anomalies = append(anomalies, verify.LateBindingLines(set)...)
+	for _, seal := range set.Seals {
+		anomalies = append(anomalies, labelled(seal.SealDate, len(set.Seals), verify.SealAnomalies(seal))...)
+	}
+	for _, file := range set.Files {
+		anomalies = append(anomalies, labelled(file.Audit.Header.ChainID, len(set.Files), verify.NDJSONAnomalies(file.Audit, file.Raw))...)
+	}
 	if policy.Strict {
 		anomalies = append(anomalies, verify.StrictNotRun...)
 	}
-	outcome := walkSealed(af, ikms, pub, policy)
-	if outcome.Status != "FAIL" {
-		// Stderr, because §7 fixes what stdout holds.
-		fmt.Fprintf(stderr, "Seal checked: tenant_id %s, seal_date %s\n", seal.TenantID, seal.SealDate)
-	}
-	return printOutcome(stdout, outcome, anomalies)
+	return anomalies
 }
 
-func walkUnsealed(af *verify.AuditFile, ikms verify.IKMRegistry) verify.Outcome {
-	if ikms == nil {
-		return verify.WalkAuditChainWitness(af)
+func labelled(label string, count int, lines []string) []string {
+	if count < 2 {
+		return lines
 	}
-	return verify.WalkAuditChain(af, ikms)
-}
-
-func walkSealed(af *verify.AuditFile, ikms verify.IKMRegistry, pub ed25519.PublicKey, policy verify.SealPolicy) verify.Outcome {
-	if ikms == nil {
-		return verify.WalkAuditChainWitnessSealed(af, pub, policy)
+	out := make([]string, len(lines))
+	for i, line := range lines {
+		out[i] = label + ": " + line
 	}
-	return verify.WalkAuditChainSealed(af, ikms, pub, policy)
+	return out
 }
 
 // sealPolicyOf applies §10.12's exit 3 rules for --strict and --posture. --strict requires the
@@ -111,11 +171,11 @@ func walkSealed(af *verify.AuditFile, ikms verify.IKMRegistry, pub ed25519.Publi
 // one of them cannot keep that promise.
 func sealPolicyOf(opts auditFileOptions) (verify.SealPolicy, error) {
 	policy := verify.SealPolicy{Strict: opts.strict, MinSignPayloadVersion: opts.minVersion}
-	if opts.minVersion != "" && (opts.sealPath == "" || !verify.IsSignPayloadFloor(opts.minVersion)) {
+	if opts.minVersion != "" && (len(opts.sealPaths) == 0 || !verify.IsSignPayloadFloor(opts.minVersion)) {
 		return policy, configError("--min-sign-payload-version: needs --seal, and one of v1.0a, v1.0b or v1.0c")
 	}
 	if opts.posture != "" {
-		if opts.sealPath == "" {
+		if len(opts.sealPaths) == 0 {
 			return policy, configError("--posture: needs --seal. It is a list to compare a seal with")
 		}
 		posture, err := verify.ParseAlgorithmPosture(opts.posture)
@@ -130,7 +190,7 @@ func sealPolicyOf(opts auditFileOptions) (verify.SealPolicy, error) {
 	switch {
 	case opts.masterKey == "" && opts.keyHexFile == "":
 		return policy, configError("--strict: needs --master-key or --master-key-hex")
-	case opts.sealPath == "":
+	case len(opts.sealPaths) == 0:
 		return policy, configError("--strict: needs --seal and --root-key")
 	case policy.Posture == nil:
 		return policy, configError("--strict: needs --posture. With no posture source a verifier cannot tell a stripped signature from a single-algorithm seal")
@@ -182,7 +242,7 @@ func structuralOutcome(reason string) verify.Outcome {
 func printOutcome(w io.Writer, out verify.Outcome, anomalies []string) error {
 	fmt.Fprintf(w, "Status: %s\n", out.Status)
 	if out.Step != "" {
-		fmt.Fprintf(w, "Step: %s\nReason: %s\n", out.Step, out.Reason)
+		fmt.Fprintf(w, "Step: %s\nReason: %s\n", out.Step, safeLine(out.Reason))
 	}
 	printAnomalies(w, out.Anomalies)
 	if out.Status == "FAIL" {
@@ -194,6 +254,21 @@ func printOutcome(w io.Writer, out verify.Outcome, anomalies []string) error {
 
 func printAnomalies(w io.Writer, anomalies []string) {
 	for _, a := range anomalies {
-		fmt.Fprintf(w, "Anomaly: %s\n", a)
+		fmt.Fprintf(w, "Anomaly: %s\n", safeLine(a))
 	}
+}
+
+// safeLine is the one gate for text that reaches a line of output. Reasons and anomalies can carry
+// values from the audit file and the seal, and many of those fields have no MAC and no signature.
+// A line break there would forge a Status line, and a control character could rewrite a terminal.
+func safeLine(s string) string {
+	var line strings.Builder
+	for _, r := range s {
+		if unicode.IsControl(r) || unicode.In(r, unicode.Cf, unicode.Zl, unicode.Zp) {
+			fmt.Fprintf(&line, `\u%04X`, r)
+			continue
+		}
+		line.WriteRune(r)
+	}
+	return line.String()
 }
