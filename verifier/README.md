@@ -173,6 +173,8 @@ A record with `format_version` and none of `seq`, `prev_hash`, `payload_hash`, `
 | The seal names an algorithm the list lacks | `Status: PASS-WITH-ANOMALY`, exit 0. With `--strict`: exit 1 |
 | The seal carries a `signatures` list that the posture agrees with | Exit 3: this verifier cannot check a second signature |
 
+Exit 3 here does not show that a second signature exists. The list is unsigned, so anyone who can edit the seal file can add an entry with no key, and that moves a stripped seal from exit 1 to exit 3. Before you rely on such a seal, obtain a verifier that checks the second signature.
+
 Exit 0 alone does not show a clean result. Read the `Status:` and `Anomaly:` lines.
 
 ## Limits against spec 0.4.0
@@ -180,7 +182,7 @@ Exit 0 alone does not show a clean result. Read the `Status:` and `Anomaly:` lin
 The spec published first, and this verifier follows it in steps. It does not yet do the following:
 
 1. **Hourly and weekly seals.** No signed field names their window, so a run with one exits 3 after its signature verifies. The spec tracks this as an open issue.
-2. **Dual-algorithm signatures.** Cases (a) and (e) of §7 step 11 are not built, so such a seal is exit 3. Go 1.26.2's standard library has no ML-DSA package (`go doc crypto/mldsa` finds none).
+2. **Dual-algorithm signatures.** Cases (a) and (e) of §7 step 11 are not built, so such a seal is exit 3, and exit 3 proves nothing about its list. Go 1.26.2's standard library has no ML-DSA package (`go doc crypto/mldsa` finds none).
 3. **Posture sources.** Only the command-line list is built, which is source (iii) of case (c).
 4. **Unknown record kinds.** A stamped record of a later kind is walked and covered by the roots. The `unknown wire-format kind present` line and the `additional_verifications` marker are not printed.
 5. **Keys.** One IKM per run, for the one `--key-version`. A set whose entries use several generations fails at step 7.
