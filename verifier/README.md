@@ -130,6 +130,8 @@ The seal file is one JSON object with the field names of the `audit_file.seal` b
 
 The structural-only path completes whether or not `--master-key` is supplied. The MAC step records itself as skipped when no IKM is available, so the report is always complete.
 
+Every command prints values from a file through one gate, so a line break or a control character in a field prints as its code point, and cannot forge a line. `diff` says `ledgers identical` only when every byte matches. It names the seal and entry fields it knows, and any other byte difference reads as a difference, exit 1.
+
 ## Examiner's-lens guarantees
 
 - **Offline.** No DNS, no HTTPS, no telemetry. Verified by build-time policy: the binary imports nothing under `net/http` for external hosts.

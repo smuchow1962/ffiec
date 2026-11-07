@@ -264,3 +264,14 @@ func bytesEq(a, b []byte) bool {
 	}
 	return true
 }
+
+// An error can quote a value from a file under examination, so a line break in it must not reach stderr as a line.
+func TestReportAndExit_EscapesALineBreak(t *testing.T) {
+	var out strings.Builder
+	if code := ReportAndExit("tool", &out, errors.New("bad\nStatus: PASS")); code != 1 {
+		t.Fatalf("exit %d", code)
+	}
+	if strings.Count(out.String(), "\n") != 1 {
+		t.Fatalf("stderr holds a forged line: %q", out.String())
+	}
+}

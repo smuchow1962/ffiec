@@ -5,6 +5,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/mmpworks/ffiec/cliutil"
 	"github.com/mmpworks/ffiec/core/jcs"
 	"github.com/mmpworks/ffiec/testkit/clitest"
 )
@@ -82,8 +83,8 @@ func TestOutput_SafeLine(t *testing.T) {
 		"a" + string(rune(0x2028)) + "b": fmt.Sprintf("a%cu2028b", 92),
 		"merkle — §7":                    "merkle — §7",
 	} {
-		if got := safeLine(in); got != want {
-			t.Errorf("safeLine(%q) = %q, want %q", in, got, want)
+		if got := cliutil.SafeLine(in); got != want {
+			t.Errorf("SafeLine(%q) = %q, want %q", in, got, want)
 		}
 	}
 }

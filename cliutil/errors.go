@@ -61,9 +61,9 @@ func ReportAndExit(prog string, stderr io.Writer, err error) int {
 	}
 	var ue *UsageError
 	if errors.As(err, &ue) {
-		fmt.Fprintf(stderr, "%s: %s\n", prog, ue.Msg)
+		fmt.Fprintf(stderr, "%s: %s\n", prog, SafeLine(ue.Msg))
 		return 2
 	}
-	fmt.Fprintf(stderr, "%s: %v\n", prog, err)
+	fmt.Fprintf(stderr, "%s: %s\n", prog, SafeLine(err.Error()))
 	return 1
 }
