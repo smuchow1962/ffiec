@@ -94,7 +94,7 @@ func TestLateBinding_IsReported(t *testing.T) {
 		MustSucceed(t).
 		StdoutContains(t, "Status: PASS\n").
 		StdoutContains(t, "Anomaly: late-binding entries: 1\n").
-		StdoutContains(t, "Anomaly: late-binding entry at seal_date "+dayTwo+": (RUN-A, 2, "+late+", captured_at absent)\n")
+		StdoutContains(t, "Anomaly: late-binding entry at seal_date "+dayTwo+": (\"RUN-A\", 2, "+late+", captured_at absent)\n")
 }
 
 func TestLateBinding_NoLineWithNoneOfThem(t *testing.T) {

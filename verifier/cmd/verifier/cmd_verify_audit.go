@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"unicode"
 
 	"github.com/mmpworks/ffiec/cliutil"
 	"github.com/mmpworks/ffiec/verifier/internal/exitcodes"
@@ -122,13 +123,13 @@ func loadSeals(paths []string) ([]verify.AuditSeal, verify.Outcome) {
 // several files a per-file step failed in.
 func reportOnStderr(stderr io.Writer, set verify.FileSet, outcome verify.Outcome) {
 	if outcome.File != "" && len(set.Files) > 1 {
-		fmt.Fprintf(stderr, "In file: %s\n", outcome.File)
+		fmt.Fprintf(stderr, "In file: %s\n", safeLine(outcome.File))
 	}
 	if outcome.Status == "FAIL" {
 		return
 	}
 	for _, seal := range set.Seals {
-		fmt.Fprintf(stderr, "Seal checked: tenant_id %s, seal_date %s\n", seal.TenantID, seal.SealDate)
+		fmt.Fprintf(stderr, "Seal checked: tenant_id %s, seal_date %s\n", safeLine(seal.TenantID), safeLine(seal.SealDate))
 	}
 }
 
@@ -241,7 +242,7 @@ func structuralOutcome(reason string) verify.Outcome {
 func printOutcome(w io.Writer, out verify.Outcome, anomalies []string) error {
 	fmt.Fprintf(w, "Status: %s\n", out.Status)
 	if out.Step != "" {
-		fmt.Fprintf(w, "Step: %s\nReason: %s\n", out.Step, out.Reason)
+		fmt.Fprintf(w, "Step: %s\nReason: %s\n", out.Step, safeLine(out.Reason))
 	}
 	printAnomalies(w, out.Anomalies)
 	if out.Status == "FAIL" {
@@ -253,6 +254,21 @@ func printOutcome(w io.Writer, out verify.Outcome, anomalies []string) error {
 
 func printAnomalies(w io.Writer, anomalies []string) {
 	for _, a := range anomalies {
-		fmt.Fprintf(w, "Anomaly: %s\n", a)
+		fmt.Fprintf(w, "Anomaly: %s\n", safeLine(a))
 	}
+}
+
+// safeLine is the one gate for text that reaches a line of output. Reasons and anomalies can carry
+// values from the audit file and the seal, and many of those fields have no MAC and no signature.
+// A line break there would forge a Status line, and a control character could rewrite a terminal.
+func safeLine(s string) string {
+	var line strings.Builder
+	for _, r := range s {
+		if unicode.IsControl(r) || unicode.In(r, unicode.Cf, unicode.Zl, unicode.Zp) {
+			fmt.Fprintf(&line, `\u%04X`, r)
+			continue
+		}
+		line.WriteRune(r)
+	}
+	return line.String()
 }

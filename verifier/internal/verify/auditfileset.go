@@ -6,6 +6,7 @@ import (
 	"crypto/ed25519"
 	"fmt"
 	"slices"
+	"strconv"
 	"strings"
 	"time"
 
@@ -270,8 +271,13 @@ func LateBindingLines(set FileSet) []string {
 			continue
 		}
 		date, _ := effectiveDate(entry)
-		entries = append(entries, fmt.Sprintf("late-binding entry at seal_date %s: (%s, %d, %s, captured_at %s)",
-			cmp.Or(date, "unknown"), entry.RunID, entry.Seq, entry.ReceivedAt, cmp.Or(entry.CapturedAt, "absent")))
+		captured := "absent"
+		if entry.CapturedAt != "" {
+			captured = strconv.Quote(entry.CapturedAt)
+		}
+		// Quoted: captured_at is outside the MAC, and a witness run has not checked run_id.
+		entries = append(entries, fmt.Sprintf("late-binding entry at seal_date %s: (%q, %d, %s, captured_at %s)",
+			cmp.Or(date, "unknown"), entry.RunID, entry.Seq, entry.ReceivedAt, captured))
 	}
 	if len(entries) == 0 {
 		return nil
