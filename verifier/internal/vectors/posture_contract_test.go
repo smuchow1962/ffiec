@@ -15,6 +15,10 @@ import (
 // the walk, because their signatures are placeholders. The decision reads no signature, so
 // these 2 vectors can judge it directly: input.json gives the seal and the outside posture,
 // and expected_output.txt gives the result.
+//
+// N017's description.md at pin 8e85a24 says --strict stays PASS-WITH-ANOMALY. Spec 0.4.0 §7 step
+// 11 case (b) makes that a FAIL. The pin moves when issue 12 closes. This test reads N017 as
+// non-strict, where the pinned bytes and 0.4.0 agree.
 func TestPostureDecisionMatchesThePinnedVectors(t *testing.T) {
 	dir, err := CorpusDir()
 	if errors.Is(err, ErrCorpusNotFound) {

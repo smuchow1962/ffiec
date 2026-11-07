@@ -32,6 +32,7 @@ type auditFileOptions struct {
 	rootKey    string
 	posture    string
 	strict     bool
+	minVersion string
 }
 
 // repeatedFlag collects every use of a flag, in order.
@@ -82,7 +83,7 @@ func runVerifyAuditFile(opts auditFileOptions, stdout, stderr io.Writer) error {
 	}
 	outcome := verify.WalkFileSet(set, ikms, pub, policy)
 	reportOnStderr(stderr, set, outcome)
-	return printOutcome(stdout, outcome, setAnomalies(set))
+	return printOutcome(stdout, outcome, setAnomalies(set, policy))
 }
 
 func loadAuditFiles(paths []string) ([]verify.SuppliedFile, verify.Outcome) {
@@ -133,7 +134,7 @@ func reportOnStderr(stderr io.Writer, set verify.FileSet, outcome verify.Outcome
 
 // setAnomalies names what a clean walk did not establish. With several files or seals, each
 // line names the one it is about.
-func setAnomalies(set verify.FileSet) []string {
+func setAnomalies(set verify.FileSet, policy verify.SealPolicy) []string {
 	var anomalies []string
 	if len(set.Seals) == 0 {
 		anomalies = append(anomalies, verify.NoSealAnomaly)
@@ -143,6 +144,9 @@ func setAnomalies(set verify.FileSet) []string {
 	}
 	for _, file := range set.Files {
 		anomalies = append(anomalies, labelled(file.Audit.Header.ChainID, len(set.Files), verify.NDJSONAnomalies(file.Audit, file.Raw))...)
+	}
+	if policy.Strict {
+		anomalies = append(anomalies, verify.StrictNotRun...)
 	}
 	return anomalies
 }
@@ -162,7 +166,10 @@ func labelled(label string, count int, lines []string) []string {
 // key, the seal and a posture source, because it promises every check ran, and a run without
 // one of them cannot keep that promise.
 func sealPolicyOf(opts auditFileOptions) (verify.SealPolicy, error) {
-	policy := verify.SealPolicy{Strict: opts.strict}
+	policy := verify.SealPolicy{Strict: opts.strict, MinSignPayloadVersion: opts.minVersion}
+	if opts.minVersion != "" && (len(opts.sealPaths) == 0 || !verify.IsSignPayloadFloor(opts.minVersion)) {
+		return policy, configError("--min-sign-payload-version: needs --seal, and one of v1.0a, v1.0b or v1.0c")
+	}
 	if opts.posture != "" {
 		if len(opts.sealPaths) == 0 {
 			return policy, configError("--posture: needs --seal. It is a list to compare a seal with")

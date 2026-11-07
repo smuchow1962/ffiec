@@ -21,6 +21,7 @@ func runVerify(args []string, stdout, stderr io.Writer) error {
 		keyVersion = fs.Int("key-version", 1, "With --audit-file: the key_version the supplied IKM belongs to.")
 		posture    = fs.String("posture", "", "With --seal: the institution's declared algorithm list, comma-separated, from a source outside the seal. Example: ed25519,dilithium3.")
 		strict     = fs.Bool("strict", false, "With --audit-file: a posture problem fails with exit 1 and does not warn. Needs the master key, --seal, --root-key and --posture.")
+		minVersion = fs.String("min-sign-payload-version", "", "With --seal: the institution's floor, from a source outside the seal. A seal below it fails.")
 	)
 	var auditFiles, seals repeatedFlag
 	fs.Var(&auditFiles, "audit-file", "Path to an on-disk NDJSON audit file, once per run. Runs the §7 walk over them. With no key, runs witness mode.")
@@ -34,13 +35,13 @@ func runVerify(args []string, stdout, stderr io.Writer) error {
 		if *masterKey != "" && *keyHex != "" {
 			return cliutil.Usagef("--master-key and --master-key-hex: use one")
 		}
-		return runVerifyAuditFile(auditFileOptions{paths: auditFiles, masterKey: *masterKey, keyHexFile: *keyHex, keyVersion: *keyVersion, sealPaths: seals, rootKey: *rootKey, posture: *posture, strict: *strict}, stdout, stderr)
+		return runVerifyAuditFile(auditFileOptions{paths: auditFiles, masterKey: *masterKey, keyHexFile: *keyHex, keyVersion: *keyVersion, sealPaths: seals, rootKey: *rootKey, posture: *posture, strict: *strict, minVersion: *minVersion}, stdout, stderr)
 	}
 	if len(seals) > 0 {
 		return cliutil.Usagef("--seal: needs --audit-file. --ledger files carry their seal inside")
 	}
-	if *posture != "" || *strict {
-		return cliutil.Usagef("--posture and --strict: need --audit-file. The --ledger walk does not apply a posture yet")
+	if *posture != "" || *strict || *minVersion != "" {
+		return cliutil.Usagef("--posture, --strict and --min-sign-payload-version: need --audit-file. The --ledger walk does not apply them yet")
 	}
 	if err := cliutil.RequireFlags(map[string]string{
 		"ledger":   *ledgerPath,

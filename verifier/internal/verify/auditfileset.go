@@ -161,19 +161,20 @@ func checkSeals(set FileSet, pub ed25519.PublicKey, policy SealPolicy) Outcome {
 	slices.SortStableFunc(seals, func(a, b AuditSeal) int { return cmp.Compare(a.SealDate, b.SealDate) })
 	headers := fileHeaders(set)
 	if slices.ContainsFunc(seals, namesOtherCadence) {
-		return checkSignaturesOnly(seals, headers, pub)
+		return checkSignaturesOnly(seals, headers, pub, policy)
 	}
 	entries := unionEntries(set)
 	if out := checkEveryEntryCovered(entries, seals); out.Status == "FAIL" {
 		return out
 	}
-	for _, seal := range seals {
-		day := &AuditFile{Header: headers[0], Entries: entriesOf(seal, entries), Seal: seal}
-		if out := checkSeal(day, headers, pub); out.Status == "FAIL" {
+	days := make([]*AuditFile, len(seals))
+	for i, seal := range seals {
+		days[i] = &AuditFile{Header: headers[0], Entries: entriesOf(seal, entries), Seal: seal}
+		if out := checkSeal(days[i], headers, pub, policy); out.Status == "FAIL" {
 			return out
 		}
 	}
-	return judgeEverySeal(seals, policy)
+	return judgeEverySeal(days, policy)
 }
 
 func fileHeaders(set FileSet) []AuditHeader {
@@ -193,10 +194,11 @@ func namesOtherCadence(seal AuditSeal) bool {
 // checkSignaturesOnly is the §7 step 10 path for a seal that is not daily. No signed field names
 // that seal's window, so no selection can be made. A bad signature stays exit 1. A good one is
 // exit 3, because this run cannot judge the seal, and so the run never reads PASS.
-func checkSignaturesOnly(seals []AuditSeal, headers []AuditHeader, pub ed25519.PublicKey) Outcome {
+func checkSignaturesOnly(seals []AuditSeal, headers []AuditHeader, pub ed25519.PublicKey, policy SealPolicy) Outcome {
 	for _, seal := range seals {
 		for _, check := range []func() Outcome{
 			func() Outcome { return checkSealCoversFiles(seal, headers) },
+			func() Outcome { return checkSealFloor(seal, policy) },
 			func() Outcome { return checkSealAlgorithm(seal) },
 			func() Outcome { return checkSealSingleSignature(seal, pub) },
 		} {
@@ -238,10 +240,10 @@ func entriesOf(seal AuditSeal, entries []*AuditEntry) []AuditEntry {
 
 // judgeEverySeal returns the first FAIL. Otherwise it keeps every seal's warning, and the status
 // line reports the first.
-func judgeEverySeal(seals []AuditSeal, policy SealPolicy) Outcome {
+func judgeEverySeal(days []*AuditFile, policy SealPolicy) Outcome {
 	result := pass()
-	for _, seal := range seals {
-		out := JudgeSealPosture(seal, policy)
+	for _, day := range days {
+		out := judgeSeal(day, policy)
 		if out.Status == "FAIL" {
 			return out
 		}

@@ -177,6 +177,12 @@ Exit 3 here does not show that a second signature exists. The list is unsigned, 
 
 Exit 0 alone does not show a clean result. Read the `Status:` and `Anomaly:` lines.
 
+`--strict` also refuses, with exit 1 at step 12, a seal with `dev_mode` true and a seal over any entry whose `kms_handle_uri` begins with `plaintext-`. Without `--strict`, these print anomaly lines.
+
+## Sign-payload floor
+
+`--min-sign-payload-version v1.0b` fails a seal below that version with exit 1, before signature dispatch. Take the value from the institution's CC8.1. A seal's own `declared_sign_payload_floor` field is also honoured, but no signature binds it, so an editor can remove it. Use the flag. Only the flag protects against that edit.
+
 ## Limits against spec 0.4.0
 
 The spec published first, and this verifier follows it in steps. It does not yet do the following:
@@ -186,7 +192,8 @@ The spec published first, and this verifier follows it in steps. It does not yet
 3. **Posture sources.** Only the command-line list is built, which is source (iii) of case (c).
 4. **Unknown record kinds.** A stamped record of a later kind is walked and covered by the roots. The `unknown wire-format kind present` line and the `additional_verifications` marker are not printed.
 5. **Keys.** One IKM per run, for the one `--key-version`. A set whose entries use several generations fails at step 7.
-6. **`--ledger` walk.** It applies no posture, takes one seal inside its file, and refuses `--posture` and `--strict`.
+6. **`--ledger` walk.** It applies no posture and no floor, takes one seal inside its file, and refuses `--posture`, `--strict` and `--min-sign-payload-version`.
+7. **`--strict` rules not built.** Step 12a (the GenAI model identifier check) does not run, and `seal.cadence` is not compared with a claimed cadence, because no input names one. A `--strict` run prints both as anomaly lines. The tenant key registry and flat-file floor sources are not built.
 
 ## Cross-references
 

@@ -102,6 +102,8 @@ type AuditEntry struct {
 type AuditSeal struct {
 	MerkleRootHex string `json:"merkle_root_hex"`
 	Algorithm     string `json:"algorithm"`
+	// DeclaredSignPayloadFloor is source (iii) of the §7 floor check. No sign_payload form binds it.
+	DeclaredSignPayloadFloor string `json:"declared_sign_payload_floor"`
 	// ResolvedPublicKeyType is the descriptor a §4.3.2 algorithm/key-type
 	// mismatch fixture carries (e.g. "rsa-3072" when algorithm is
 	// "ed25519"). Absent on conformant seals.
@@ -355,7 +357,8 @@ func walkEntryStructure(h AuditHeader, e *AuditEntry, expectedSeq int, expectedP
 // checkBinding is §7 step 4: the per-entry cross-chain-lift defence. The
 // event's tenant_id MUST match the header tenant_id, and its run_id MUST
 // match the header chain_id. The corpus headers carry no chain_id, so the
-// run half applies when the header names a chain, as an on-disk file does.
+// run half is skipped for them. An on-disk file cannot reach that skip:
+// loadNDJSONHeader refuses a header with no chain_id.
 func checkBinding(h AuditHeader, e *AuditEntry, expectedSeq int) Outcome {
 	if eventTenantID(e) != h.TenantID {
 		return fail("4", fmt.Sprintf(
