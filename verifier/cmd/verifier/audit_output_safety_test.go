@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
@@ -65,11 +66,11 @@ func TestOutput_AnAlgorithmNameCannotForgeALine(t *testing.T) {
 // The escape keeps the value readable, and ordinary text prints as it stands.
 func TestOutput_SafeLine(t *testing.T) {
 	for in, want := range map[string]string{
-		"a\nb":        `a\u000Ab`,
-		"a\x1b[2J":    `a\u001B[2J`,
-		"a‮b":    `a‮b`,
-		"a b":    `a b`,
-		"merkle — §7": "merkle — §7",
+		"a\nb":                           `a\u000Ab`,
+		"a\x1b[2J":                       `a\u001B[2J`,
+		"a" + string(rune(0x202E)) + "b": fmt.Sprintf("a%cu202Eb", 92),
+		"a" + string(rune(0x2028)) + "b": fmt.Sprintf("a%cu2028b", 92),
+		"merkle — §7":                    "merkle — §7",
 	} {
 		if got := safeLine(in); got != want {
 			t.Errorf("safeLine(%q) = %q, want %q", in, got, want)
