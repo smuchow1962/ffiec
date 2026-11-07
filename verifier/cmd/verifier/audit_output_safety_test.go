@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/mmpworks/ffiec/core/jcs"
+	"github.com/mmpworks/ffiec/testkit/clitest"
 )
 
 // A stamp field is outside the MAC, and a signatures list is unsigned, so anyone who can edit the
@@ -61,6 +62,15 @@ func TestOutput_AnAlgorithmNameCannotForgeALine(t *testing.T) {
 			assertOneStatusLineNoEscape(t, result.Stdout)
 		})
 	}
+}
+
+// The class sweep: run_id reaches a reason. A witness run has no MAC check, so an editor can set
+// it and chain_id together, and step 4 still holds.
+func TestOutput_ARunIDInAReasonCannotForgeALine(t *testing.T) {
+	run := buildRun(t, forgedLine, manyAt(1, dayTwo))
+	seal := writeSeal(t, sealOver(t, dayOne, map[string][][]byte{forgedLine: run}, everyEntry))
+	result := clitest.Run(Main, "verify", "--audit-file", writeLines(t, run), "--seal", seal, "--root-key", samplePubKey).MustExit(t, 1)
+	assertOneStatusLineNoEscape(t, result.Stdout)
 }
 
 // The escape keeps the value readable, and ordinary text prints as it stands.

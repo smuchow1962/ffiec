@@ -71,8 +71,15 @@ func checkOneFloor(seal AuditSeal, floor, source string) Outcome {
 // signature has verified.
 func judgeSeal(af *AuditFile, policy SealPolicy) Outcome {
 	judged := JudgeSealPosture(af.Seal, policy)
-	if judged.Status != "FAIL" && policy.Strict && holdsDevelopmentKey(af) {
+	if judged.Status == "FAIL" || !policy.Strict {
+		return judged
+	}
+	if holdsDevelopmentKey(af) {
 		return fail("12", "dev-mode seal in production verification — refused")
+	}
+	// §7's fail-closed rule. The pre-amendment form signs no dev_mode, so anyone can clear the field.
+	if af.Seal.SignPayloadVersion == signPayloadPreAmendment {
+		return fail("12", "seal binds no dev_mode: --strict cannot confirm a production seal")
 	}
 	return judged
 }

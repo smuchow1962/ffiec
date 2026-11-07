@@ -183,11 +183,11 @@ Exit 3 here does not show that a second signature exists. The list is unsigned, 
 
 Exit 0 alone does not show a clean result. Read the `Status:` and `Anomaly:` lines.
 
-`--strict` also refuses, with exit 1 at step 12, a seal with `dev_mode` true and a seal over any entry whose `kms_handle_uri` begins with `plaintext-`. Without `--strict`, these print anomaly lines.
+`--strict` also refuses, with exit 1 at step 12, a seal with `dev_mode` true and a seal over any entry whose `kms_handle_uri` begins with `plaintext-`. Without `--strict`, these print anomaly lines. `--strict` also refuses a seal with no `sign_payload_version`: that form signs no `dev_mode`, so nothing shows it is a production seal.
 
 ## Sign-payload floor
 
-`--min-sign-payload-version v1.0b` fails a seal below that version with exit 1, before signature dispatch. Take the value from the institution's CC8.1. A seal's own `declared_sign_payload_floor` field is also honoured, but no signature binds it, so an editor can remove it. Use the flag. Only the flag protects against that edit.
+`--min-sign-payload-version v1.0b` fails a seal below that version with exit 1, before signature dispatch. Take the value from the institution's CC8.1. A seal's own `declared_sign_payload_floor` field is also honoured, but no signature binds it, so an editor can remove it. Use the flag. Only the flag protects against that edit. If the flag repeats, the last one wins, so a script must not append a weaker one. An empty value is exit 3.
 
 ## Limits against spec 0.4.0
 

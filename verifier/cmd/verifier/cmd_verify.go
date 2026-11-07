@@ -32,6 +32,9 @@ func runVerify(args []string, stdout, stderr io.Writer) error {
 		return nil
 	}
 	if len(auditFiles) > 0 {
+		if err := emptyPolicyFlag(fs); err != nil {
+			return err
+		}
 		if *masterKey != "" && *keyHex != "" {
 			return cliutil.Usagef("--master-key and --master-key-hex: use one")
 		}
