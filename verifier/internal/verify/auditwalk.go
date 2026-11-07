@@ -88,6 +88,7 @@ type AuditEntry struct {
 	// after ingest, so they are outside the MAC (§4.2.2).
 	ReceivedAt  string `json:"received_at"`
 	LateBinding bool   `json:"late_binding"`
+	CapturedAt  string `json:"captured_at"`
 	// PartialStampLine is the file line of a record with only some of the chain stamp. Step 6
 	// refuses it. Zero means the record has the whole stamp.
 	PartialStampLine int `json:"-"`

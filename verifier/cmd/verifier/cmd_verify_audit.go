@@ -138,7 +138,10 @@ func setAnomalies(set verify.FileSet, policy verify.SealPolicy) []string {
 	var anomalies []string
 	if len(set.Seals) == 0 {
 		anomalies = append(anomalies, verify.NoSealAnomaly)
+	} else {
+		anomalies = append(anomalies, verify.SealDatesLine(set.Seals))
 	}
+	anomalies = append(anomalies, verify.LateBindingLines(set)...)
 	for _, seal := range set.Seals {
 		anomalies = append(anomalies, labelled(seal.SealDate, len(set.Seals), verify.SealAnomalies(seal))...)
 	}

@@ -147,7 +147,17 @@ func loadNDJSONEntry(line []byte) (AuditEntry, int, error) {
 		PayloadHashHex:    base64ToHex(stringField(stampValue, "payload_hash")),
 		ReceivedAt:        stringField(stampValue, "received_at"),
 		LateBinding:       lateBinding,
+		CapturedAt:        capturedAtOf(stampValue, whole),
 	}, stampFields, nil
+}
+
+// capturedAtOf reads captured_at from the stamp, or else from the event. It is forensic, so the
+// walk reports it and trusts nothing to it.
+func capturedAtOf(stamp, whole map[string]any) string {
+	if value := stringField(stamp, "captured_at"); value != "" {
+		return value
+	}
+	return stringField(whole, "captured_at")
 }
 
 // macInput returns the bytes step 9 recomputes over, and removes the stamp from

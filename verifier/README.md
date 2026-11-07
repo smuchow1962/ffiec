@@ -158,7 +158,13 @@ An entry's seal is the UTC date of its `received_at`, plus one day when `late_bi
 | Several seals, and no entry has `received_at` | Exit 2, before step 1. With one seal, all entries count as its day, and the root decides |
 | A seal that is not daily | Its signature is checked. Exit 1 if it is bad, otherwise exit 3 |
 
-A record with `format_version` and none of `seq`, `prev_hash`, `payload_hash`, `key_version` and `key_fingerprint` has no leaf, no MAC and no root over it. It is outside the verified evidence, and the anomaly line `unstamped records: N` counts it. A record with some of the 5 fails at step 6.
+A record with `format_version` and none of `seq`, `prev_hash`, `payload_hash`, `key_version` and `key_fingerprint` has no leaf, no MAC and no root over it. It is outside the verified evidence, and the anomaly line `unstamped records: N` counts it. A record with some of the 5 fails at step 6. An added unstamped record stays exit 0, with `--strict` too: read its count.
+
+Late-binding entries print as `late-binding entries: N`, with each entry's `(run_id, seq, received_at, captured_at)`.
+
+**What a pass covers.** A sealed run prints `seal dates covered:`. The result is about those days only. If a run crosses midnight, and its later entries are cut from the end along with that day's seal, every supplied entry is covered and no step can fail. Compare the dates with the days you expected.
+
+**`kms_handle_uri` is provenance, outside the MAC.** On a `v1.0a` seal, no signature binds it, so an editor can change it. That includes clearing a `plaintext-` handle before `--strict` reads it. `v1.0b` and `v1.0c` bind the day's distinct values, so an edit that changes that set fails, and removing one entry's copy of a value others still hold does not. `dev_mode` is signed from `v1.0a` on.
 
 ## Algorithm posture
 

@@ -6,6 +6,7 @@ import (
 	"crypto/ed25519"
 	"fmt"
 	"slices"
+	"strings"
 	"time"
 
 	"github.com/mmpworks/ffiec/verifier/internal/exitcodes"
@@ -141,7 +142,8 @@ func walkOneFile(af *AuditFile, ikms IKMRegistry) Outcome {
 }
 
 // checkForks applies §10.25. Byte-identical files stopped at the pre-flight, so 2 files with one
-// claim differ here.
+// claim differ here. The header's claim is the entries' claim: the loader requires chain_id, step 4
+// has held every entry's run_id equal to it, and each run_id is under the MAC.
 func checkForks(set FileSet) Outcome {
 	seen := map[[2]string]bool{}
 	for _, file := range set.Files {
@@ -256,6 +258,37 @@ func judgeEverySeal(days []*AuditFile, policy SealPolicy) Outcome {
 		result.Anomalies = append(result.Anomalies, out.Anomalies...)
 	}
 	return result
+}
+
+// LateBindingLines is the report that §7 and §4.2.2 require: the count, then each entry's
+// (run_id, seq, received_at, captured_at). Late binding is normal operation, so these are
+// anomaly lines and never a failure.
+func LateBindingLines(set FileSet) []string {
+	var entries []string
+	for _, entry := range unionEntries(set) {
+		if !entry.LateBinding {
+			continue
+		}
+		date, _ := effectiveDate(entry)
+		entries = append(entries, fmt.Sprintf("late-binding entry at seal_date %s: (%s, %d, %s, captured_at %s)",
+			cmp.Or(date, "unknown"), entry.RunID, entry.Seq, entry.ReceivedAt, cmp.Or(entry.CapturedAt, "absent")))
+	}
+	if len(entries) == 0 {
+		return nil
+	}
+	return append([]string{fmt.Sprintf("late-binding entries: %d", len(entries))}, entries...)
+}
+
+// SealDatesLine names the days this run covered. A run's last entries can be cut along with their
+// day's seal: every supplied entry is then covered, so no step can fail. Only this line tells the
+// reader that the result is about these days and no others.
+func SealDatesLine(seals []AuditSeal) string {
+	dates := make([]string, len(seals))
+	for i, seal := range seals {
+		dates[i] = seal.SealDate
+	}
+	slices.Sort(dates)
+	return fmt.Sprintf("seal dates covered: %s: a later day's entries, cut from the end of a run along with that day's seal, cannot be detected", strings.Join(dates, ", "))
 }
 
 // unionEntries is the (run_id, seq) order of §7 step 10. Go compares strings by their UTF-8 bytes,
