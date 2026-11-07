@@ -128,6 +128,8 @@ type Outcome struct {
 	Step     string
 	Reason   string
 	ExitCode int
+	// Anomalies are the lines this outcome itself requires on stdout, as vectors N017 and N018 pin.
+	Anomalies []string
 }
 
 // pass is the clean-walk outcome (status PASS, exit 0, no step/reason).
