@@ -152,6 +152,8 @@ The structural-only path completes whether or not `--master-key` is supplied. Th
 | The seal names an algorithm the list lacks | `Status: PASS-WITH-ANOMALY`, exit 0. With `--strict`: exit 1 |
 | The seal carries a `signatures` list that the posture agrees with | Exit 3: this verifier cannot check a second signature |
 
+Exit 3 here does not show that a second signature exists. The list is unsigned, so anyone who can edit the seal file can add an entry with no key, and that moves a stripped seal from exit 1 to exit 3. Before you rely on such a seal, obtain a verifier that checks the second signature.
+
 Exit 0 alone does not show a clean result. Read the `Status:` and `Anomaly:` lines.
 
 ## Limits against spec 0.4.0
@@ -160,7 +162,7 @@ The spec published first, and this verifier follows it in steps. It does not yet
 
 1. **File set.** The audit-file walk takes one `--audit-file` and one `--seal`. The several-file, several-seal rules of §7 step 10 are not built: selection by `received_at`, the entry outside every seal, the fork, and exit 3 on a seal that is not daily.
 2. **Operational root.** A v1.0c seal's `operational_events_log_root` is not recomputed. The run prints an anomaly that says so.
-3. **Dual-algorithm signatures.** Cases (a) and (e) of §7 step 11 are not built, so such a seal is exit 3. Go 1.26.2's standard library has no ML-DSA package (`go doc crypto/mldsa` finds none).
+3. **Dual-algorithm signatures.** Cases (a) and (e) of §7 step 11 are not built, so such a seal is exit 3, and exit 3 proves nothing about its list. Go 1.26.2's standard library has no ML-DSA package (`go doc crypto/mldsa` finds none).
 4. **Posture sources.** Only the command-line list is built, which is source (iii) of case (c).
 5. **`--ledger` walk.** It applies no posture, and it refuses `--posture` and `--strict`.
 
