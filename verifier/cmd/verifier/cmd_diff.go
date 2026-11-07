@@ -1,9 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
 	"io"
+	"os"
 
 	"github.com/mmpworks/ffiec/cliutil"
 	"github.com/mmpworks/ffiec/verifier/internal/verify"
@@ -37,16 +39,37 @@ func runDiff(args []string, stdout, stderr io.Writer) error {
 		return fmt.Errorf("--after: %w", err)
 	}
 
+	sameBytes, err := sameFileBytes(*beforePath, *afterPath)
+	if err != nil {
+		return err
+	}
 	mismatches := compareLedgers(a, b)
+	if !sameBytes && len(mismatches) == 0 {
+		mismatches = []string{"file bytes differ, outside the seal and entry fields this command names"}
+	}
 	if len(mismatches) == 0 {
-		fmt.Fprintln(stdout, "ledgers identical (chain entries and seal)")
+		printLine(stdout, "ledgers identical (every byte)")
 		return nil
 	}
-	fmt.Fprintf(stdout, "%d differences found:\n", len(mismatches))
+	printLine(stdout, "%d differences found:", len(mismatches))
 	for _, m := range mismatches {
-		fmt.Fprintf(stdout, "  %s\n", m)
+		printLine(stdout, "  %s", m)
 	}
 	return fmt.Errorf("ledgers differ")
+}
+
+// sameFileBytes is what "identical" means here. compareLedgers names the fields an examiner reads
+// first, and a ledger has more fields than that, some of them outside the seal's signature.
+func sameFileBytes(before, after string) (bool, error) {
+	a, err := os.ReadFile(before)
+	if err != nil {
+		return false, fmt.Errorf("--before: %w", err)
+	}
+	b, err := os.ReadFile(after)
+	if err != nil {
+		return false, fmt.Errorf("--after: %w", err)
+	}
+	return bytes.Equal(a, b), nil
 }
 
 // compareLedgers produces a deterministic list of human-readable

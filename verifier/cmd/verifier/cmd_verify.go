@@ -23,7 +23,7 @@ func runVerify(args []string, stdout, stderr io.Writer) error {
 		strict     = fs.Bool("strict", false, "With --audit-file: a posture problem fails with exit 1 and does not warn. Needs the master key, --seal, --root-key and --posture.")
 		minVersion = fs.String("min-sign-payload-version", "", "With --seal: the institution's floor, from a source outside the seal. A seal below it fails.")
 	)
-	var auditFiles, seals repeatedFlag
+	var auditFiles, seals cliutil.StringSlice
 	fs.Var(&auditFiles, "audit-file", "Path to an on-disk NDJSON audit file, once per run. Runs the §7 walk over them. With no key, runs witness mode.")
 	fs.Var(&seals, "seal", "With --audit-file: path to a day's seal record as JSON, once per day. Runs steps 10 and 11. Needs --root-key.")
 	if stop, err := cliutil.ParseFlags(fs, args, stdout, progName); err != nil {
@@ -43,7 +43,7 @@ func runVerify(args []string, stdout, stderr io.Writer) error {
 	if len(seals) > 0 {
 		return cliutil.Usagef("--seal: needs --audit-file. --ledger files carry their seal inside")
 	}
-	if *posture != "" || *strict || *minVersion != "" {
+	if policyFlagGiven(fs) {
 		return cliutil.Usagef("--posture, --strict and --min-sign-payload-version: need --audit-file. The --ledger walk does not apply them yet")
 	}
 	if err := cliutil.RequireFlags(map[string]string{
@@ -87,34 +87,34 @@ func writeReport(w io.Writer, path string, r *verify.Result) {
 	if r == nil {
 		return
 	}
-	fmt.Fprintf(w, "verifier report\n")
-	fmt.Fprintf(w, "  ledger:        %s\n", path)
-	fmt.Fprintf(w, "  entry_count:   %d\n", r.EntryCount)
-	fmt.Fprintf(w, "  seal_date:     %s\n", r.SealDate)
-	fmt.Fprintf(w, "  signing_key:   %s\n", r.SignerKey)
-	fmt.Fprintln(w, "  steps:")
+	printLine(w, "verifier report")
+	printLine(w, "  ledger:        %s", path)
+	printLine(w, "  entry_count:   %d", r.EntryCount)
+	printLine(w, "  seal_date:     %s", r.SealDate)
+	printLine(w, "  signing_key:   %s", r.SignerKey)
+	printLine(w, "  steps:")
 	for _, s := range r.Steps {
 		status := "PASS"
 		if !s.OK {
 			status = "FAIL"
 		}
 		if s.Note != "" {
-			fmt.Fprintf(w, "    [%s] %-18s — %s\n", status, s.Name, s.Note)
+			printLine(w, "    [%s] %-18s — %s", status, s.Name, s.Note)
 		} else {
-			fmt.Fprintf(w, "    [%s] %s\n", status, s.Name)
+			printLine(w, "    [%s] %s", status, s.Name)
 		}
 	}
 	if len(r.AdditionalVerifications) > 0 {
-		fmt.Fprintln(w, "  additional_verifications:")
+		printLine(w, "  additional_verifications:")
 		for _, av := range r.AdditionalVerifications {
 			status := "PASS"
 			if !av.OK {
 				status = "FAIL"
 			}
 			if av.Note != "" {
-				fmt.Fprintf(w, "    [%s] %-30s (%d entries) — %s\n", status, av.Family, av.EntryHits, av.Note)
+				printLine(w, "    [%s] %-30s (%d entries) — %s", status, av.Family, av.EntryHits, av.Note)
 			} else {
-				fmt.Fprintf(w, "    [%s] %-30s (%d entries)\n", status, av.Family, av.EntryHits)
+				printLine(w, "    [%s] %-30s (%d entries)", status, av.Family, av.EntryHits)
 			}
 		}
 	}
@@ -125,5 +125,5 @@ func writeReport(w io.Writer, path string, r *verify.Result) {
 	if !r.StructuralPass {
 		overall = "FAIL"
 	}
-	fmt.Fprintf(w, "  overall:       %s\n", overall)
+	printLine(w, "  overall:       %s", overall)
 }

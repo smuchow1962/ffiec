@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"io"
 
 	"github.com/mmpworks/ffiec/cliutil"
@@ -32,10 +31,10 @@ func runWalk(args []string, stdout, stderr io.Writer) error {
 	}
 	for i := range led.Entries {
 		e := &led.Entries[i]
-		fmt.Fprintf(stdout, "[%04d] %s seal_date=%s prev=%s entry=%s\n",
+		printLine(stdout, "[%04d] %s seal_date=%s prev=%s entry=%s",
 			e.MerkleLeafIndex, e.EntryID, e.SealDate, short(e.PrevHash), short(e.EntryHash))
 	}
-	fmt.Fprintf(stdout, "seal:    date=%s leaves=%d signer=%s\n",
+	printLine(stdout, "seal:    date=%s leaves=%d signer=%s",
 		led.Seal.SealDate, led.Seal.LeafCount, led.Seal.SigningKeyFingerprint)
 	return nil
 }

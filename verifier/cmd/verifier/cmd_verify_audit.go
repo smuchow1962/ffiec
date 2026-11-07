@@ -8,7 +8,6 @@ import (
 	"io"
 	"os"
 	"strings"
-	"unicode"
 
 	"github.com/mmpworks/ffiec/cliutil"
 	"github.com/mmpworks/ffiec/verifier/internal/exitcodes"
@@ -35,16 +34,6 @@ type auditFileOptions struct {
 	posture    string
 	strict     bool
 	minVersion string
-}
-
-// repeatedFlag collects every use of a flag, in order.
-type repeatedFlag []string
-
-func (r *repeatedFlag) String() string { return strings.Join(*r, ",") }
-
-func (r *repeatedFlag) Set(value string) error {
-	*r = append(*r, value)
-	return nil
 }
 
 // runVerifyAuditFile walks one or more NDJSON audit files and prints the §7 output: the
@@ -124,13 +113,13 @@ func loadSeals(paths []string) ([]verify.AuditSeal, verify.Outcome) {
 // several files a per-file step failed in.
 func reportOnStderr(stderr io.Writer, set verify.FileSet, outcome verify.Outcome) {
 	if outcome.File != "" && len(set.Files) > 1 {
-		fmt.Fprintf(stderr, "In file: %s\n", safeLine(outcome.File))
+		fmt.Fprintf(stderr, "In file: %s\n", cliutil.SafeLine(outcome.File))
 	}
 	if outcome.Status == "FAIL" {
 		return
 	}
 	for _, seal := range set.Seals {
-		fmt.Fprintf(stderr, "Seal checked: tenant_id %s, seal_date %s\n", safeLine(seal.TenantID), safeLine(seal.SealDate))
+		fmt.Fprintf(stderr, "Seal checked: tenant_id %s, seal_date %s\n", cliutil.SafeLine(seal.TenantID), cliutil.SafeLine(seal.SealDate))
 	}
 }
 
@@ -177,6 +166,15 @@ func emptyPolicyFlag(fs *flag.FlagSet) error {
 		}
 	})
 	return err
+}
+
+// policyFlagGiven reports whether the command line named a policy flag, whatever its value.
+func policyFlagGiven(fs *flag.FlagSet) bool {
+	given := false
+	fs.Visit(func(f *flag.Flag) {
+		given = given || f.Name == "posture" || f.Name == "min-sign-payload-version" || f.Name == "strict"
+	})
+	return given
 }
 
 // sealPolicyOf applies §10.12's exit 3 rules for --strict and --posture. --strict requires the
@@ -255,11 +253,11 @@ func structuralOutcome(reason string) verify.Outcome {
 func printOutcome(w io.Writer, out verify.Outcome, anomalies []string) error {
 	fmt.Fprintf(w, "Status: %s\n", out.Status)
 	if out.Step != "" {
-		fmt.Fprintf(w, "Step: %s\nReason: %s\n", out.Step, safeLine(out.Reason))
+		fmt.Fprintf(w, "Step: %s\nReason: %s\n", out.Step, cliutil.SafeLine(out.Reason))
 	}
 	printAnomalies(w, out.Anomalies)
 	if out.Status == "FAIL" {
-		return &exitError{code: out.ExitCode, message: safeLine(out.Reason)}
+		return &exitError{code: out.ExitCode, message: out.Reason}
 	}
 	printAnomalies(w, anomalies)
 	return nil
@@ -267,21 +265,11 @@ func printOutcome(w io.Writer, out verify.Outcome, anomalies []string) error {
 
 func printAnomalies(w io.Writer, anomalies []string) {
 	for _, a := range anomalies {
-		fmt.Fprintf(w, "Anomaly: %s\n", safeLine(a))
+		fmt.Fprintf(w, "Anomaly: %s\n", cliutil.SafeLine(a))
 	}
 }
 
-// safeLine is the one gate for text that reaches a line of output. Reasons and anomalies can carry
-// values from the audit file and the seal, and many of those fields have no MAC and no signature.
-// A line break there would forge a Status line, and a control character could rewrite a terminal.
-func safeLine(s string) string {
-	var line strings.Builder
-	for _, r := range s {
-		if unicode.IsControl(r) || unicode.In(r, unicode.Cf, unicode.Zl, unicode.Zp) {
-			fmt.Fprintf(&line, `\u%04X`, r)
-			continue
-		}
-		line.WriteRune(r)
-	}
-	return line.String()
+// printLine writes one line through the output gate. Its format holds no line break.
+func printLine(w io.Writer, format string, a ...any) {
+	fmt.Fprintln(w, cliutil.SafeLine(fmt.Sprintf(format, a...)))
 }

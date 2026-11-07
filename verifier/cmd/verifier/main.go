@@ -54,7 +54,7 @@ func Main(args []string, _ io.Reader, stdout, stderr io.Writer) int {
 	var walked *exitError
 	if errors.As(err, &walked) {
 		if walked.code == int(exitcodes.ConfigurationError) {
-			fmt.Fprintf(stderr, "%s: %s\n", progName, walked.message)
+			fmt.Fprintf(stderr, "%s: %s\n", progName, cliutil.SafeLine(walked.message))
 		}
 		return walked.code
 	}
