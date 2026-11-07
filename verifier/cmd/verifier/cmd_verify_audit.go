@@ -32,6 +32,7 @@ type auditFileOptions struct {
 	rootKey    string
 	posture    string
 	strict     bool
+	minVersion string
 }
 
 // runVerifyAuditFile walks an NDJSON audit file and prints the §7 output: the
@@ -80,6 +81,9 @@ func runVerifyAuditFile(opts auditFileOptions, stdout, stderr io.Writer) error {
 	}
 	af.Seal = seal
 	anomalies := append(verify.SealAnomalies(seal), verify.NDJSONAnomalies(af, raw)...)
+	if policy.Strict {
+		anomalies = append(anomalies, verify.StrictNotRun...)
+	}
 	outcome := walkSealed(af, ikms, pub, policy)
 	if outcome.Status != "FAIL" {
 		// Stderr, because §7 fixes what stdout holds.
@@ -106,7 +110,10 @@ func walkSealed(af *verify.AuditFile, ikms verify.IKMRegistry, pub ed25519.Publi
 // key, the seal and a posture source, because it promises every check ran, and a run without
 // one of them cannot keep that promise.
 func sealPolicyOf(opts auditFileOptions) (verify.SealPolicy, error) {
-	policy := verify.SealPolicy{Strict: opts.strict}
+	policy := verify.SealPolicy{Strict: opts.strict, MinSignPayloadVersion: opts.minVersion}
+	if opts.minVersion != "" && (opts.sealPath == "" || !verify.IsSignPayloadFloor(opts.minVersion)) {
+		return policy, configError("--min-sign-payload-version: needs --seal, and one of v1.0a, v1.0b or v1.0c")
+	}
 	if opts.posture != "" {
 		if opts.sealPath == "" {
 			return policy, configError("--posture: needs --seal. It is a list to compare a seal with")

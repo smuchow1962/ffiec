@@ -21,6 +21,68 @@ const StatusPassWithAnomaly = "PASS-WITH-ANOMALY"
 type SealPolicy struct {
 	Posture []string
 	Strict  bool
+	// MinSignPayloadVersion is the floor from the command line, source (iv) of the §7 floor check.
+	// Empty means none was given.
+	MinSignPayloadVersion string
+}
+
+// StrictNotRun names the --strict rules of §7 that this verifier does not apply, so a --strict
+// PASS never implies them.
+var StrictNotRun = []string{
+	"--strict did not run step 12a: the GenAI model identifier check is not built",
+	"--strict did not compare seal.cadence with the institution's claimed cadence: no input names it",
+}
+
+// signPayloadRank is the §7 floor order. A seal with no version is the pre-amendment form, below
+// every floor.
+var signPayloadRank = map[string]int{signPayloadPreAmendment: 0, "v1.0a": 1, signPayloadV1_0b: 2, signPayloadV1_0c: 3}
+
+// IsSignPayloadFloor reports whether value can be a floor.
+func IsSignPayloadFloor(value string) bool {
+	rank, known := signPayloadRank[value]
+	return known && rank > 0
+}
+
+// checkSealFloor is the §7 floor check, before signature dispatch. The seal's own field is source
+// (iii). No sign_payload form binds it, so an editor can remove it, and only the flag protects
+// against that. The field can only make the run fail, so honouring it lowers nothing.
+func checkSealFloor(seal AuditSeal, policy SealPolicy) Outcome {
+	if out := checkOneFloor(seal, policy.MinSignPayloadVersion, "--min-sign-payload-version"); out.Status == "FAIL" {
+		return out
+	}
+	return checkOneFloor(seal, seal.DeclaredSignPayloadFloor, "declared_sign_payload_floor")
+}
+
+// checkOneFloor leaves a version it does not know to dispatch, which names it. A floor it does not
+// know cannot be met, so the check fails closed.
+func checkOneFloor(seal AuditSeal, floor, source string) Outcome {
+	if floor == "" {
+		return pass()
+	}
+	version, versionKnown := signPayloadRank[seal.SignPayloadVersion]
+	minimum, floorKnown := signPayloadRank[floor]
+	if versionKnown && (!floorKnown || version < minimum) {
+		return fail("11", fmt.Sprintf("sign_payload_version %q below institution-declared floor %q (CC8.1-named source: %s)", seal.SignPayloadVersion, floor, source))
+	}
+	return pass()
+}
+
+// judgeSeal is the part of §7 steps 11 and 12 that reads the outside policy. It runs after the
+// signature has verified.
+func judgeSeal(af *AuditFile, policy SealPolicy) Outcome {
+	judged := JudgeSealPosture(af.Seal, policy)
+	if judged.Status != "FAIL" && policy.Strict && holdsDevelopmentKey(af) {
+		return fail("12", "dev-mode seal in production verification — refused")
+	}
+	return judged
+}
+
+// holdsDevelopmentKey is the --strict refusal of §7 step 12, §4.2 and §10.7: a dev_mode seal, or an
+// entry whose kms_handle_uri begins with "plaintext-".
+func holdsDevelopmentKey(af *AuditFile) bool {
+	return af.Seal.DevMode || slices.ContainsFunc(af.Entries, func(e AuditEntry) bool {
+		return strings.HasPrefix(e.KMSHandleURI, "plaintext-")
+	})
 }
 
 // ParseAlgorithmPosture reads the comma-separated list given on the command line, the source

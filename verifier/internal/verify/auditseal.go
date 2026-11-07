@@ -53,10 +53,10 @@ func WalkAuditChainSealed(af *AuditFile, ikms IKMRegistry, pub ed25519.PublicKey
 	if out := WalkAuditChain(af, ikms); out.Status == "FAIL" {
 		return out
 	}
-	if out := checkSeal(af, pub); out.Status == "FAIL" {
+	if out := checkSeal(af, pub, policy); out.Status == "FAIL" {
 		return out
 	}
-	return JudgeSealPosture(af.Seal, policy)
+	return judgeSeal(af, policy)
 }
 
 // WalkAuditChainWitnessSealed runs the no-key walk and then the seal steps: the
@@ -68,10 +68,10 @@ func WalkAuditChainWitnessSealed(af *AuditFile, pub ed25519.PublicKey, policy Se
 	if witness.Status == "FAIL" {
 		return witness
 	}
-	if out := checkSeal(af, pub); out.Status == "FAIL" {
+	if out := checkSeal(af, pub, policy); out.Status == "FAIL" {
 		return out
 	}
-	judged := JudgeSealPosture(af.Seal, policy)
+	judged := judgeSeal(af, policy)
 	if judged.Status == "FAIL" {
 		return judged
 	}
@@ -81,10 +81,11 @@ func WalkAuditChainWitnessSealed(af *AuditFile, pub ed25519.PublicKey, policy Se
 
 // checkSeal stops at the first failure, as §7 does, and SealAnomalies names what it
 // did not check. A list of checks in §7 order keeps this auditor-readable.
-func checkSeal(af *AuditFile, pub ed25519.PublicKey) Outcome {
+func checkSeal(af *AuditFile, pub ed25519.PublicKey, policy SealPolicy) Outcome {
 	for _, check := range []func() Outcome{
 		func() Outcome { return checkMerkleRootAudit(af) },
 		func() Outcome { return checkSealCoversFile(af) },
+		func() Outcome { return checkSealFloor(af.Seal, policy) },
 		func() Outcome { return checkSealAlgorithm(af.Seal) },
 		func() Outcome { return checkSealSingleSignature(af.Seal, pub) },
 		func() Outcome { return checkSealKeyVersions(af) },

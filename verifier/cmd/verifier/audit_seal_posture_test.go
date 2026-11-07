@@ -77,16 +77,14 @@ func TestPosture_FlagErrorsAreExit3BeforeAnyRead(t *testing.T) {
 	}
 }
 
-// §7 step 11 case (d). A source that names the seal's one algorithm gives a clean result in both modes.
+// §7 step 11 case (d). A source that names the seal's one algorithm gives a clean result.
+// TestStrict_PassesAProductionSeal covers --strict, which also refuses this sample's development key.
 func TestPosture_SingleAlgorithmIsClean(t *testing.T) {
-	seal := writeSeal(t, goodSeal(t))
-	for _, mode := range [][]string{{"--posture", "ed25519"}, {"--posture", "ed25519", "--strict"}} {
-		sealed(seal, mode...).
-			MustSucceed(t).
-			StdoutContains(t, "Status: PASS\n").
-			StdoutLacks(t, "algorithm posture").
-			StdoutLacks(t, "PASS-WITH-ANOMALY")
-	}
+	sealed(writeSeal(t, goodSeal(t)), "--posture", "ed25519").
+		MustSucceed(t).
+		StdoutContains(t, "Status: PASS\n").
+		StdoutLacks(t, "algorithm posture").
+		StdoutLacks(t, "PASS-WITH-ANOMALY")
 }
 
 // §7 step 11 case (b). Someone removes the second signature, or the whole list. The surviving

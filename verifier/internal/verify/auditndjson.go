@@ -66,9 +66,24 @@ func loadNDJSONHeader(line []byte) (AuditHeader, Outcome) {
 		ChainID          string `json:"chain_id"`
 		GenesisHash      string `json:"genesis_hash"`
 		HKDFInputsDigest string `json:"hkdf_inputs_digest"`
+		OpenedAtUTC      string `json:"opened_at_utc"`
 	}
 	if err := json.Unmarshal(line, &h); err != nil {
 		return AuditHeader{}, structuralFail("pre-flight", fmt.Sprintf("malformed header: %v", err))
+	}
+	// §4.4 requires these, and §10.12 makes a missing one exit 2. The header carries no MAC, so
+	// the walk's later steps must never read an absent field as "nothing to check".
+	for _, required := range []struct{ name, value string }{
+		{"format_version", h.FormatVersion},
+		{"tenant_id", h.TenantID},
+		{"chain_id", h.ChainID},
+		{"genesis_hash", h.GenesisHash},
+		{"hkdf_inputs_digest", h.HKDFInputsDigest},
+		{"opened_at_utc", h.OpenedAtUTC},
+	} {
+		if required.value == "" {
+			return AuditHeader{}, structuralFail("pre-flight", "header missing required field "+required.name)
+		}
 	}
 	return AuditHeader{
 		FormatVersion:       h.FormatVersion,
