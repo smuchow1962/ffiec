@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/ed25519"
 	"encoding/hex"
+	"flag"
 	"fmt"
 	"io"
 	"os"
@@ -166,6 +167,18 @@ func labelled(label string, count int, lines []string) []string {
 	return out
 }
 
+// emptyPolicyFlag finds --posture= or --min-sign-payload-version= with no value. Read as "not given",
+// either one would silently drop a check the command line asked for.
+func emptyPolicyFlag(fs *flag.FlagSet) error {
+	var err error
+	fs.Visit(func(f *flag.Flag) {
+		if (f.Name == "posture" || f.Name == "min-sign-payload-version") && f.Value.String() == "" {
+			err = configError("--%s: the value is empty", f.Name)
+		}
+	})
+	return err
+}
+
 // sealPolicyOf applies §10.12's exit 3 rules for --strict and --posture. --strict requires the
 // key, the seal and a posture source, because it promises every check ran, and a run without
 // one of them cannot keep that promise.
@@ -246,7 +259,7 @@ func printOutcome(w io.Writer, out verify.Outcome, anomalies []string) error {
 	}
 	printAnomalies(w, out.Anomalies)
 	if out.Status == "FAIL" {
-		return &exitError{code: out.ExitCode, message: out.Reason}
+		return &exitError{code: out.ExitCode, message: safeLine(out.Reason)}
 	}
 	printAnomalies(w, anomalies)
 	return nil
